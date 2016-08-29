@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     81862,       1717]
-NotebookOptionsPosition[     79986,       1648]
-NotebookOutlinePosition[     80343,       1664]
-CellTagsIndexPosition[     80300,       1661]
+NotebookDataLength[     83233,       1762]
+NotebookOptionsPosition[     81160,       1687]
+NotebookOutlinePosition[     81521,       1703]
+CellTagsIndexPosition[     81478,       1700]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -494,80 +494,119 @@ Cell["\:5b58\:50a8\:8fc7\:7a0b\:751f\:6210", "Section",
 Cell[CellGroupData[{
 
 Cell[BoxData[
- RowBox[{"\:5b58\:50a8\:8fc7\:7a0b", "[", "\"\<\:8bc1\:5238\:5356\:51fa\>\"", 
+ RowBox[{"\:6838\:7b97\:8bbe\:8ba1", "[", 
+  RowBox[{
+  "\"\<\:4e1a\:52a1\:6838\:7b97\>\"", ",", 
+   "\"\<\:8bc1\:5238\:4e70\:5165\>\""}], "]"}]], "Input",
+ CellChangeTimes->{{3.6810194086960154`*^9, 3.681019448571615*^9}, {
+  3.6810194803976154`*^9, 3.681019482378815*^9}, {3.6810204193266153`*^9, 
+  3.681020422399815*^9}}],
+
+Cell[BoxData[
+ RowBox[{"\[LeftAssociation]", 
+  RowBox[{
+   RowBox[{"\<\"\:5e93\:5b58\:6210\:672c\"\>", 
+    "\[Rule]", "\<\"\:6210\:4ea4\:91d1\:989d\"\>"}], ",", 
+   RowBox[{"\<\"\:8d26\:6237\:8d44\:91d1\"\>", 
+    "\[Rule]", "\<\"-\:624b\:7eed\:8d39 - \:6210\:4ea4\:91d1\:989d\"\>"}], 
+   ",", 
+   RowBox[{"\<\"\:5176\:5b83\:8d39\:7528\"\>", 
+    "\[Rule]", "\<\"\:624b\:7eed\:8d39 - \:8fc7\:6237\:8d39 - \:5238\:5546\
+\:4f63\:91d1\"\>"}], ",", 
+   RowBox[{"\<\"\:51c0\:624b\:7eed\:8d39\"\>", 
+    "\[Rule]", "\<\"\:5238\:5546\:4f63\:91d1\"\>"}], ",", 
+   RowBox[{"\<\"\:8fc7\:6237\:8d39\:7528\"\>", 
+    "\[Rule]", "\<\"\:8fc7\:6237\:8d39\"\>"}], ",", 
+   RowBox[{"\<\"\:4e70\:5165\:91d1\:989d\"\>", 
+    "\[Rule]", "\<\"\:6210\:4ea4\:91d1\:989d\"\>"}], ",", 
+   RowBox[{"\<\"\:5e93\:5b58\:6570\:91cf\"\>", 
+    "\[Rule]", "\<\"\:6210\:4ea4\:6570\:91cf\"\>"}], ",", 
+   RowBox[{"\<\"\:4e70\:5165\:6570\:91cf\"\>", 
+    "\[Rule]", "\<\"\:6210\:4ea4\:6570\:91cf\"\>"}]}], 
+  "\[RightAssociation]"}]], "Output",
+ CellChangeTimes->{{3.681019418867215*^9, 3.6810194496012154`*^9}, 
+   3.681019483268015*^9, 3.681020423491815*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"\"\<\:5176\:5b83\:8d39\:7528\>\"", "\[Rule]", 
+  "\"\<\:624b\:7eed\:8d39 - \:8fc7\:6237\:8d39 - \
+\:5238\:5546\:4f63\:91d1\>\""}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"\"\<\:5176\:5b83\:8d39\:7528\>\"", "\[Rule]", 
+  "\"\<-\:5370\:82b1\:7a0e + \:624b\:7eed\:8d39 - \
+\:5238\:5546\:4f63\:91d1\>\""}]], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"\:5b58\:50a8\:8fc7\:7a0b", "[", "\"\<\:8bc1\:5238\:4e70\:5165\>\"", 
   "]"}]], "Input",
- CellChangeTimes->{{3.6810043983182373`*^9, 3.681004412186637*^9}}],
+ CellChangeTimes->{{3.6810043983182373`*^9, 3.681004412186637*^9}, {
+  3.6810160539366026`*^9, 3.6810160558242025`*^9}}],
 
 Cell[BoxData["\<\"/***************************************************\\n    \
-\:4e1a\:52a1\:7c7b\:578b:\\t\:8bc1\:5238\:5356\:51fa\\n    \:4e1a\:52a1\:6458\
-\:8981:\\t221001\\n\\n\\n    \:672c\:5b58\:50a8\:8fc7\:7a0b\:7531\:4ee5\:4e0b\
+\:4e1a\:52a1\:7c7b\:578b:\\t\:8bc1\:5238\:4e70\:5165\\n    \:4e1a\:52a1\:6458\
+\:8981:\\t220000\\n\\n\\n    \:672c\:5b58\:50a8\:8fc7\:7a0b\:7531\:4ee5\:4e0b\
 \:4f1a\:8ba1\:5206\:5f55\:81ea\:52a8\:751f\:6210\:3002\:8bf7\:52ff\:624b\:5de5\
-\:4fee\:6539\:3002\\n\\n|----------+----------+----------+--------------------\
-------------+--------------------------|\\n| \:4e1a\:52a1\:7c7b\:578b | \
-\:501f\:65b9     | \:8d37\:65b9     | \:91d1\:989d                           \
-| \:8bf4\:660e                     \
-|\\n|----------+----------+----------+--------------------------------+-------\
--------------------|\\n| \:8bc1\:5238\:5356\:51fa | \:8d26\:6237\:8d44\:91d1 \
-| \:4ea4\:6613\:6536\:76ca | \:6210\:4ea4\:91d1\:989d                       | \
-\:6210\:672c\:548c\:4ea4\:6613\:6536\:76ca\:5165\:8d26       |\\n| \:8bc1\
-\:5238\:5356\:51fa | \:4ea4\:6613\:6536\:76ca | \:5e93\:5b58\:6210\:672c | \
-\:5e93\:5b58\:6210\:672c * \:6210\:4ea4\:6570\:91cf / \
-\:5e93\:5b58\:6570\:91cf | \:6210\:672c\:548c\:4ea4\:6613\:6536\:76ca\:5165\
-\:8d26       |\\n| \:8bc1\:5238\:5356\:51fa | \:5176\:5b83\:8d39\:7528 | \
-\:8d26\:6237\:8d44\:91d1 | \:624b\:7eed\:8d39                         | \
-\:624b\:7eed\:8d39\:5165\:8d26               |\\n| \:8bc1\:5238\:5356\:51fa | \
-\:5370\:82b1\:7a0e\:8d39 | \:5176\:5b83\:8d39\:7528 | \:5370\:82b1\:7a0e      \
-                   | \:5370\:82b1\:7a0e\:5165\:8d26               |\\n| \
-\:8bc1\:5238\:5356\:51fa | \:51c0\:624b\:7eed\:8d39 | \
-\:5176\:5b83\:8d39\:7528 | \:5238\:5546\:4f63\:91d1                       | \
-\:51c0\:624b\:7eed\:8d39\:ff08\:5238\:5546\:4f63\:91d1\:ff09\:5165\:8d26 \
-|\\n|----------+----------+----------+--------------------------------+-------\
--------------------|\\n| \:8bc1\:5238\:5356\:51fa | \:5356\:51fa\:6570\:91cf \
-| \:5e93\:5b58\:6570\:91cf | \:6210\:4ea4\:6570\:91cf                       | \
-\:5356\:51fa\:6570\:91cf\:8bb0\:5f55             |\\n| \:8bc1\:5238\:5356\
-\:51fa | \:5356\:51fa\:91d1\:989d | \:8868\:5916\:5bf9\:62c6 | \:6210\:4ea4\
-\:91d1\:989d                       | \:5356\:51fa\:91d1\:989d\:8bb0\:5f55     \
-        |\\n|----------+----------+----------+--------------------------------\
-+--------------------------|\\n\\n*/\\n\\nif exists (select * from sysobjects \
-where type = 'P' and name = 'sp_221001')\\n\\tdrop procedure \
-sp_221001\\ngo\\n\\ncreate procedure sp_221001(\\n\\t@bizdate int,  \
-\\n\\t@msg varchar(128) = null output)\\nas\\nbegin try\\n\\tbegin \
-transaction\\n\\n\\t-- \:66f4\:65b0\:6301\:4ed3\:6838\:7b97\:8868\\n\\tmerge \
-into stkasset_hs as sec\\n\\tusing (\\n\\t\\tselect serverid, orgid, custid, \
-fundid, market, stkcode, '00' as ltlx, moneytype, bankcode,\\n\\t\\t       \
-matchqty, matchamt, fee_jsxf, fee_sxf, fee_ghf, fee_yhs, \
-feefront\\n\\t\\tfrom logasset_hs\\n\\t\\twhere digestid = 221001 and bizdate \
-= @bizdate\\n\\t) as ord\\n\\ton (\\n\\t\\tsec.serverid = ord.serverid and\\n\
-\\t\\tsec.orgid = ord.orgid and\\n\\t\\tsec.custid = ord.custid \
-and\\n\\t\\tsec.fundid = ord.fundid and\\n\\t\\tsec.market = ord.market \
-and\\n\\t\\tsec.ltlx = ord.ltlx and\\t\\t-- todo: some don't need specific \
-ltlx\\n\\t\\tsec.stkcode = ord.stkcode)\\n\\twhen matched then\\n\\t\\tupdate \
-set sec.syvalue_ch = -((sec.stkcost_ch*ord.matchqty)/sec.stkqty_ch) + \
-ord.matchamt, sec.stkcost_ch = \
--((sec.stkcost_ch*ord.matchqty)/sec.stkqty_ch), sec.qtfee_ch = -ord.fee_yhs + \
-ord.fee_sxf - ord.fee_jsxf, sec.yhs_ch = ord.fee_yhs, sec.jsxf_ch = \
-ord.fee_jsxf, sec.stksaleqty = ord.matchqty, sec.stkqty_ch = -ord.matchqty, \
-sec.stksaleamt = ord.matchamt\\n\\twhen not matched then\\n\\t\\tinsert \
-(serverid, orgid, custid, fundid, market, stkcode, ltlx, sec.syvalue_ch, \
-sec.stkcost_ch, sec.qtfee_ch, sec.yhs_ch, sec.jsxf_ch, sec.stksaleqty, \
-sec.stkqty_ch, sec.stksaleamt)  \\n\\t\\tvalues (ord.serverid, ord.orgid, \
-ord.custid, ord.fundid, ord.market, ord.stkcode, ord.ltlx, \
--((sec.stkcost_ch*ord.matchqty)/sec.stkqty_ch) + ord.matchamt, \
--((sec.stkcost_ch*ord.matchqty)/sec.stkqty_ch), -ord.fee_yhs + ord.fee_sxf - \
-ord.fee_jsxf, ord.fee_yhs, ord.fee_jsxf, ord.matchqty, -ord.matchqty, \
-ord.matchamt);\\n\\t\\t\\n\\t-- \:66f4\:65b0\:8d44\:91d1\:6838\:7b97\:8868\\n\
+\:4fee\:6539\:3002\\n\\n|----------+----------+----------+----------+---------\
+-----------------|\\n| \:4e1a\:52a1\:7c7b\:578b | \:501f\:65b9     | \:8d37\
+\:65b9     | \:91d1\:989d     | \:8bf4\:660e                     \
+|\\n|----------+----------+----------+----------+--------------------------|\\\
+n| \:8bc1\:5238\:4e70\:5165 | \:5e93\:5b58\:6210\:672c | \:8d26\:6237\:8d44\
+\:91d1 | \:6210\:4ea4\:91d1\:989d | \:6210\:672c\:5165\:8d26                 \
+|\\n| \:8bc1\:5238\:4e70\:5165 | \:5176\:5b83\:8d39\:7528 | \
+\:8d26\:6237\:8d44\:91d1 | \:624b\:7eed\:8d39   | \:624b\:7eed\:8d39\:5165\
+\:8d26               |\\n| \:8bc1\:5238\:4e70\:5165 | \
+\:51c0\:624b\:7eed\:8d39 | \:5176\:5b83\:8d39\:7528 | \
+\:5238\:5546\:4f63\:91d1 | \:51c0\:624b\:7eed\:8d39\:ff08\:5238\:5546\:4f63\
+\:91d1\:ff09\:5165\:8d26 |\\n| \:8bc1\:5238\:4e70\:5165 | \:8fc7\:6237\:8d39\
+\:7528 | \:5176\:5b83\:8d39\:7528 | \:8fc7\:6237\:8d39   | \:8fc7\:6237\:8d39\
+\:5165\:8d26               \
+|\\n|----------+----------+----------+----------+--------------------------|\\\
+n| \:8bc1\:5238\:4e70\:5165 | \:8868\:5916\:5bf9\:62c6 | \:4e70\:5165\:91d1\
+\:989d | \:6210\:4ea4\:91d1\:989d | \:4e70\:5165\:91d1\:989d\:8bb0\:5f55      \
+       |\\n| \:8bc1\:5238\:4e70\:5165 | \:5e93\:5b58\:6570\:91cf | \:4e70\
+\:5165\:6570\:91cf | \:6210\:4ea4\:6570\:91cf | \
+\:4e70\:5165\:6570\:91cf\:8bb0\:5f55             \
+|\\n|----------+----------+----------+----------+--------------------------|\\\
+n\\n*/\\n\\nif exists (select * from sysobjects where type = 'P' and name = \
+'sp_220000')\\n\\tdrop procedure sp_220000\\ngo\\n\\ncreate procedure \
+sp_220000(\\n\\t@bizdate int,  \\n\\t@msg varchar(128) = null \
+output)\\nas\\nbegin try\\n\\tbegin transaction\\n\\n\\t-- \:66f4\:65b0\:6301\
+\:4ed3\:6838\:7b97\:8868\\n\\tmerge into stkasset_hs as sec\\n\\tusing \
+(\\n\\t\\tselect serverid, orgid, custid, fundid, market, stkcode, '00' as \
+ltlx, moneytype, bankcode,\\n\\t\\t       matchqty, matchamt, fee_jsxf, \
+fee_sxf, fee_ghf, fee_yhs, feefront\\n\\t\\tfrom logasset_hs\\n\\t\\twhere \
+digestid = 220000 and bizdate = @bizdate\\n\\t) as ord\\n\\ton \
+(\\n\\t\\tsec.serverid = ord.serverid and\\n\\t\\tsec.orgid = ord.orgid \
+and\\n\\t\\tsec.custid = ord.custid and\\n\\t\\tsec.fundid = ord.fundid \
+and\\n\\t\\tsec.market = ord.market and\\n\\t\\tsec.ltlx = ord.ltlx \
+and\\t\\t-- todo: some don't need specific ltlx\\n\\t\\tsec.stkcode = \
+ord.stkcode)\\n\\twhen matched then\\n\\t\\tupdate set sec.stkcost_ch = \
+ord.matchamt, sec.qtfee_ch = ord.fee_sxf - ord.fee_ghf - ord.fee_jsxf, \
+sec.jsxf_ch = ord.fee_jsxf, sec.ghf_ch = ord.fee_ghf, sec.stkbuyamt = \
+ord.matchamt, sec.stkqty_ch = ord.matchqty, sec.stkbuyqty = \
+ord.matchqty\\n\\twhen not matched then\\n\\t\\tinsert (serverid, orgid, \
+custid, fundid, market, stkcode, ltlx, sec.stkcost_ch, sec.qtfee_ch, \
+sec.jsxf_ch, sec.ghf_ch, sec.stkbuyamt, sec.stkqty_ch, sec.stkbuyqty)  \\n\\t\
+\\tvalues (ord.serverid, ord.orgid, ord.custid, ord.fundid, ord.market, \
+ord.stkcode, ord.ltlx, ord.matchamt, ord.fee_sxf - ord.fee_ghf - \
+ord.fee_jsxf, ord.fee_jsxf, ord.fee_ghf, ord.matchamt, ord.matchqty, \
+ord.matchqty);\\n\\t\\t\\n\\t-- \:66f4\:65b0\:8d44\:91d1\:6838\:7b97\:8868\\n\
 \\tmerge into fundasset_hs as fun\\n\\tusing (\\n\\t\\tselect serverid, \
 orgid, custid, bankcode, fundid, moneytype, matchamt, fee_jsxf, fee_sxf, \
 fee_ghf, fee_yhs, feefront\\n\\t\\tfrom logasset_hs\\n\\t\\twhere digestid = \
-221001 and bizdate = @bizdate\\n\\t) as ord\\n\\ton (\\n\\t\\tfun.serverid = \
+220000 and bizdate = @bizdate\\n\\t) as ord\\n\\ton (\\n\\t\\tfun.serverid = \
 ord.serverid and\\n\\t\\tfun.orgid = ord.orgid and\\n\\t\\tfun.custid = \
 ord.custid and\\n\\t\\tfun.bankcode = ord.bankcode and\\n\\t\\tfun.fundid = \
 ord.fundid and\\n\\t\\tfun.moneytype = ord.moneytype)\\n\\twhen matched \
-then\\n\\t\\tupdate set fun.fundbal_ch = -ord.fee_sxf + \
+then\\n\\t\\tupdate set fun.fundbal_ch = -ord.fee_sxf - \
 ord.matchamt\\n\\twhen not matched then\\n\\t\\tinsert (serverid, orgid, \
 custid, bankcode, fundid, moneytype, fun.fundbal_ch)  \\n\\t\\tvalues \
 (ord.serverid, ord.orgid, ord.custid, ord.bankcode, ord.fundid, \
-ord.moneytype, -ord.fee_sxf + ord.matchamt);\\n\\n\\n\\t-- \:66f4\:65b0\:5404\
+ord.moneytype, -ord.fee_sxf - ord.matchamt);\\n\\n\\n\\t-- \:66f4\:65b0\:5404\
 \:7edf\:8ba1\:53d8\:91cf\\n\\n\\tupdate stkasset_hs set\\n\\t-- \:5229\:606f\
 \:8ba1\:63d0 = \:9884\:8ba1\:5229\:606f - \:5229\:606f\:6210\:672c\\n\\t-- \
 \:503a\:5238\:7968\:9762\:5229\:606f | \:9884\:8ba1\:5229\:606f / \
@@ -578,7 +617,7 @@ ord.moneytype, -ord.fee_sxf + ord.matchamt);\\n\\n\\n\\t-- \:66f4\:65b0\:5404\
 \:51c0\:8d44\:4ea7       | \:603b\:5e02\:503c + \:672c\:65e5\:4f59\:989d + \
 \:501f\:51fa\:91d1\:989d + \:9884\:8ba1\:5229\:606f + \
 \:5728\:9014\:672a\:6536 + \:5229\:606f\:79ef\:6570  - \:501f\:5165\:91d1\
-\:989d - \:5728\:9014\:672a\:4ed8\\n\\t\\n\\twhere digestid = 221001 and \
+\:989d - \:5728\:9014\:672a\:4ed8\\n\\t\\n\\twhere digestid = 220000 and \
 bizdate = @bizdate\\n\\n\\n\\t-- \
 \:66f4\:65b0\:5404\:7d2f\:8ba1\:53d8\:91cf\\n\\t\\n\\tupdate stkasset_hs \
 set\\n\\tstkqty = stkqty + stkqty_ch,\\t-- \:5e93\:5b58\:6570\:91cf\:ff08\
@@ -619,11 +658,11 @@ fundaward_ch\\t\\t-- \
 \:7d2f\:8ba1\:7ed3\:606f\:ff08\:7d2f\:8ba1\:ff09\\n\\twhere tjdate = @bizdate\
 \\n\\n\\n\\tselect @msg='\:6838\:7b97\:5904\:7406\:6210\:529f'\\n\\n\\tupdate \
 logasset_hs set sett_status = 3, sett_remark = @msg\\n\\twhere  bizdate = \
-@bizdate and digestid = 221001 and bizdate = @bizdate\\n\\n\\tcommit \
+@bizdate and digestid = 220000 and bizdate = @bizdate\\n\\n\\tcommit \
 transaction\\n\\treturn 0\\nend try\\n\\nbegin catch\\n\\tif @@trancount > \
 0\\n\\t\\trollback transaction\\n\\t\\n\\treturn -1\\nend \
 catch\\n\\ngo\\n\"\>"], "Output",
- CellChangeTimes->{3.6810044131694374`*^9}]
+ CellChangeTimes->{3.6810044131694374`*^9, 3.6810160567134027`*^9}]
 }, Open  ]],
 
 Cell[BoxData[
@@ -1647,7 +1686,7 @@ Cell[BoxData["\<\"-((stkcost_ch*matchqty)/stkqty_ch)\"\>"], "Output",
 }, Closed]]
 },
 WindowSize->{1117, 780},
-WindowMargins->{{Automatic, 48}, {63, Automatic}},
+WindowMargins->{{Automatic, -1202}, {-47, Automatic}},
 FrontEndVersion->"10.4 for Microsoft Windows (64-bit) (2016\:5e743\:670819\
 \:65e5)",
 StyleDefinitions->"Default.nb"
@@ -1675,48 +1714,54 @@ Cell[15022, 340, 6720, 144, 513, "Input"]
 Cell[CellGroupData[{
 Cell[21779, 489, 172, 2, 70, "Section"],
 Cell[CellGroupData[{
-Cell[21976, 495, 179, 3, 33, "Input"],
-Cell[22158, 500, 8827, 125, 2972, "Output"]
+Cell[21976, 495, 339, 7, 33, "Input"],
+Cell[22318, 504, 1127, 23, 55, "Output"]
 }, Open  ]],
-Cell[31000, 628, 538, 13, 33, "Input"]
+Cell[23460, 530, 164, 3, 31, "Input"],
+Cell[23627, 535, 165, 3, 31, "Input"],
+Cell[CellGroupData[{
+Cell[23817, 542, 232, 4, 33, "Input"],
+Cell[24052, 548, 8107, 116, 2912, "Output"]
 }, Open  ]],
-Cell[CellGroupData[{
-Cell[31575, 646, 97, 1, 70, "Section"],
-Cell[31675, 649, 1972, 40, 98, "Input"],
-Cell[33650, 691, 1376, 32, 99, "Input"],
-Cell[CellGroupData[{
-Cell[35051, 727, 1001, 24, 55, "Input"],
-Cell[36055, 753, 325, 5, 33, "Output"]
+Cell[32174, 667, 538, 13, 33, "Input"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[36417, 763, 169, 4, 33, "Input"],
-Cell[36589, 769, 528, 11, 33, "Output"]
+Cell[32749, 685, 97, 1, 70, "Section"],
+Cell[32849, 688, 1972, 40, 98, "Input"],
+Cell[34824, 730, 1376, 32, 99, "Input"],
+Cell[CellGroupData[{
+Cell[36225, 766, 1001, 24, 55, "Input"],
+Cell[37229, 792, 325, 5, 33, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[37154, 785, 1283, 29, 136, "Input"],
-Cell[38440, 816, 2614, 37, 1412, "Output"]
+Cell[37591, 802, 169, 4, 33, "Input"],
+Cell[37763, 808, 528, 11, 33, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[38328, 824, 1283, 29, 136, "Input"],
+Cell[39614, 855, 2614, 37, 1412, "Output"]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[41091, 858, 969, 23, 49, "Input"],
-Cell[42063, 883, 247, 3, 31, "Output"]
+Cell[42265, 897, 969, 23, 49, "Input"],
+Cell[43237, 922, 247, 3, 31, "Output"]
 }, Open  ]],
-Cell[42325, 889, 603, 14, 33, "Input"],
+Cell[43499, 928, 603, 14, 33, "Input"],
 Cell[CellGroupData[{
-Cell[42953, 907, 280, 7, 33, "Input"],
-Cell[43236, 916, 1588, 31, 76, "Output"]
+Cell[44127, 946, 280, 7, 33, "Input"],
+Cell[44410, 955, 1588, 31, 76, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[44861, 952, 1524, 30, 159, "Input"],
-Cell[46388, 984, 22456, 422, 856, "Output"]
+Cell[46035, 991, 1524, 30, 159, "Input"],
+Cell[47562, 1023, 22456, 422, 856, "Output"]
 }, Closed]],
-Cell[68859, 1409, 1434, 36, 70, "Input"],
+Cell[70033, 1448, 1434, 36, 70, "Input"],
 Cell[CellGroupData[{
-Cell[70318, 1449, 1140, 18, 96, "Input"],
-Cell[71461, 1469, 7338, 146, 297, "Output"]
+Cell[71492, 1488, 1140, 18, 96, "Input"],
+Cell[72635, 1508, 7338, 146, 297, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[78836, 1620, 984, 21, 33, "Input"],
-Cell[79823, 1643, 135, 1, 31, "Output"]
+Cell[80010, 1659, 984, 21, 33, "Input"],
+Cell[80997, 1682, 135, 1, 31, "Output"]
 }, Open  ]]
 }, Closed]]
 }
