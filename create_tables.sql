@@ -208,7 +208,7 @@ CREATE TABLE sysconfig(
 PRIMARY KEY (iid ));
 
 
-drop table if exists stktrd
+drop table if exists stktrd;
 CREATE TABLE stktrd(
 	serverid int NOT NULL,
 	market char(1) NOT NULL,
@@ -239,7 +239,7 @@ CREATE TABLE stktrd(
 	stkoverdraw char(1) NOT NULL,
 	fundrealback char(1) NOT NULL,
 	stockrealback char(1) NOT NULL,
-	reserveprop varchar(128) NOT NULL,
+	reserveprop varchar(128),
 	settlefundays int NOT NULL,
 	settlestkdays int NOT NULL,
 	funduseflag char(1) NOT NULL,
@@ -258,7 +258,7 @@ CREATE TABLE stktrd(
 	lastlimitday int NOT NULL,
 	limitday int NOT NULL,
 	quitdate int NOT NULL,
-	memotext varchar(128) NOT NULL,
+	memotext varchar(128),
 	chkmktvalueflag char(1) NOT NULL
 );
 
