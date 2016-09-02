@@ -1,23 +1,23 @@
 /********************************************
-    业务摘要：  221007
-    业务名称：  红利入账
+    业务摘要：  221008
+    业务名称：  债券兑息
     动作代码：  HG
     流通类型：  00
 ********************************************/
-if exists (select * from sysobjects where type='P' and name='sp_Cust_PT_Hlrz')
-    drop proc sp_Cust_PT_Hlrz
+if exists (select * from sysobjects where type='P' and name='sp_Cust_PT_Zqdx')
+    drop proc sp_Cust_PT_Zqdx
 go
 /*
-select * from logasset where digestid=221007
+select * from logasset where digestid=221008
 declare @msg as varchar(128)
-exec sp_Cust_PT_Hlrz 20150105, 1, 100, @msg output
+exec sp_Cust_PT_Zqdx 20150105, 1, 100, @msg output
 select @msg
 */
-CREATE proc sp_Cust_PT_Hlrz(
+CREATE proc sp_Cust_PT_Zqdx(
  @serverid  int
 ,@bizdate   int
 ,@sno       int
-,@custid    bigint,
+,@custid    bigint
 ,@msg       varchar(128) =null output
 )
 with encryption
@@ -34,7 +34,7 @@ declare @rowcount as int, @expense as numeric(20,2), @ret as int
 	@fee_sxf=fee_sxf, @fee_jsxf=fee_jsxf, @fee_ghf=fee_ghf, @fee_yhs=fee_yhs, @feefront=feefront,
 	@sett_status=sett_status, @sett_remark=sett_remark, @expense=fee_sxf + fee_ghs + fee_yhs + feefront
    from logasset with (nolock, index=index_of_logasset_pk)
-  where sno=@sno and bizdate=@bizdate and serverid=@serverid and digestid=221007
+  where sno=@sno and bizdate=@bizdate and serverid=@serverid and digestid=221008
 
 begin try
 

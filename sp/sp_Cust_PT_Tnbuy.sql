@@ -20,7 +20,7 @@ select @ret, @msg
 CREATE proc sp_Cust_PT_Tnbuy( @serverid  int
 ,@bizdate   int
 ,@sno       int
-,@custid    bigint,
+,@custid    bigint
 ,@msg       varchar(128) =null output
 )
 with encryption

@@ -17,7 +17,7 @@ CREATE proc sp_Cust_KFJJ_Sg(
  @serverid  char(1)
 ,@bizdate   int
 ,@sno       int
-,@custid    bigint,
+,@custid    bigint
 ,@msg       varchar(128) =null output
 )
 with encryption

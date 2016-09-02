@@ -1,24 +1,19 @@
 /********************************************
-    业务摘要：  221001
-    业务名称：  证券卖出
+    业务摘要：  550003
+    业务名称：  卖券还款
     动作代码：  0S
     流通类型：  00
 ********************************************/
-if exists (select * from sysobjects where type='P' and name='sp_Cust_PT_Sale')
-    drop proc sp_Cust_PT_Sale
+if exists (select * from sysobjects where type='P' and name='sp_Cust_RZRQ_Mqhk')
+    drop proc sp_Cust_RZRQ_Mqhk
 go
 /*
-select * from logasset_hs where bizdate<20150106
-select * from logasset_hs where sno=251110 and bizdate=20150130
-select * from logasset_hs where sno=278249 and bizdate=20150105
-select * from logasset_hs where custid=181600023165 and bizdate=20150105 and digestid=221001
 declare @msg as varchar(128)
-exec sp_Cust_PT_Sale @serverid=1, @bizdate=20150105, @sno=148741, @custid=129500065129, @msg=@msg output
+exec sp_Cust_RZRQ_Mqhk @serverid=1, @bizdate=20150105, @sno=148741, @custid=129500065129, @msg=@msg output
 select @msg
 
-select * from stkasset_hs
 */
-CREATE proc sp_Cust_PT_Sale(
+CREATE proc sp_Cust_RZRQ_Mqhk(
  @serverid  char(1)      
 ,@bizdate   int          
 ,@sno       int
@@ -32,20 +27,20 @@ declare @orgid as varchar(4), @fundid as bigint, @moneytype as char(1), @digesti
         @matchqty as numeric(20,2), @matchamt as numeric(20,2), @fee_sxf as numeric(20,2), @fee_jsxf as numeric(20,2),
         @fee_ghf as numeric(20,2), @fee_yhs as numeric(20,2), @feefront as numeric(20,2), @sett_status as char(1),
         @sett_remark as varchar(128)
-declare @stkcost as numeric(20,2), @rowcount as int, @expense as numeric(20,2), @ret as int
+declare @stkcost as numeric(20,2), @repayment as numeric(20,2), @rowcount as int, @expense as numeric(20,2), @ret as int
         
  select @orgid=orgid, @fundid=fundid, @moneytype=moneytype, @digestid=digestid, @market=market, @stkcode=stkcode,
         @bankcode=bankcode, @fundeffect=fundeffect, @stkeffect=stkeffect, @matchqty=matchqty, @matchamt=matchamt,
         @fee_sxf=fee_sxf, @fee_jsxf=fee_jsxf, @fee_ghf=fee_ghf, @fee_yhs=fee_yhs, @feefront=feefront,
         @sett_status=sett_status, @sett_remark=sett_remark, @expense=fee_sxf + fee_ghs + fee_yhs + feefront
    from logasset with (nolock, index=index_of_logasset_pk)
-  where sno=@sno and bizdate=@bizdate and serverid=@serverid and digestid=221001
+  where sno=@sno and bizdate=@bizdate and serverid=@serverid and digestid=550003
 
  select @stkcost=stkcost
    from stkasset_hs with (nolock, index=stkasset_hs_pk)
   where serverid=@serverid and fundid=@fundid and custid=@custid and orgid=@orgid and stkcode=@stkcode and market=@market
         and ltlx='00' and stkqty >= @matchqty
-        
+  
 begin try
 
     if (@sett_status is null)
@@ -104,7 +99,37 @@ begin tran
         begin
             raiserror(' %s', 12, 1, @msg) with SETERROR
         end
-              
+
+
+        -- 更新资金核算表：偿还借款
+        merge into fundasset_hs as fun
+        using (
+                select e.serverid, e.orgid, e.custid, e.bankcode, e.fundid, e.moneytype, e.matchamt, e.fundeffect,
+                       (case when e.matchamt > f.funddebt then f.funddebt else e.matchamt end) as repayment
+                  from logasset_hs e inner join fundasset_hs f
+                    on e.serverid = f.serverid and e.orgid = f.orgid and e.custid = f.custid and e.fundid = f.fundid
+                       and e.moneytype = f.moneytype and e.bizdate = @bizdate and e.digestid = 550003
+                 where e.sno=@sno and e.bizdate=@bizdate and e.serverid=@serverid and e.digestid=550003
+        ) as ord
+        on (
+                fun.serverid = ord.serverid and
+                fun.orgid = ord.orgid and
+                fun.custid = ord.custid and
+                fun.bankcode = ord.bankcode and
+                fun.fundid = ord.fundid and
+                fun.moneytype = ord.moneytype
+        )
+        when matched then
+                update set fundbal = fundbal - @repayment,
+                           fundbal_ch = fundbal_ch - @repayment,
+                           funddebit = funddebit - @repayment,
+                           funddebit_ch = funddebit_ch - @repayment
+        when not matched then
+                insert (serverid, orgid, custid, bankcode, fundid, moneytype)  
+                values (ord.serverid, ord.orgid, ord.custid, ord.bankcode, ord.fundid, ord.moneytype);
+
+
+
      select @msg='核算处理成功'
      update logasset 
         set sett_status=3, sett_remark=@msg

@@ -18,7 +18,7 @@ CREATE proc sp_Cust_BJHG_Rq(
  @serverid  int
 ,@bizdate   int    
 ,@sno       int
-,@custid    bigint,
+,@custid    bigint
 ,@msg       varchar(128) =null output
 )
 with encryption

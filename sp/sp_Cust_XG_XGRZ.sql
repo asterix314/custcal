@@ -28,7 +28,7 @@ CREATE proc sp_Cust_XG_XGRZ(
  @serverid  char(1)
 ,@bizdate   int
 ,@sno       int
-,@custid    bigint,
+,@custid    bigint
 ,@msg       varchar(128) =null output
 )
 with encryption

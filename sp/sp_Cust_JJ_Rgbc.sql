@@ -1,23 +1,17 @@
 /********************************************
-    业务摘要：  220000
-    业务名称：  证券买入
+    业务摘要：  240508
+    业务名称：  基金认购拨出
     动作代码：  0B
     流通类型：  00
 ********************************************/
-if exists (select * from sysobjects where type='P' and name='sp_Cust_PT_Buy')
-    drop proc sp_Cust_PT_Buy
+if exists (select * from sysobjects where type='P' and name='sp_Cust_JJ_Rgbc')
+    drop proc sp_Cust_JJ_Rgbc
 go
 /*
-select * from stkasset_hs where custid=129500044309
-select * from fundasset_hs where custid=129500044309
-select * from logasset_hs where sno=63435 and bizdate=20150202 and custid=129500044309
-
-declare @ret as int, @msg as varchar(128)
-exec @ret=sp_Cust_PT_Buy '1',20150202, 63435, 129500044309, @msg output
-select @ret, @msg
+exec sp_Cust_JJ_Rgbc '1',20150202, 63435, 129500044309, @msg output
 
 */
-CREATE proc sp_Cust_PT_Buy(
+CREATE proc sp_Cust_JJ_Rgbc(
  @serverid  int
 ,@bizdate   int
 ,@sno       int
@@ -33,12 +27,12 @@ declare @orgid as varchar(4), @fundid as bigint, @moneytype as char(1), @digesti
 	@sett_remark as varchar(128)
 declare @rowcount as int, @expense as numeric(20,2), @ret as int
         
- select @orgid=orgid, @fundid=fundid, @moneytype=moneytype, @digestid=digestid, @market=market, @stkcode=stkcode,
-        @bankcode=bankcode, @fundeffect=fundeffect, @stkeffect=stkeffect @matchqty=matchqty, @matchamt=matchamt,
-	@fee_sxf=fee_sxf, @fee_jsxf=fee_jsxf, @fee_ghf=fee_ghf, @fee_yhs=fee_yhs, @feefront=feefront,
-	@sett_status=sett_status, @sett_remark=sett_remark, @expense=fee_sxf + fee_ghs + fee_yhs + feefront
-   from logasset with (nolock, index=index_of_logasset_pk)
-  where sno=@sno and bizdate=@bizdate and serverid=@serverid and digestid=220000
+ select @orgid=e.orgid, @fundid=e.fundid, @moneytype=e.moneytype, @digestid=e.digestid, @market=e.market,
+        @stkcode=e.stkcode, @bankcode=e.bankcode, @fundeffect=e.fundeffect, @stkeffect=e.fundeffect,
+        @matchqty=-fundeffect, @matchamt=-fundeffect, @sett_status=sett_status,
+        @sett_remark=sett_remark
+   from logasset_hs e
+  where e.sno=@sno and e.bizdate=@bizdate and e.serverid=@serverid and e.digestid=240509
 
 begin try
 
@@ -60,31 +54,12 @@ begin try
           raiserror(' %s', 12, 1, @msg) with SETERROR
        end
 
-    if (@stkeffect <= 0)
-       begin
-          select @msg='股票发生与该业务不符.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
-
-   if (@feefront < 0)
-       begin
-          select @msg='其他费用金额异常.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
-
-    if (@matchamt + @expense + @fundeffect != 0)
-       begin
-          select @msg='资金发生不等于成交金额加费用.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
-
 begin tran
     exec @ret=nb_Cust_Stkasset_Commit
          @serverid=@serverid, @orgid=@orgid, @custid=@custid, @fundid=@fundid, @moneytype=@moneytype, @bankcode=@bankcode,
 	     @action='0B', @market=@market, @stkcode=@stkcode, @ltlx='00', @matchqty=@matchqty, @matchamt=@matchamt,
 	     @matchamt_ex=0, @aiamount=0, @fundeffect=@fundeffect, @stkeffect=@stkeffect, @stkcost_ch=@matchamt, @syvalue_ch=0,
-	     @aicost_ch=0, @lxsr_ch=0, @fee=@fee_sxf + @fee_ghf + @feefront, @jsxf=@fee_jsxf, @yhs=@fee_yhs, @ghf=@fee_ghf,
-	     @qtfee=@feefront, @lxs=0, @blje=0, @blxx='', @msg=@msg output
+	     @aicost_ch=0, @lxsr_ch=0, @fee=0, @jsxf=0, @yhs=0, @ghf=0, @qtfee=0, @lxs=0, @blje=0, @blxx='', @msg=@msg output
 
     if (@ret!=0)
         begin
@@ -92,7 +67,7 @@ begin tran
         end
               
      select @msg='核算处理成功'
-     update logasset 
+     update logasset_hs
         set sett_status=3, sett_remark=@msg
       where sno=@sno and bizdate=@bizdate and serverid=@serverid
 

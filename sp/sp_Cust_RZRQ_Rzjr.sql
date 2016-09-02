@@ -1,19 +1,18 @@
 /********************************************
-    业务摘要：  220010
-    业务名称：  红股入账
-    动作代码：  HG
-    流通类型：  00
+    业务摘要：  553001
+    业务名称：  融资借入
+    动作代码：  资金业务
+    流通类型：  -
 ********************************************/
-if exists (select * from sysobjects where type='P' and name='sp_Cust_PT_Hgrz')
-    drop proc sp_Cust_PT_Hgrz
+if exists (select * from sysobjects where type='P' and name='sp_Cust_RZRQ_Rzjr')
+    drop proc sp_Cust_RZRQ_Rzjr
 go
 /*
-select * from logasset where digestid=220010
 declare @msg as varchar(128)
-exec sp_Cust_PT_Buy 20150105, 1, 100, @msg output
+exec sp_Cust_RZRQ_Rzjr  20150105, 1, 100, @msg output
 select @msg
 */
-CREATE proc sp_Cust_PT_Hgrz(
+CREATE proc sp_Cust_RZRQ_Rzjr(
  @serverid  int
 ,@bizdate   int
 ,@sno       int
@@ -34,7 +33,7 @@ declare @rowcount as int, @expense as numeric(20,2), @ret as int
 	@fee_sxf=fee_sxf, @fee_jsxf=fee_jsxf, @fee_ghf=fee_ghf, @fee_yhs=fee_yhs, @feefront=feefront, @sett_status=sett_status,
 	@sett_remark=sett_remark, @expense=fee_sxf + fee_ghs + fee_yhs + feefront
    from logasset with (nolock, index=index_of_logasset_pk)
-  where sno=@sno and bizdate=@bizdate and serverid=@serverid and digestid=220010
+  where sno=@sno and bizdate=@bizdate and serverid=@serverid and digestid=553001
 
 begin try
 
@@ -50,32 +49,39 @@ begin try
           return 0
        end
 
-    if (@fundeffect != 0 or @expense != 0)
+    if (@fundeffect != 0 or @expense <= 0)
        begin
           select @msg='资金发生与该业务不符.'
           raiserror(' %s', 12, 1, @msg) with SETERROR
        end
 
 
-    if (@stkeffect<=0)
-       begin
-          select @msg='股票发生与该业务不符.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
-
-
 begin tran
-    exec @ret=nb_Cust_Stkasset_Commit
-              @serverid=@serverid, @orgid=@orgid, @custid=@custid, @fundid=@fundid, @moneytype=@moneytype, @bankcode=@bankcode,
-	      @action='HG', @market=@market, @stkcode=@stkcode, @ltlx='00', @matchqty=@matchqty, @matchamt=@matchamt,
-	      @matchamt_ex=0, @aiamount=0, @fundeffect=@fundeffect, @stkeffect=@stkeffect, @stkcost_ch=@matchamt, @syvalue_ch=0,
-	      @aicost_ch=0, @lxsr_ch=0, @fee=0, @jsxf=0, @yhs=0, @ghf=0, @qtfee=0, @lxs=0, @blje=0, @blxx='', @msg=@msg output
 
-    if (@ret!=0)   
-        begin
-            raiserror(' %s', 12, 1, @msg) with SETERROR
-        end
-              
+        -- 更新资金核算表
+        merge into fundasset_hs as fun
+        using (
+                select serverid, orgid, custid, bankcode, fundid, moneytype, matchamt, fundeffect
+                  from logasset_hs
+                 where sno=@sno and bizdate=@bizdate and serverid=@serverid and digestid=222006
+        ) as ord
+        on (
+                fun.serverid = ord.serverid and
+                fun.orgid = ord.orgid and
+                fun.custid = ord.custid and
+                fun.bankcode = ord.bankcode and
+                fun.fundid = ord.fundid and
+                fun.moneytype = ord.moneytype
+        )
+        when matched then
+                update set fundbal = fundbal + ord.fundeffect, fundbal_ch = ord.fundeffect,
+                           funddebit = fundload + ord.fundeffect, fundloan_ch = fundloan_ch + ord.fundeffect
+        when not matched then
+                insert (serverid, orgid, custid, bankcode, fundid, moneytype, fundbal, fundbal_ch, funddebit, funddebit_ch)  
+                values (ord.serverid, ord.orgid, ord.custid, ord.bankcode, ord.fundid, ord.moneytype,
+                       ord.fundeffect, ord.fundeffect, ord.fundeffect, ord.fundeffect);
+
+
      select @msg='核算处理成功'
      update logasset
         set sett_status=3, sett_remark=@msg

@@ -17,7 +17,7 @@ CREATE proc sp_Cust_PT_Hlrz(
  @serverid  int
 ,@bizdate   int
 ,@sno       int
-,@custid    bigint,
+,@custid    bigint
 ,@msg       varchar(128) =null output
 )
 with encryption
@@ -56,11 +56,6 @@ begin try
           raiserror(' %s', 12, 1, @msg) with SETERROR
        end
 
-    if (@stkeffect != 0)
-       begin
-          select @msg='股票发生与该业务不符.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
 
 begin tran
     exec @ret=nb_Cust_Stkasset_Commit

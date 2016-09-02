@@ -1,23 +1,17 @@
 /********************************************
-    业务摘要：  220000
-    业务名称：  证券买入
+    业务摘要：  550001
+    业务名称：  担保品买入
     动作代码：  0B
     流通类型：  00
 ********************************************/
-if exists (select * from sysobjects where type='P' and name='sp_Cust_PT_Buy')
-    drop proc sp_Cust_PT_Buy
+if exists (select * from sysobjects where type='P' and name='sp_Cust_RZRQ_Dbpmr')
+    drop proc sp_Cust_RZRQ_Dbpmr
 go
 /*
-select * from stkasset_hs where custid=129500044309
-select * from fundasset_hs where custid=129500044309
-select * from logasset_hs where sno=63435 and bizdate=20150202 and custid=129500044309
-
-declare @ret as int, @msg as varchar(128)
-exec @ret=sp_Cust_PT_Buy '1',20150202, 63435, 129500044309, @msg output
-select @ret, @msg
+exec sp_Cust_RZRQ_Dbpmr '1',20150202, 63435, 129500044309, @msg output
 
 */
-CREATE proc sp_Cust_PT_Buy(
+CREATE proc sp_Cust_RZRQ_Dbpmr(
  @serverid  int
 ,@bizdate   int
 ,@sno       int
@@ -38,7 +32,7 @@ declare @rowcount as int, @expense as numeric(20,2), @ret as int
 	@fee_sxf=fee_sxf, @fee_jsxf=fee_jsxf, @fee_ghf=fee_ghf, @fee_yhs=fee_yhs, @feefront=feefront,
 	@sett_status=sett_status, @sett_remark=sett_remark, @expense=fee_sxf + fee_ghs + fee_yhs + feefront
    from logasset with (nolock, index=index_of_logasset_pk)
-  where sno=@sno and bizdate=@bizdate and serverid=@serverid and digestid=220000
+  where sno=@sno and bizdate=@bizdate and serverid=@serverid and digestid=550001
 
 begin try
 
