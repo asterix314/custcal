@@ -1,7 +1,7 @@
 /********************************************
     业务摘要：  140203
     业务名称：  股息红利差异扣税
-    动作代码：  HG
+    动作代码：  资金业务
     流通类型：  00
 ********************************************/
 if exists (select * from sysobjects where type='P' and name='sp_Cust_PT_Hltax')
@@ -64,17 +64,55 @@ begin try
        end
 
 begin tran
-    exec @ret=nb_Cust_Stkasset_Commit
-             @serverid=@serverid, @orgid=@orgid, @custid=@custid, @fundid=@fundid, @moneytype=@moneytype, @bankcode=@bankcode,
-	     @action='HG', @market=@market, @stkcode=@stkcode, @ltlx='00', @matchqty=0, @matchamt=0, @matchamt_ex=0,
-	     @aiamount=0, @fundeffect=@fundeffect, @stkeffect=0, @stkcost_ch=0, @syvalue_ch=0, @aicost_ch=0,
-	     @lxsr_ch=@fundeffect, @fee=0, @jsxf=0, @yhs=0, @ghf=0, @qtfee=0, @lxs=0, @blje=0, @blxx='', @msg=@msg output
 
-    if (@ret!=0)   
-        begin
-            raiserror(' %s', 12, 1, @msg) with SETERROR
-        end
-              
+        -- 更新持仓核算表：利息税
+        merge into stkasset_hs as sec
+        using (
+                select serverid, orgid, custid, fundid, market, stkcode, '00' as ltlx, moneytype, bankcode,
+                       fundeffect
+                  from logasset_hs
+                 where sno=@sno and bizdate=@bizdate and serverid=@serverid and digestid=140203
+        ) as ord
+        on (
+                sec.serverid = ord.serverid and
+                sec.orgid = ord.orgid and
+                sec.custid = ord.custid and
+                sec.fundid = ord.fundid and
+                sec.market = ord.market and
+                sec.ltlx = ord.ltlx and
+                sec.stkcode = ord.stkcode)
+        when matched then
+                update set lxs = lxs - ord.fundeffect, lxs_ch = lxs_ch - ord.fundeffect
+        when not matched then
+                insert (serverid, orgid, custid, fundid, market, stkcode, ltlx, lxs, lxs_ch)  
+                values (ord.serverid, ord.orgid, ord.custid, ord.fundid, ord.market, ord.stkcode,
+                       ord.ltlx, -ord.fundeffect, -ord.fundeffect);
+
+        -- 更新资金核算表：账户资金
+        merge into fundasset_hs as fun
+        using (
+                select serverid, orgid, custid, bankcode, fundid, moneytype, matchamt, fundeffect
+                  from logasset_hs
+                 where sno=@sno and bizdate=@bizdate and serverid=@serverid and digestid=140203
+        ) as ord
+        on (
+                fun.serverid = ord.serverid and
+                fun.orgid = ord.orgid and
+                fun.custid = ord.custid and
+                fun.bankcode = ord.bankcode and
+                fun.fundid = ord.fundid and
+                fun.moneytype = ord.moneytype
+        )
+        when matched then
+                update set fundbal = fundbal + ord.fundeffect, fundbal_ch = ord.fundeffect
+        when not matched then
+                insert (serverid, orgid, custid, bankcode, fundid, moneytype, fundbal, fundbal_ch)  
+                values (ord.serverid, ord.orgid, ord.custid, ord.bankcode, ord.fundid, ord.moneytype,
+                       ord.fundeffect, ord.fundeffect);
+
+
+
+
      select @msg='核算处理成功'
      update logasset 
         set sett_status=3, sett_remark=@msg

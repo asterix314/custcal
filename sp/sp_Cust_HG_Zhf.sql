@@ -62,7 +62,7 @@ begin tran
                 select serverid, orgid, custid, fundid, market, stkcode, '00' as ltlx, moneytype, bankcode,
                        matchqty, matchamt, fee_jsxf, fee_sxf, fee_ghf, fee_yhs, feefront
                   from logasset_hs
-                 where sno=@sno and bizdate=@bizdate and serverid=@serverid and digestid=552017
+                 where sno=@sno and bizdate=@bizdate and serverid=@serverid and digestid=220097
         ) as ord
         on (
                 sec.serverid = ord.serverid and
@@ -84,7 +84,7 @@ begin tran
         using (
                 select serverid, orgid, custid, bankcode, fundid, moneytype, matchamt, fundeffect
                   from logasset_hs
-                 where sno=@sno and bizdate=@bizdate and serverid=@serverid and digestid=552017
+                 where sno=@sno and bizdate=@bizdate and serverid=@serverid and digestid=220097
         ) as ord
         on (
                 fun.serverid = ord.serverid and

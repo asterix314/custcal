@@ -1,18 +1,18 @@
 /********************************************
-    业务摘要：  940008
-    业务名称：  三方存管现金蓝补
+    业务摘要：  140029
+    业务名称：  现金红冲
     动作代码：  资金业务
     流通类型：  00
 ********************************************/
-if exists (select * from sysobjects where type='P' and name='sp_Cust_ZZCQ_Sfcgxjlb')
-    drop proc sp_Cust_ZZCQ_Sfcgxjlb
+if exists (select * from sysobjects where type='P' and name='sp_Cust_QZCQ_Xjhc')
+    drop proc sp_Cust_QZCQ_Xjhc
 go
 /*
 declare @msg as varchar(128)
-exec sp_Cust_ZZCQ_Sfcgxjlb  20150105, 1, 100, @msg output
+exec sp_Cust_QZCQ_Xjhc  20150105, 1, 100, @msg output
 select @msg
 */
-CREATE proc sp_Cust_ZZCQ_Sfcgxjlb(
+CREATE proc sp_Cust_QZCQ_Xjhc(
  @serverid  int
 ,@bizdate   int
 ,@sno       int
@@ -33,7 +33,7 @@ declare @rowcount as int, @expense as numeric(20,2), @ret as int
 	@fee_sxf=fee_sxf, @fee_jsxf=fee_jsxf, @fee_ghf=fee_ghf, @fee_yhs=fee_yhs, @feefront=feefront, @sett_status=sett_status,
 	@sett_remark=sett_remark, @expense=fee_sxf + fee_ghs + fee_yhs + feefront
    from logasset with (nolock, index=index_of_logasset_pk)
-  where sno=@sno and bizdate=@bizdate and serverid=@serverid and digestid=940008
+  where sno=@sno and bizdate=@bizdate and serverid=@serverid and digestid=140029
 
 begin try
 
@@ -63,7 +63,7 @@ begin tran
         using (
                 select serverid, orgid, custid, bankcode, fundid, moneytype, matchamt, fundeffect
                   from logasset_hs
-                 where sno=@sno and bizdate=@bizdate and serverid=@serverid and digestid=940008
+                 where sno=@sno and bizdate=@bizdate and serverid=@serverid and digestid=140029
         ) as ord
         on (
                 fun.serverid = ord.serverid and
