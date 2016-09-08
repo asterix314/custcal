@@ -1,0 +1,24 @@
+/****************************************
+    存储过程：    `存储过程`
+    业务描述：    `业务名称`（`业务摘要`）
+    核算类型：    无需核算
+*****************************************/
+
+if exists (select * from sysobjects where type = 'P' and name = '`存储过程`')
+        drop procedure `存储过程`
+go
+
+create procedure `存储过程`(
+ @serverid  char(1)      
+,@bizdate   int          
+,@sno       int
+,@custid    bigint    
+,@msg       varchar(128) =null output
+)
+-- with encryption
+as
+
+-- do nothing
+
+go
+

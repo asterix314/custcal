@@ -1,0 +1,104 @@
+/****************************************
+    存储过程：    `存储过程`
+    业务描述：    `业务名称`（`业务摘要`）
+    核算类型：    持仓调整
+*****************************************/
+
+/**** 测试 ****
+select top 10 * from `业务流水` where bizdate = 20150105 and digestid = `业务摘要`
+declare @msg as varchar(128)
+exec `存储过程` @serverid=1, @bizdate=20150105, @sno=100, @custid=13398876520, @msg output
+select @msg
+***************/
+
+if exists (select * from sysobjects where type = 'P' and name = '`存储过程`')
+        drop procedure `存储过程`
+go
+
+create procedure `存储过程`(
+ @serverid  char(1)      
+,@bizdate   int          
+,@sno       int
+,@custid    bigint    
+,@msg       varchar(128) =null output
+)
+-- with encryption
+as
+declare @stkdeffect as numeric(20,2), @sett_status as char(1), @expense as numeric(20,2), @ret as int
+        
+ select @stkeffect=stkeffect, @sett_status=sett_status, @expense=fee_sxf + fee_ghs + fee_yhs + feefront
+   from `业务流水`
+  where sno=@sno and bizdate=@bizdate and serverid=@serverid and digestid=`业务摘要`
+
+begin try
+   if (@sett_status is null)
+      begin
+         select @msg='该笔流水不存在或调用错误.'
+         raiserror(' %s', 12, 1, @msg) with SETERROR
+      end
+
+   if (@sett_status='3')
+      begin
+         select @msg='该笔流水已处理.'
+         return 0
+      end
+
+   if (@stkeffect = 0 or @expense != 0)
+      begin
+         select @msg='资金发生与该业务不符.'
+         raiserror(' %s', 12, 1, @msg) with SETERROR
+      end
+
+   begin tran
+      -- 更新持仓核算表
+      merge into `持仓核算` as s
+      using (
+         select serverid, orgid, custid, fundid, market, stkcode, '00' as ltlx, stkeffect -- 流通类型为"流通股00"
+           from `业务流水`
+          where serverid=@serverid and bizdate=@bizdate and sno=@sno) -- primary key of `业务流水`
+      as e on (
+         s.serverid = e.serverid and s.orgid = e.orgid and s.custid = e.custid and s.fundid = e.fundid
+         and s.market = e.market and s.stkcode = e.stkcode and s.ltlx = e.ltlx) -- primary key of s
+      when matched then
+         update set stkqty = stkqty + e.stkeffect, stkqty_ch = stkqty_ch + e.stkeffect
+      when not matched then
+         insert (serverid, orgid, custid, fundid, market, stkcode, ltlx,
+                 stkbuyqty, stkbuyamt, stksaleqty, stksaleamt, stkbuyamt_ex, stksaleamt_ex, stkztgrqty, stkztgramt,
+                 stkztgcqty, stkztgcamt, stkpledge, stkdebt, stkloan, stkhgqty, stkpgqty, stkpgamt,
+                 stkhlamt, stkqty_tz, stkqty_tzje, stkqty, stkqty_ch, stkcost, stkcost_ch, syvalue,
+                 syvalue_ch, gyvalue, gyvalue_ch, lxsr, lxsr_ch, rzlx, rzlx_ch, rqlx,
+                 rqlx_ch, aiamount, aiamount_ch, hglx, hglx_ch, jsxf, jsxf_ch, yhs,
+                 yhs_ch, ghf, ghf_ch, qtfee, qtfee_ch, lxs, lxs_ch, aicost,
+                 aicost_ch, bondintr, lxjt, lxjt_ch, stkadjust, stkadjust_ch, mktvalue, fee, fee_ch,
+                 ) -- leaving null: stkprice, jtdate, gydate, remark
+         values (e.serverid, e.orgid, e.custid, e.fundid, e.market, e.stkcode, e.ltlx,
+                 0,0,0,0,0,0,0,0,
+                 0,0,0,0,0,0,0,0,
+                 0,0,0,e.stkeffect, e.stkeffect,0,0,0,
+                 0,0,0,0,0,0,0,0,
+                 0,0,0,0,0,0,0,0,
+                 0,0,0,0,0,0,0,0,
+                 0,0,0,0,0,0,0,0,0);
+
+      select @msg='核算处理成功'
+      update `业务流水`
+         set sett_status=3, sett_remark=@msg
+       where serverid=@serverid and bizdate=@bizdate and sno=@sno
+   
+   commit tran
+   return 0
+end try
+
+begin catch
+   if @@trancount > 0
+       rollback tran
+
+   select @msg='失败:' + error_message() + ''
+   
+   update `业务流水` 
+      set sett_status=4, sett_remark=@msg
+    where sno=@sno and bizdate=@bizdate and serverid=@serverid
+
+   return -1
+end catch
+go

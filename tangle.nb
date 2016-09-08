@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     83233,       1762]
-NotebookOptionsPosition[     81160,       1687]
-NotebookOutlinePosition[     81521,       1703]
-CellTagsIndexPosition[     81478,       1700]
+NotebookDataLength[     41355,        957]
+NotebookOptionsPosition[     39876,        901]
+NotebookOutlinePosition[     40230,        917]
+CellTagsIndexPosition[     40187,        914]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -35,7 +35,7 @@ Cell[BoxData["\<\"C:\\\\cygwin64\\\\home\\\\zhangchenhui\\\\custcal\"\>"], \
    3.6809185896276426`*^9, 3.6809186045567474`*^9}, {3.6809187435218525`*^9, 
    3.680918771077672*^9}, 3.680918810371016*^9, 3.6809188483463683`*^9, 
    3.6809189711243773`*^9, 3.6809238008312016`*^9, 3.6809453557919793`*^9, 
-   3.6809873706325626`*^9}]
+   3.6809873706325626`*^9, 3.6822998598717813`*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -54,17 +54,6 @@ Cell[BoxData[{
        RowBox[{"\"\<custcal.org\>\"", ",", "\"\<Text\>\"", ",", 
         RowBox[{"CharacterEncoding", "\[Rule]", "\"\<UTF8\>\""}]}], "]"}]}], 
      "|>"}]}], ";"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{
-   RowBox[{"AppendTo", "[", 
-    RowBox[{"\:6838\:7b97\:8bbe\:8ba1", ",", "\[IndentingNewLine]", 
-     RowBox[{
-     "\"\<\:5b58\:50a8\:8fc7\:7a0b\:6a21\:677f\>\"", "\[Rule]", 
-      "\[IndentingNewLine]", 
-      RowBox[{"Import", "[", 
-       RowBox[{"\"\<sp.template\>\"", ",", "\"\<Text\>\"", ",", 
-        RowBox[{"CharacterEncoding", "\[Rule]", "\"\<UTF8\>\""}]}], "]"}]}]}],
-     "]"}], ";"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
    RowBox[{"AppendTo", "[", 
@@ -120,9 +109,8 @@ Cell[BoxData[{
             RowBox[{
              RowBox[{"type", ":", 
               RowBox[{"(", 
-               RowBox[{
-               "\"\<tab\>\"", "|", "\"\<acc\>\"", "|", "\"\<fld\>\""}], 
-               ")"}]}], "~~", "\"\<:\>\""}], ",", "\[IndentingNewLine]", 
+               RowBox[{"WordCharacter", ".."}], ")"}]}], "~~", "\"\<:\>\""}], 
+            ",", "\[IndentingNewLine]", 
             RowBox[{
              RowBox[{"(", 
               RowBox[{"tname", ":", 
@@ -233,11 +221,11 @@ Cell[BoxData[{
                    RowBox[{"Query", "[", 
                     RowBox[{
                     "\"\<\:6838\:7b97\:8f93\:5165\:8f93\:51fa\>\"", ",", 
-                    "#\:8868", ",", "\"\<\:522b\:540d\>\""}], "]"}], "[", 
-                   "\:6838\:7b97\:8bbe\:8ba1", "]"}], "<>", "\"\<.\>\"", "<>",
-                   "#\:5b57\:6bb5"}]}], ")"}], "&"}]}], "]"}], "@", 
-            "\:6838\:7b97\:8bbe\:8ba1"}]}]}], "]"}]}]}]}]}], "]"}], ";"}], 
-  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+                    "#\:8868", ",", "\"\<\:6570\:636e\:5e93\:8868\>\""}], 
+                    "]"}], "[", "\:6838\:7b97\:8bbe\:8ba1", "]"}], "<>", 
+                  "\"\<.\>\"", "<>", "#\:5b57\:6bb5"}]}], ")"}], "&"}]}], 
+             "]"}], "@", "\:6838\:7b97\:8bbe\:8ba1"}]}]}], "]"}]}]}]}]}], 
+    "]"}], ";"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
    RowBox[{"AppendTo", "[", 
@@ -294,7 +282,7 @@ Cell[BoxData[{
            RowBox[{"GroupBy", "[", 
             RowBox[{"e", ",", "\[IndentingNewLine]", 
              RowBox[{
-              RowBox[{"Key", "[", "\"\<\:4e1a\:52a1\:7c7b\:578b\>\"", "]"}], 
+              RowBox[{"Key", "[", "\"\<\:6838\:7b97\:7c7b\:578b\>\"", "]"}], 
               "\[Rule]", 
               RowBox[{"(", "\[IndentingNewLine]", 
                RowBox[{
@@ -306,8 +294,11 @@ Cell[BoxData[{
                     RowBox[{
                     "\"\<\:79d1\:76ee\:4fe1\:606f\>\"", ",", "#\:501f\:65b9", 
                     ",", "\"\<\:79d1\:76ee\:65b9\:5411\>\""}], "]"}], 
-                    RowBox[{"ToExpression", "[", "#\:91d1\:989d", "]"}]}]}], 
-                  ",", "\[IndentingNewLine]", 
+                    RowBox[{"ToExpression", "[", 
+                    RowBox[{"StringReplace", "[", 
+                    RowBox[{"#\:91d1\:989d", ",", 
+                    RowBox[{"\"\<.\>\"", "\[Rule]", "\"\<$\>\""}]}], "]"}], 
+                    "]"}]}]}], ",", "\[IndentingNewLine]", 
                   RowBox[{"#\:8d37\:65b9", "\[Rule]", 
                    RowBox[{
                     RowBox[{"-", 
@@ -315,8 +306,12 @@ Cell[BoxData[{
                     RowBox[{
                     "\"\<\:79d1\:76ee\:4fe1\:606f\>\"", ",", "#\:8d37\:65b9", 
                     ",", "\"\<\:79d1\:76ee\:65b9\:5411\>\""}], "]"}]}], 
-                    RowBox[{"ToExpression", "[", "#\:91d1\:989d", "]"}]}]}]}],
-                  "|>"}], "&"}], ")"}]}], ",", "\[IndentingNewLine]", 
+                    RowBox[{"ToExpression", "[", 
+                    RowBox[{"StringReplace", "[", 
+                    RowBox[{"#\:91d1\:989d", ",", 
+                    RowBox[{"\"\<.\>\"", "\[Rule]", "\"\<$\>\""}]}], "]"}], 
+                    "]"}]}]}]}], "|>"}], "&"}], ")"}]}], ",", 
+             "\[IndentingNewLine]", 
              RowBox[{"Merge", "[", 
               RowBox[{"Total", "/*", "InputForm", "/*", "ToString"}], "]"}]}],
              "]"}]}], ")"}]}], "\[IndentingNewLine]", "]"}], "@", 
@@ -336,7 +331,112 @@ Cell[BoxData[{
    3.6809932768919888`*^9, 3.6809933006969786`*^9}, {3.680993781779579*^9, 
    3.6809937880663795`*^9}, {3.680993856706379*^9, 3.680993887999979*^9}, {
    3.6809944689715385`*^9, 3.6809944961153326`*^9}, {3.680994527284133*^9, 
-   3.6809945529149327`*^9}, {3.6809956977541327`*^9, 3.680995699251733*^9}}],
+   3.6809945529149327`*^9}, {3.6809956977541327`*^9, 3.680995699251733*^9}, {
+   3.682299925780466*^9, 3.6822999267692566`*^9}, {3.682301082104323*^9, 
+   3.6823010867248607`*^9}, {3.682301380163514*^9, 3.6823013897865515`*^9}, {
+   3.682301448142*^9, 3.6823014929449997`*^9}, {3.682301539899*^9, 
+   3.682301542682*^9}, {3.682303141988*^9, 3.6823031435769997`*^9}, {
+   3.682303271731*^9, 3.6823032754960003`*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\:5b58\:50a8\:8fc7\:7a0b\:751f\:6210", "Section",
+ CellChangeTimes->{{3.680926869674283*^9, 3.680926885617381*^9}, {
+  3.680996372468839*^9, 3.6809963898627276`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Query", "[", "\[IndentingNewLine]", 
+   RowBox[{"\"\<\:6838\:7b97\:529e\:6cd5\>\"", ",", "\[IndentingNewLine]", 
+    RowBox[{"Select", "[", 
+     RowBox[{
+      RowBox[{"#\:6a21\:677f", "\[Equal]", "\"\<Y\>\""}], "&"}], "]"}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"Export", "[", 
+      RowBox[{
+       RowBox[{"FileNameJoin", "[", 
+        RowBox[{"{", 
+         RowBox[{"\"\<sp\>\"", ",", 
+          RowBox[{"#\:5b58\:50a8\:8fc7\:7a0b", "<>", "\"\<.sql\>\""}]}], 
+         "}"}], "]"}], ",", "\[IndentingNewLine]", 
+       RowBox[{"TemplateApply", "[", "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{"Import", "[", 
+          RowBox[{
+           RowBox[{"FileNameJoin", "[", 
+            RowBox[{"{", 
+             RowBox[{"\"\<templates\>\"", ",", 
+              RowBox[{
+              "#\:6838\:7b97\:7c7b\:578b", "<>", "\"\<.template\>\""}]}], 
+             "}"}], "]"}], ",", "\"\<Text\>\"", ",", 
+           RowBox[{"CharacterEncoding", "\[Rule]", "\"\<UTF8\>\""}]}], "]"}], 
+         ",", "\[IndentingNewLine]", 
+         RowBox[{"Join", "[", "\[IndentingNewLine]", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"Query", "[", 
+             RowBox[{
+             "\"\<\:6838\:7b97\:8f93\:5165\:8f93\:51fa\>\"", ",", "All", ",", 
+              "\"\<\:6570\:636e\:5e93\:8868\>\""}], "]"}], "@", 
+            "\:6838\:7b97\:8bbe\:8ba1"}], ",", "\[IndentingNewLine]", "#"}], 
+          "\[IndentingNewLine]", "]"}]}], "]"}], ",", "\"\<Text\>\"", ",", 
+       RowBox[{"CharacterEncoding", "\[Rule]", "\"\<CP936\>\""}]}], "]"}], 
+     "&"}]}], "]"}], "@", "\:6838\:7b97\:8bbe\:8ba1"}]], "Input",
+ CellChangeTimes->{{3.682302338401*^9, 3.682302339403*^9}, {3.682303346692*^9,
+    3.6823033639449997`*^9}, {3.682303403801*^9, 3.682303415391*^9}, {
+   3.682303466076*^9, 3.6823034963129997`*^9}, {3.682303559692*^9, 
+   3.682303579573*^9}, {3.682304262597*^9, 3.682304304426*^9}, {
+   3.682304338135*^9, 3.6823044065179996`*^9}, {3.682304439197*^9, 
+   3.682304485362*^9}, 3.682304560851*^9, {3.682304696119*^9, 
+   3.682304697094*^9}, {3.68230480658*^9, 3.682304807278*^9}, 
+   3.6823048511140003`*^9, {3.682304930259*^9, 3.68230493285*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"\<\"sp\\\\sp_Cust_PT_Hltax.sql\"\>", 
+   ",", "\<\"sp\\\\sp_Cust_ZJCQ_Gxhlkslb.sql\"\>", 
+   ",", "\<\"sp\\\\sp_Cust_PT_Zdjy.sql\"\>", 
+   ",", "\<\"sp\\\\sp_Cust_PT_Cxzd.sql\"\>", 
+   ",", "\<\"sp\\\\sp_Cust_HG_Zdjy.sql\"\>", 
+   ",", "\<\"sp\\\\sp_Cust_HG_Czjy.sql\"\>", 
+   ",", "\<\"sp\\\\sp_Cust_ZJCQ_Tzxjc.sql\"\>", 
+   ",", "\<\"sp\\\\sp_Cust_ZJCQ_Tzxjq.sql\"\>", 
+   ",", "\<\"sp\\\\sp_Cust_PT_Scgqzq.sql\"\>", 
+   ",", "\<\"sp\\\\sp_Cust_PT_Tpqr.sql\"\>", 
+   ",", "\<\"sp\\\\sp_Cust_ZZCQ_Sfcgxjlb.sql\"\>", 
+   ",", "\<\"sp\\\\sp_Cust_ZZCQ_Sfcgxjhc.sql\"\>", 
+   ",", "\<\"sp\\\\sp_Cust_QZCQ_Xjlb.sql\"\>", 
+   ",", "\<\"sp\\\\sp_Cust_QZCQ_Xjhc.sql\"\>", 
+   ",", "\<\"sp\\\\sp_Cust_QZCQ_Zplb.sql\"\>", 
+   ",", "\<\"sp\\\\sp_Cust_QZCQ_Zphc.sql\"\>", 
+   ",", "\<\"sp\\\\sp_Cust_PT_Zqlb.sql\"\>", 
+   ",", "\<\"sp\\\\sp_Cust_PT_Zqhc.sql\"\>", 
+   ",", "\<\"sp\\\\sp_Cust_CG_Yzzr.sql\"\>", 
+   ",", "\<\"sp\\\\sp_Cust_ZJCQ_Czc.sql\"\>", 
+   ",", "\<\"sp\\\\sp_Cust_ZJCQ_Xjc.sql\"\>", 
+   ",", "\<\"sp\\\\sp_Cust_ZZCQ_Yzzztzc.sql\"\>", 
+   ",", "\<\"sp\\\\sp_Cust_ZJCQ_Zzzpc.sql\"\>", 
+   ",", "\<\"sp\\\\sp_Cust_ZJCQ_Otcr.sql\"\>", 
+   ",", "\<\"sp\\\\sp_Cust_ZZCQ_Tzzzr.sql\"\>", 
+   ",", "\<\"sp\\\\sp_Cust_CG_Yzzc.sql\"\>", 
+   ",", "\<\"sp\\\\sp_Cust_ZJCQ_Czq.sql\"\>", 
+   ",", "\<\"sp\\\\sp_Cust_ZJCQ_Xjq.sql\"\>", 
+   ",", "\<\"sp\\\\sp_Cust_ZJCQ_Zzzpq.sql\"\>", 
+   ",", "\<\"sp\\\\sp_Cust_ZJCQ_Otcc.sql\"\>", 
+   ",", "\<\"sp\\\\sp_Cust_ZZCQ_Tzzzc.sql\"\>"}], "}"}]], "Output",
+ CellChangeTimes->{3.682304936507*^9, 3.682311139329*^9, 3.682311183049*^9, 
+  3.6823113489440002`*^9, 3.68231291727*^9, 3.682316613348*^9}]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\:8349\:7a3f", "Section",
+ CellChangeTimes->{{3.680176209981593*^9, 3.680176212328283*^9}}],
 
 Cell[BoxData[{
  RowBox[{
@@ -482,209 +582,20 @@ Cell[BoxData[{
    3.68094481117187*^9, 3.6809448655541215`*^9}, {3.680945037733218*^9, 
    3.680945103551196*^9}, 3.6809909756195173`*^9, {3.6809910571451178`*^9, 
    3.680991058315118*^9}, {3.6809911475315175`*^9, 3.6809911494503174`*^9}, {
-   3.6809962230373325`*^9, 3.680996279587034*^9}}]
-}, Open  ]],
-
-Cell[CellGroupData[{
-
-Cell["\:5b58\:50a8\:8fc7\:7a0b\:751f\:6210", "Section",
- CellChangeTimes->{{3.680926869674283*^9, 3.680926885617381*^9}, {
-  3.680996372468839*^9, 3.6809963898627276`*^9}}],
-
-Cell[CellGroupData[{
+   3.6809962230373325`*^9, 3.680996279587034*^9}}],
 
 Cell[BoxData[
- RowBox[{"\:6838\:7b97\:8bbe\:8ba1", "[", 
+ RowBox[{
   RowBox[{
-  "\"\<\:4e1a\:52a1\:6838\:7b97\>\"", ",", 
-   "\"\<\:8bc1\:5238\:4e70\:5165\>\""}], "]"}]], "Input",
- CellChangeTimes->{{3.6810194086960154`*^9, 3.681019448571615*^9}, {
-  3.6810194803976154`*^9, 3.681019482378815*^9}, {3.6810204193266153`*^9, 
-  3.681020422399815*^9}}],
-
-Cell[BoxData[
- RowBox[{"\[LeftAssociation]", 
-  RowBox[{
-   RowBox[{"\<\"\:5e93\:5b58\:6210\:672c\"\>", 
-    "\[Rule]", "\<\"\:6210\:4ea4\:91d1\:989d\"\>"}], ",", 
-   RowBox[{"\<\"\:8d26\:6237\:8d44\:91d1\"\>", 
-    "\[Rule]", "\<\"-\:624b\:7eed\:8d39 - \:6210\:4ea4\:91d1\:989d\"\>"}], 
-   ",", 
-   RowBox[{"\<\"\:5176\:5b83\:8d39\:7528\"\>", 
-    "\[Rule]", "\<\"\:624b\:7eed\:8d39 - \:8fc7\:6237\:8d39 - \:5238\:5546\
-\:4f63\:91d1\"\>"}], ",", 
-   RowBox[{"\<\"\:51c0\:624b\:7eed\:8d39\"\>", 
-    "\[Rule]", "\<\"\:5238\:5546\:4f63\:91d1\"\>"}], ",", 
-   RowBox[{"\<\"\:8fc7\:6237\:8d39\:7528\"\>", 
-    "\[Rule]", "\<\"\:8fc7\:6237\:8d39\"\>"}], ",", 
-   RowBox[{"\<\"\:4e70\:5165\:91d1\:989d\"\>", 
-    "\[Rule]", "\<\"\:6210\:4ea4\:91d1\:989d\"\>"}], ",", 
-   RowBox[{"\<\"\:5e93\:5b58\:6570\:91cf\"\>", 
-    "\[Rule]", "\<\"\:6210\:4ea4\:6570\:91cf\"\>"}], ",", 
-   RowBox[{"\<\"\:4e70\:5165\:6570\:91cf\"\>", 
-    "\[Rule]", "\<\"\:6210\:4ea4\:6570\:91cf\"\>"}]}], 
-  "\[RightAssociation]"}]], "Output",
- CellChangeTimes->{{3.681019418867215*^9, 3.6810194496012154`*^9}, 
-   3.681019483268015*^9, 3.681020423491815*^9}]
-}, Open  ]],
-
-Cell[BoxData[
- RowBox[{"\"\<\:5176\:5b83\:8d39\:7528\>\"", "\[Rule]", 
-  "\"\<\:624b\:7eed\:8d39 - \:8fc7\:6237\:8d39 - \
-\:5238\:5546\:4f63\:91d1\>\""}]], "Input"],
-
-Cell[BoxData[
- RowBox[{"\"\<\:5176\:5b83\:8d39\:7528\>\"", "\[Rule]", 
-  "\"\<-\:5370\:82b1\:7a0e + \:624b\:7eed\:8d39 - \
-\:5238\:5546\:4f63\:91d1\>\""}]], "Input"],
-
-Cell[CellGroupData[{
-
-Cell[BoxData[
- RowBox[{"\:5b58\:50a8\:8fc7\:7a0b", "[", "\"\<\:8bc1\:5238\:4e70\:5165\>\"", 
-  "]"}]], "Input",
- CellChangeTimes->{{3.6810043983182373`*^9, 3.681004412186637*^9}, {
-  3.6810160539366026`*^9, 3.6810160558242025`*^9}}],
-
-Cell[BoxData["\<\"/***************************************************\\n    \
-\:4e1a\:52a1\:7c7b\:578b:\\t\:8bc1\:5238\:4e70\:5165\\n    \:4e1a\:52a1\:6458\
-\:8981:\\t220000\\n\\n\\n    \:672c\:5b58\:50a8\:8fc7\:7a0b\:7531\:4ee5\:4e0b\
-\:4f1a\:8ba1\:5206\:5f55\:81ea\:52a8\:751f\:6210\:3002\:8bf7\:52ff\:624b\:5de5\
-\:4fee\:6539\:3002\\n\\n|----------+----------+----------+----------+---------\
------------------|\\n| \:4e1a\:52a1\:7c7b\:578b | \:501f\:65b9     | \:8d37\
-\:65b9     | \:91d1\:989d     | \:8bf4\:660e                     \
-|\\n|----------+----------+----------+----------+--------------------------|\\\
-n| \:8bc1\:5238\:4e70\:5165 | \:5e93\:5b58\:6210\:672c | \:8d26\:6237\:8d44\
-\:91d1 | \:6210\:4ea4\:91d1\:989d | \:6210\:672c\:5165\:8d26                 \
-|\\n| \:8bc1\:5238\:4e70\:5165 | \:5176\:5b83\:8d39\:7528 | \
-\:8d26\:6237\:8d44\:91d1 | \:624b\:7eed\:8d39   | \:624b\:7eed\:8d39\:5165\
-\:8d26               |\\n| \:8bc1\:5238\:4e70\:5165 | \
-\:51c0\:624b\:7eed\:8d39 | \:5176\:5b83\:8d39\:7528 | \
-\:5238\:5546\:4f63\:91d1 | \:51c0\:624b\:7eed\:8d39\:ff08\:5238\:5546\:4f63\
-\:91d1\:ff09\:5165\:8d26 |\\n| \:8bc1\:5238\:4e70\:5165 | \:8fc7\:6237\:8d39\
-\:7528 | \:5176\:5b83\:8d39\:7528 | \:8fc7\:6237\:8d39   | \:8fc7\:6237\:8d39\
-\:5165\:8d26               \
-|\\n|----------+----------+----------+----------+--------------------------|\\\
-n| \:8bc1\:5238\:4e70\:5165 | \:8868\:5916\:5bf9\:62c6 | \:4e70\:5165\:91d1\
-\:989d | \:6210\:4ea4\:91d1\:989d | \:4e70\:5165\:91d1\:989d\:8bb0\:5f55      \
-       |\\n| \:8bc1\:5238\:4e70\:5165 | \:5e93\:5b58\:6570\:91cf | \:4e70\
-\:5165\:6570\:91cf | \:6210\:4ea4\:6570\:91cf | \
-\:4e70\:5165\:6570\:91cf\:8bb0\:5f55             \
-|\\n|----------+----------+----------+----------+--------------------------|\\\
-n\\n*/\\n\\nif exists (select * from sysobjects where type = 'P' and name = \
-'sp_220000')\\n\\tdrop procedure sp_220000\\ngo\\n\\ncreate procedure \
-sp_220000(\\n\\t@bizdate int,  \\n\\t@msg varchar(128) = null \
-output)\\nas\\nbegin try\\n\\tbegin transaction\\n\\n\\t-- \:66f4\:65b0\:6301\
-\:4ed3\:6838\:7b97\:8868\\n\\tmerge into stkasset_hs as sec\\n\\tusing \
-(\\n\\t\\tselect serverid, orgid, custid, fundid, market, stkcode, '00' as \
-ltlx, moneytype, bankcode,\\n\\t\\t       matchqty, matchamt, fee_jsxf, \
-fee_sxf, fee_ghf, fee_yhs, feefront\\n\\t\\tfrom logasset_hs\\n\\t\\twhere \
-digestid = 220000 and bizdate = @bizdate\\n\\t) as ord\\n\\ton \
-(\\n\\t\\tsec.serverid = ord.serverid and\\n\\t\\tsec.orgid = ord.orgid \
-and\\n\\t\\tsec.custid = ord.custid and\\n\\t\\tsec.fundid = ord.fundid \
-and\\n\\t\\tsec.market = ord.market and\\n\\t\\tsec.ltlx = ord.ltlx \
-and\\t\\t-- todo: some don't need specific ltlx\\n\\t\\tsec.stkcode = \
-ord.stkcode)\\n\\twhen matched then\\n\\t\\tupdate set sec.stkcost_ch = \
-ord.matchamt, sec.qtfee_ch = ord.fee_sxf - ord.fee_ghf - ord.fee_jsxf, \
-sec.jsxf_ch = ord.fee_jsxf, sec.ghf_ch = ord.fee_ghf, sec.stkbuyamt = \
-ord.matchamt, sec.stkqty_ch = ord.matchqty, sec.stkbuyqty = \
-ord.matchqty\\n\\twhen not matched then\\n\\t\\tinsert (serverid, orgid, \
-custid, fundid, market, stkcode, ltlx, sec.stkcost_ch, sec.qtfee_ch, \
-sec.jsxf_ch, sec.ghf_ch, sec.stkbuyamt, sec.stkqty_ch, sec.stkbuyqty)  \\n\\t\
-\\tvalues (ord.serverid, ord.orgid, ord.custid, ord.fundid, ord.market, \
-ord.stkcode, ord.ltlx, ord.matchamt, ord.fee_sxf - ord.fee_ghf - \
-ord.fee_jsxf, ord.fee_jsxf, ord.fee_ghf, ord.matchamt, ord.matchqty, \
-ord.matchqty);\\n\\t\\t\\n\\t-- \:66f4\:65b0\:8d44\:91d1\:6838\:7b97\:8868\\n\
-\\tmerge into fundasset_hs as fun\\n\\tusing (\\n\\t\\tselect serverid, \
-orgid, custid, bankcode, fundid, moneytype, matchamt, fee_jsxf, fee_sxf, \
-fee_ghf, fee_yhs, feefront\\n\\t\\tfrom logasset_hs\\n\\t\\twhere digestid = \
-220000 and bizdate = @bizdate\\n\\t) as ord\\n\\ton (\\n\\t\\tfun.serverid = \
-ord.serverid and\\n\\t\\tfun.orgid = ord.orgid and\\n\\t\\tfun.custid = \
-ord.custid and\\n\\t\\tfun.bankcode = ord.bankcode and\\n\\t\\tfun.fundid = \
-ord.fundid and\\n\\t\\tfun.moneytype = ord.moneytype)\\n\\twhen matched \
-then\\n\\t\\tupdate set fun.fundbal_ch = -ord.fee_sxf - \
-ord.matchamt\\n\\twhen not matched then\\n\\t\\tinsert (serverid, orgid, \
-custid, bankcode, fundid, moneytype, fun.fundbal_ch)  \\n\\t\\tvalues \
-(ord.serverid, ord.orgid, ord.custid, ord.bankcode, ord.fundid, \
-ord.moneytype, -ord.fee_sxf - ord.matchamt);\\n\\n\\n\\t-- \:66f4\:65b0\:5404\
-\:7edf\:8ba1\:53d8\:91cf\\n\\n\\tupdate stkasset_hs set\\n\\t-- \:5229\:606f\
-\:8ba1\:63d0 = \:9884\:8ba1\:5229\:606f - \:5229\:606f\:6210\:672c\\n\\t-- \
-\:503a\:5238\:7968\:9762\:5229\:606f | \:9884\:8ba1\:5229\:606f / \
-\:5e93\:5b58\:6570\:91cf\\n\\t-- \:5e02\:503c\:91d1\:989d     | \:5e02\:573a\
-\:4ef7\:683c * \:5e93\:5b58\:6570\:91cf\\n\\t-- \:603b\:8ba1\:8d39\:7528     \
-| \:51c0\:624b\:7eed\:8d39 + \:5370\:82b1\:7a0e\:8d39 + \:8fc7\:6237\:8d39\
-\:7528 + \:5229\:606f\:7a0e\:8d39 + \:5176\:5b83\:8d39\:7528\\n\\n\\t-- \
-\:51c0\:8d44\:4ea7       | \:603b\:5e02\:503c + \:672c\:65e5\:4f59\:989d + \
-\:501f\:51fa\:91d1\:989d + \:9884\:8ba1\:5229\:606f + \
-\:5728\:9014\:672a\:6536 + \:5229\:606f\:79ef\:6570  - \:501f\:5165\:91d1\
-\:989d - \:5728\:9014\:672a\:4ed8\\n\\t\\n\\twhere digestid = 220000 and \
-bizdate = @bizdate\\n\\n\\n\\t-- \
-\:66f4\:65b0\:5404\:7d2f\:8ba1\:53d8\:91cf\\n\\t\\n\\tupdate stkasset_hs \
-set\\n\\tstkqty = stkqty + stkqty_ch,\\t-- \:5e93\:5b58\:6570\:91cf\:ff08\
-\:7d2f\:8ba1\:ff09\\n\\tstkcost = stkcost + stkcost_ch,\\t-- \:5e93\:5b58\
-\:6210\:672c\:ff08\:7d2f\:8ba1\:ff09\\n\\tgyvalue = gyvalue + \
-gyvalue_ch,\\t-- \
-\:6d6e\:52a8\:76c8\:4e8f\:ff08\:7d2f\:8ba1\:ff09\\n\\tsyvalue = syvalue + \
-syvalue_ch,\\t-- \:4ea4\:6613\:6536\:76ca \:ff08\:7d2f\:8ba1\:ff09\\n\\tlxsr \
-= lxsr + lxsr_ch,\\t\\t-- \:5229\:606f\:6536\:5165\:ff08\:7d2f\:8ba1\:ff09\\n\
-\\trzlx = rzlx + rzlx_ch, \\t\\t-- \:878d\:8d44\:5229\:606f\:ff08\:7d2f\:8ba1\
-\:ff09\\n\\trqlx = rqlx + rqlx_ch,\\t\\t-- \:878d\:5238\:5229\:606f\:ff08\
-\:7d2f\:8ba1\:ff09\\n\\thglx = hglx + hglx_ch,\\t\\t-- \:56de\:8d2d\:5229\
-\:606f\:ff08\:7d2f\:8ba1\:ff09\\n\\tfee = fee + fee_ch,\\t\\t-- \:603b\:8d39\
-\:7528\:ff08\:7d2f\:8ba1\:ff09\\n\\tjsxf = jsxf + jsxf_ch,\\t\\t-- \:51c0\
-\:624b\:7eed\:8d39\:ff08\:7d2f\:8ba1\:ff09\\n\\tyhs = yhs + yhs_ch,\\t\\t-- \
-\:5370\:82b1\:7a0e\:ff08\:7d2f\:8ba1\:ff09\\n\\tghf = ghf + ghf_ch,\\t\\t-- \
-\:8fc7\:6237\:8d39\:ff08\:7d2f\:8ba1\:ff09\\n\\tlxs = lxs + lxs_ch,\\t\\t-- \
-\:5229\:606f\:7a0e\:ff08\:7d2f\:8ba1\:ff09\\n\\tqtfee = qtfee + \
-qtfee_ch,\\t-- \:5176\:5b83\:8d39\:ff08\:7d2f\:8ba1\:ff09\\n\\taicost = \
-aicost + aicost_ch\\t-- \
-\:5229\:606f\:6210\:672c\:ff08\:7d2f\:8ba1\:ff09\\n\\twhere bizdate = \
-@bizdate\\n\\n\\tupdate fundasset_hs set\\n\\tfundbal = fundbal + fundbal_ch,\
-\\t\\t\\t-- \:8d26\:6237\:8d44\:91d1\:ff08\:7d2f\:8ba1\:ff09\\n\\tfundunsave \
-= fundunsave + fundunsave_ch,\\t-- \:53d6\:6b3e\:91d1\:989d\:ff08\:7d2f\:8ba1\
-\:ff09\\n\\tfundsave = fundsave + fundsave_ch,\\t\\t-- \:5b58\:6b3e\:91d1\
-\:989d\:ff08\:7d2f\:8ba1\:ff09\\n\\tfundloan = fundloan + \
-fundloan_ch,\\t\\t-- \
-\:501f\:51fa\:91d1\:989d\:ff08\:7d2f\:8ba1\:ff09\\n\\tfunddebt = funddebt + \
-funddebt_ch,\\t\\t-- \
-\:501f\:5165\:91d1\:989d\:ff08\:7d2f\:8ba1\:ff09\\n\\tfunduncome = funduncome \
-+ funduncome_ch,\\t-- \
-\:5728\:9014\:672a\:6536\:ff08\:7d2f\:8ba1\:ff09\\n\\tfundunpay = fundunpay + \
-fundunpay_ch,\\t\\t-- \
-\:5728\:9014\:672a\:4ed8\:ff08\:7d2f\:8ba1\:ff09\\n\\tfundintr = fundintr + \
-fundintr_ch\\t\\t-- \
-\:5229\:606f\:79ef\:6570\:ff08\:7d2f\:8ba1\:ff09\\n\\tfundaward = fundaward + \
-fundaward_ch\\t\\t-- \
-\:7d2f\:8ba1\:7ed3\:606f\:ff08\:7d2f\:8ba1\:ff09\\n\\twhere tjdate = @bizdate\
-\\n\\n\\n\\tselect @msg='\:6838\:7b97\:5904\:7406\:6210\:529f'\\n\\n\\tupdate \
-logasset_hs set sett_status = 3, sett_remark = @msg\\n\\twhere  bizdate = \
-@bizdate and digestid = 220000 and bizdate = @bizdate\\n\\n\\tcommit \
-transaction\\n\\treturn 0\\nend try\\n\\nbegin catch\\n\\tif @@trancount > \
-0\\n\\t\\trollback transaction\\n\\t\\n\\treturn -1\\nend \
-catch\\n\\ngo\\n\"\>"], "Output",
- CellChangeTimes->{3.6810044131694374`*^9, 3.6810160567134027`*^9}]
-}, Open  ]],
-
-Cell[BoxData[
- RowBox[{"StringJoin", "[", 
-  RowBox[{"\:5b58\:50a8\:8fc7\:7a0b", "/@", 
-   RowBox[{
-    RowBox[{"Query", "[", 
-     RowBox[{"\"\<\:6838\:7b97\:529e\:6cd5\>\"", ",", 
-      RowBox[{
-       RowBox[{"Select", "[", 
-        RowBox[{
-         RowBox[{"#\:540c\:7c7b\:4e1a\:52a1", "\[Equal]", "\"\<\>\""}], "&"}],
-         "]"}], "/*", "Keys"}]}], "]"}], "@", "\:6838\:7b97\:8bbe\:8ba1"}]}], 
-  "]"}]], "Input",
- CellChangeTimes->{{3.680996424618903*^9, 3.680996426958888*^9}, {
-  3.6809964672378297`*^9, 3.680996706463408*^9}}]
-}, Open  ]],
-
-Cell[CellGroupData[{
-
-Cell["\:8349\:7a3f", "Section",
- CellChangeTimes->{{3.680176209981593*^9, 3.680176212328283*^9}}],
+   RowBox[{"AppendTo", "[", 
+    RowBox[{"\:6838\:7b97\:8bbe\:8ba1", ",", "\[IndentingNewLine]", 
+     RowBox[{
+     "\"\<\:5b58\:50a8\:8fc7\:7a0b\:6a21\:677f\>\"", "\[Rule]", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Import", "[", 
+       RowBox[{"\"\<sp.template\>\"", ",", "\"\<Text\>\"", ",", 
+        RowBox[{"CharacterEncoding", "\[Rule]", "\"\<UTF8\>\""}]}], "]"}]}]}],
+     "]"}], ";"}], "\[IndentingNewLine]"}]], "Input"],
 
 Cell[BoxData[
  RowBox[{"Export", "[", 
@@ -985,708 +896,11 @@ Cell[BoxData[
   "\[RightAssociation]"}]], "Output",
  CellChangeTimes->{
   3.680586707342536*^9, {3.680586743878536*^9, 3.6805867863535357`*^9}}]
-}, Open  ]],
-
-Cell[CellGroupData[{
-
-Cell[BoxData[
- RowBox[{
-  RowBox[{"Query", "[", "\[IndentingNewLine]", 
-   RowBox[{
-   "\"\<\:6838\:7b97\:529e\:6cd5\>\"", ",", "\[IndentingNewLine]", "All", ",",
-     "\[IndentingNewLine]", 
-    RowBox[{"\"\<@action\>\"", "/*", "\[IndentingNewLine]", 
-     RowBox[{"(", 
-      RowBox[{
-       RowBox[{"Append", "[", 
-        RowBox[{
-         RowBox[{
-          RowBox[{"Query", "[", 
-           RowBox[{
-           "\"\<\:516c\:5171\:8fc7\:7a0b\:53c2\:6570\>\"", ",", "All", ",", 
-            "\"\<\:8d4b\:503c\>\""}], "]"}], "@", 
-          "\:6838\:7b97\:8bbe\:8ba1"}], ",", 
-         RowBox[{"\"\<@action\>\"", "\[Rule]", "#"}]}], "]"}], "&"}], ")"}], "/*",
-      "\[IndentingNewLine]", "f"}]}], "\[IndentingNewLine]", "]"}], "@", 
-  "\:6838\:7b97\:8bbe\:8ba1"}]], "Input",
- CellChangeTimes->{{3.680585457575536*^9, 3.680585486973536*^9}, {
-   3.680585656966536*^9, 3.680585744939536*^9}, {3.680585809292536*^9, 
-   3.680585878651536*^9}, {3.680585965268536*^9, 3.680585974755536*^9}, {
-   3.680586015123536*^9, 3.680586059363536*^9}, {3.6805860924125357`*^9, 
-   3.6805861664902987`*^9}, {3.6805862046624813`*^9, 
-   3.6805862854134054`*^9}, {3.6805863239545507`*^9, 
-   3.6805863705758886`*^9}, {3.680586404528493*^9, 3.680586410063939*^9}, {
-   3.680586449406536*^9, 3.6805864533575363`*^9}, {3.680586611540536*^9, 
-   3.680586638292536*^9}, {3.6805866703905363`*^9, 3.680586673461536*^9}, 
-   3.6805868403505363`*^9, {3.680586923751536*^9, 3.680586934459536*^9}, {
-   3.6805869964125357`*^9, 3.680587000550536*^9}}],
-
-Cell[BoxData[
- RowBox[{"\[LeftAssociation]", 
-  RowBox[{
-   RowBox[{"\<\"\:8bc1\:5238\:4e70\:5165\"\>", "\[Rule]", 
-    RowBox[{"f", "[", 
-     RowBox[{"\[LeftAssociation]", 
-      RowBox[{
-       RowBox[{"\<\"@matchqty\"\>", 
-        "\[Rule]", "\<\"\:6210\:4ea4\:6570\:91cf\"\>"}], ",", 
-       RowBox[{"\<\"@matchamt\"\>", 
-        "\[Rule]", "\<\"\:6210\:4ea4\:91d1\:989d\"\>"}], ",", 
-       RowBox[{"\<\"@matchamt_ex\"\>", "\[Rule]", "\<\"0\"\>"}], ",", 
-       RowBox[{"\<\"@aiamount\"\>", "\[Rule]", "\<\"0\"\>"}], ",", 
-       RowBox[{"\<\"@fundeffect\"\>", 
-        "\[Rule]", "\<\"\:8d26\:6237\:8d44\:91d1\"\>"}], ",", 
-       RowBox[{"\<\"@stkeffect\"\>", 
-        "\[Rule]", "\<\"\:5e93\:5b58\:6570\:91cf\"\>"}], ",", 
-       RowBox[{"\<\"@stkcost_ch\"\>", 
-        "\[Rule]", "\<\"\:5e93\:5b58\:6210\:672c\"\>"}], ",", 
-       RowBox[{"\<\"@syvalue_ch\"\>", 
-        "\[Rule]", "\<\"\:4ea4\:6613\:6536\:76ca\"\>"}], ",", 
-       RowBox[{"\<\"@aicost_ch\"\>", 
-        "\[Rule]", "\<\"\:5229\:606f\:6210\:672c\"\>"}], ",", 
-       RowBox[{"\<\"@lxsr_ch\"\>", 
-        "\[Rule]", "\<\"\:5229\:606f\:6536\:5165\"\>"}], ",", 
-       RowBox[{"\<\"@fee\"\>", "\[Rule]", "\<\"\:603b\:8d39\:7528\"\>"}], ",", 
-       RowBox[{"\<\"@jsxf\"\>", 
-        "\[Rule]", "\<\"\:51c0\:624b\:7eed\:8d39\"\>"}], ",", 
-       RowBox[{"\<\"@yhs\"\>", "\[Rule]", "\<\"\:5370\:82b1\:7a0e\"\>"}], ",", 
-       RowBox[{"\<\"@ghf\"\>", "\[Rule]", "\<\"\:8fc7\:6237\:8d39\"\>"}], ",", 
-       RowBox[{"\<\"@qtfee\"\>", "\[Rule]", "\<\"\:5176\:5b83\:8d39\"\>"}], 
-       ",", 
-       RowBox[{"\<\"@lxs\"\>", "\[Rule]", "\<\"\:5229\:606f\:7a0e\"\>"}], ",", 
-       RowBox[{"\<\"@action\"\>", "\[Rule]", "\<\"0B\"\>"}]}], 
-      "\[RightAssociation]"}], "]"}]}], ",", 
-   RowBox[{"\<\"Tn\:8bc1\:5238\:4e70\:5165\"\>", "\[Rule]", 
-    RowBox[{"f", "[", 
-     RowBox[{"\[LeftAssociation]", 
-      RowBox[{
-       RowBox[{"\<\"@matchqty\"\>", 
-        "\[Rule]", "\<\"\:6210\:4ea4\:6570\:91cf\"\>"}], ",", 
-       RowBox[{"\<\"@matchamt\"\>", 
-        "\[Rule]", "\<\"\:6210\:4ea4\:91d1\:989d\"\>"}], ",", 
-       RowBox[{"\<\"@matchamt_ex\"\>", "\[Rule]", "\<\"0\"\>"}], ",", 
-       RowBox[{"\<\"@aiamount\"\>", "\[Rule]", "\<\"0\"\>"}], ",", 
-       RowBox[{"\<\"@fundeffect\"\>", 
-        "\[Rule]", "\<\"\:8d26\:6237\:8d44\:91d1\"\>"}], ",", 
-       RowBox[{"\<\"@stkeffect\"\>", 
-        "\[Rule]", "\<\"\:5e93\:5b58\:6570\:91cf\"\>"}], ",", 
-       RowBox[{"\<\"@stkcost_ch\"\>", 
-        "\[Rule]", "\<\"\:5e93\:5b58\:6210\:672c\"\>"}], ",", 
-       RowBox[{"\<\"@syvalue_ch\"\>", 
-        "\[Rule]", "\<\"\:4ea4\:6613\:6536\:76ca\"\>"}], ",", 
-       RowBox[{"\<\"@aicost_ch\"\>", 
-        "\[Rule]", "\<\"\:5229\:606f\:6210\:672c\"\>"}], ",", 
-       RowBox[{"\<\"@lxsr_ch\"\>", 
-        "\[Rule]", "\<\"\:5229\:606f\:6536\:5165\"\>"}], ",", 
-       RowBox[{"\<\"@fee\"\>", "\[Rule]", "\<\"\:603b\:8d39\:7528\"\>"}], ",", 
-       RowBox[{"\<\"@jsxf\"\>", 
-        "\[Rule]", "\<\"\:51c0\:624b\:7eed\:8d39\"\>"}], ",", 
-       RowBox[{"\<\"@yhs\"\>", "\[Rule]", "\<\"\:5370\:82b1\:7a0e\"\>"}], ",", 
-       RowBox[{"\<\"@ghf\"\>", "\[Rule]", "\<\"\:8fc7\:6237\:8d39\"\>"}], ",", 
-       RowBox[{"\<\"@qtfee\"\>", "\[Rule]", "\<\"\:5176\:5b83\:8d39\"\>"}], 
-       ",", 
-       RowBox[{"\<\"@lxs\"\>", "\[Rule]", "\<\"\:5229\:606f\:7a0e\"\>"}], ",", 
-       RowBox[{"\<\"@action\"\>", "\[Rule]", "\<\"0B\"\>"}]}], 
-      "\[RightAssociation]"}], "]"}]}], ",", 
-   RowBox[{"\<\"\:6caa\:6e2f\:901a\:80a1\:7968\:4e70\:5165\"\>", "\[Rule]", 
-    RowBox[{"f", "[", 
-     RowBox[{"\[LeftAssociation]", 
-      RowBox[{
-       RowBox[{"\<\"@matchqty\"\>", 
-        "\[Rule]", "\<\"\:6210\:4ea4\:6570\:91cf\"\>"}], ",", 
-       RowBox[{"\<\"@matchamt\"\>", 
-        "\[Rule]", "\<\"\:6210\:4ea4\:91d1\:989d\"\>"}], ",", 
-       RowBox[{"\<\"@matchamt_ex\"\>", "\[Rule]", "\<\"0\"\>"}], ",", 
-       RowBox[{"\<\"@aiamount\"\>", "\[Rule]", "\<\"0\"\>"}], ",", 
-       RowBox[{"\<\"@fundeffect\"\>", 
-        "\[Rule]", "\<\"\:8d26\:6237\:8d44\:91d1\"\>"}], ",", 
-       RowBox[{"\<\"@stkeffect\"\>", 
-        "\[Rule]", "\<\"\:5e93\:5b58\:6570\:91cf\"\>"}], ",", 
-       RowBox[{"\<\"@stkcost_ch\"\>", 
-        "\[Rule]", "\<\"\:5e93\:5b58\:6210\:672c\"\>"}], ",", 
-       RowBox[{"\<\"@syvalue_ch\"\>", 
-        "\[Rule]", "\<\"\:4ea4\:6613\:6536\:76ca\"\>"}], ",", 
-       RowBox[{"\<\"@aicost_ch\"\>", 
-        "\[Rule]", "\<\"\:5229\:606f\:6210\:672c\"\>"}], ",", 
-       RowBox[{"\<\"@lxsr_ch\"\>", 
-        "\[Rule]", "\<\"\:5229\:606f\:6536\:5165\"\>"}], ",", 
-       RowBox[{"\<\"@fee\"\>", "\[Rule]", "\<\"\:603b\:8d39\:7528\"\>"}], ",", 
-       RowBox[{"\<\"@jsxf\"\>", 
-        "\[Rule]", "\<\"\:51c0\:624b\:7eed\:8d39\"\>"}], ",", 
-       RowBox[{"\<\"@yhs\"\>", "\[Rule]", "\<\"\:5370\:82b1\:7a0e\"\>"}], ",", 
-       RowBox[{"\<\"@ghf\"\>", "\[Rule]", "\<\"\:8fc7\:6237\:8d39\"\>"}], ",", 
-       RowBox[{"\<\"@qtfee\"\>", "\[Rule]", "\<\"\:5176\:5b83\:8d39\"\>"}], 
-       ",", 
-       RowBox[{"\<\"@lxs\"\>", "\[Rule]", "\<\"\:5229\:606f\:7a0e\"\>"}], ",", 
-       RowBox[{"\<\"@action\"\>", "\[Rule]", "\<\"0B\"\>"}]}], 
-      "\[RightAssociation]"}], "]"}]}], ",", 
-   RowBox[{"\<\"\:8bc1\:5238\:5356\:51fa\"\>", "\[Rule]", 
-    RowBox[{"f", "[", 
-     RowBox[{"\[LeftAssociation]", 
-      RowBox[{
-       RowBox[{"\<\"@matchqty\"\>", 
-        "\[Rule]", "\<\"\:6210\:4ea4\:6570\:91cf\"\>"}], ",", 
-       RowBox[{"\<\"@matchamt\"\>", 
-        "\[Rule]", "\<\"\:6210\:4ea4\:91d1\:989d\"\>"}], ",", 
-       RowBox[{"\<\"@matchamt_ex\"\>", "\[Rule]", "\<\"0\"\>"}], ",", 
-       RowBox[{"\<\"@aiamount\"\>", "\[Rule]", "\<\"0\"\>"}], ",", 
-       RowBox[{"\<\"@fundeffect\"\>", 
-        "\[Rule]", "\<\"\:8d26\:6237\:8d44\:91d1\"\>"}], ",", 
-       RowBox[{"\<\"@stkeffect\"\>", 
-        "\[Rule]", "\<\"\:5e93\:5b58\:6570\:91cf\"\>"}], ",", 
-       RowBox[{"\<\"@stkcost_ch\"\>", 
-        "\[Rule]", "\<\"\:5e93\:5b58\:6210\:672c\"\>"}], ",", 
-       RowBox[{"\<\"@syvalue_ch\"\>", 
-        "\[Rule]", "\<\"\:4ea4\:6613\:6536\:76ca\"\>"}], ",", 
-       RowBox[{"\<\"@aicost_ch\"\>", 
-        "\[Rule]", "\<\"\:5229\:606f\:6210\:672c\"\>"}], ",", 
-       RowBox[{"\<\"@lxsr_ch\"\>", 
-        "\[Rule]", "\<\"\:5229\:606f\:6536\:5165\"\>"}], ",", 
-       RowBox[{"\<\"@fee\"\>", "\[Rule]", "\<\"\:603b\:8d39\:7528\"\>"}], ",", 
-       RowBox[{"\<\"@jsxf\"\>", 
-        "\[Rule]", "\<\"\:51c0\:624b\:7eed\:8d39\"\>"}], ",", 
-       RowBox[{"\<\"@yhs\"\>", "\[Rule]", "\<\"\:5370\:82b1\:7a0e\"\>"}], ",", 
-       RowBox[{"\<\"@ghf\"\>", "\[Rule]", "\<\"\:8fc7\:6237\:8d39\"\>"}], ",", 
-       RowBox[{"\<\"@qtfee\"\>", "\[Rule]", "\<\"\:5176\:5b83\:8d39\"\>"}], 
-       ",", 
-       RowBox[{"\<\"@lxs\"\>", "\[Rule]", "\<\"\:5229\:606f\:7a0e\"\>"}], ",", 
-       RowBox[{"\<\"@action\"\>", "\[Rule]", "\<\"0S\"\>"}]}], 
-      "\[RightAssociation]"}], "]"}]}], ",", 
-   RowBox[{"\<\"Tn\:8bc1\:5238\:5356\:51fa\"\>", "\[Rule]", 
-    RowBox[{"f", "[", 
-     RowBox[{"\[LeftAssociation]", 
-      RowBox[{
-       RowBox[{"\<\"@matchqty\"\>", 
-        "\[Rule]", "\<\"\:6210\:4ea4\:6570\:91cf\"\>"}], ",", 
-       RowBox[{"\<\"@matchamt\"\>", 
-        "\[Rule]", "\<\"\:6210\:4ea4\:91d1\:989d\"\>"}], ",", 
-       RowBox[{"\<\"@matchamt_ex\"\>", "\[Rule]", "\<\"0\"\>"}], ",", 
-       RowBox[{"\<\"@aiamount\"\>", "\[Rule]", "\<\"0\"\>"}], ",", 
-       RowBox[{"\<\"@fundeffect\"\>", 
-        "\[Rule]", "\<\"\:8d26\:6237\:8d44\:91d1\"\>"}], ",", 
-       RowBox[{"\<\"@stkeffect\"\>", 
-        "\[Rule]", "\<\"\:5e93\:5b58\:6570\:91cf\"\>"}], ",", 
-       RowBox[{"\<\"@stkcost_ch\"\>", 
-        "\[Rule]", "\<\"\:5e93\:5b58\:6210\:672c\"\>"}], ",", 
-       RowBox[{"\<\"@syvalue_ch\"\>", 
-        "\[Rule]", "\<\"\:4ea4\:6613\:6536\:76ca\"\>"}], ",", 
-       RowBox[{"\<\"@aicost_ch\"\>", 
-        "\[Rule]", "\<\"\:5229\:606f\:6210\:672c\"\>"}], ",", 
-       RowBox[{"\<\"@lxsr_ch\"\>", 
-        "\[Rule]", "\<\"\:5229\:606f\:6536\:5165\"\>"}], ",", 
-       RowBox[{"\<\"@fee\"\>", "\[Rule]", "\<\"\:603b\:8d39\:7528\"\>"}], ",", 
-       RowBox[{"\<\"@jsxf\"\>", 
-        "\[Rule]", "\<\"\:51c0\:624b\:7eed\:8d39\"\>"}], ",", 
-       RowBox[{"\<\"@yhs\"\>", "\[Rule]", "\<\"\:5370\:82b1\:7a0e\"\>"}], ",", 
-       RowBox[{"\<\"@ghf\"\>", "\[Rule]", "\<\"\:8fc7\:6237\:8d39\"\>"}], ",", 
-       RowBox[{"\<\"@qtfee\"\>", "\[Rule]", "\<\"\:5176\:5b83\:8d39\"\>"}], 
-       ",", 
-       RowBox[{"\<\"@lxs\"\>", "\[Rule]", "\<\"\:5229\:606f\:7a0e\"\>"}], ",", 
-       RowBox[{"\<\"@action\"\>", "\[Rule]", "\<\"0S\"\>"}]}], 
-      "\[RightAssociation]"}], "]"}]}], ",", 
-   RowBox[{"\<\"\:6caa\:6e2f\:901a\:80a1\:7968\:5356\:51fa\"\>", "\[Rule]", 
-    RowBox[{"f", "[", 
-     RowBox[{"\[LeftAssociation]", 
-      RowBox[{
-       RowBox[{"\<\"@matchqty\"\>", 
-        "\[Rule]", "\<\"\:6210\:4ea4\:6570\:91cf\"\>"}], ",", 
-       RowBox[{"\<\"@matchamt\"\>", 
-        "\[Rule]", "\<\"\:6210\:4ea4\:91d1\:989d\"\>"}], ",", 
-       RowBox[{"\<\"@matchamt_ex\"\>", "\[Rule]", "\<\"0\"\>"}], ",", 
-       RowBox[{"\<\"@aiamount\"\>", "\[Rule]", "\<\"0\"\>"}], ",", 
-       RowBox[{"\<\"@fundeffect\"\>", 
-        "\[Rule]", "\<\"\:8d26\:6237\:8d44\:91d1\"\>"}], ",", 
-       RowBox[{"\<\"@stkeffect\"\>", 
-        "\[Rule]", "\<\"\:5e93\:5b58\:6570\:91cf\"\>"}], ",", 
-       RowBox[{"\<\"@stkcost_ch\"\>", 
-        "\[Rule]", "\<\"\:5e93\:5b58\:6210\:672c\"\>"}], ",", 
-       RowBox[{"\<\"@syvalue_ch\"\>", 
-        "\[Rule]", "\<\"\:4ea4\:6613\:6536\:76ca\"\>"}], ",", 
-       RowBox[{"\<\"@aicost_ch\"\>", 
-        "\[Rule]", "\<\"\:5229\:606f\:6210\:672c\"\>"}], ",", 
-       RowBox[{"\<\"@lxsr_ch\"\>", 
-        "\[Rule]", "\<\"\:5229\:606f\:6536\:5165\"\>"}], ",", 
-       RowBox[{"\<\"@fee\"\>", "\[Rule]", "\<\"\:603b\:8d39\:7528\"\>"}], ",", 
-       RowBox[{"\<\"@jsxf\"\>", 
-        "\[Rule]", "\<\"\:51c0\:624b\:7eed\:8d39\"\>"}], ",", 
-       RowBox[{"\<\"@yhs\"\>", "\[Rule]", "\<\"\:5370\:82b1\:7a0e\"\>"}], ",", 
-       RowBox[{"\<\"@ghf\"\>", "\[Rule]", "\<\"\:8fc7\:6237\:8d39\"\>"}], ",", 
-       RowBox[{"\<\"@qtfee\"\>", "\[Rule]", "\<\"\:5176\:5b83\:8d39\"\>"}], 
-       ",", 
-       RowBox[{"\<\"@lxs\"\>", "\[Rule]", "\<\"\:5229\:606f\:7a0e\"\>"}], ",", 
-       RowBox[{"\<\"@action\"\>", "\[Rule]", "\<\"0S\"\>"}]}], 
-      "\[RightAssociation]"}], "]"}]}], ",", 
-   RowBox[{"\<\"\:7ea2\:5229\:5165\:8d26\"\>", "\[Rule]", 
-    RowBox[{"f", "[", 
-     RowBox[{"\[LeftAssociation]", 
-      RowBox[{
-       RowBox[{"\<\"@matchqty\"\>", 
-        "\[Rule]", "\<\"\:6210\:4ea4\:6570\:91cf\"\>"}], ",", 
-       RowBox[{"\<\"@matchamt\"\>", 
-        "\[Rule]", "\<\"\:6210\:4ea4\:91d1\:989d\"\>"}], ",", 
-       RowBox[{"\<\"@matchamt_ex\"\>", "\[Rule]", "\<\"0\"\>"}], ",", 
-       RowBox[{"\<\"@aiamount\"\>", "\[Rule]", "\<\"0\"\>"}], ",", 
-       RowBox[{"\<\"@fundeffect\"\>", 
-        "\[Rule]", "\<\"\:8d26\:6237\:8d44\:91d1\"\>"}], ",", 
-       RowBox[{"\<\"@stkeffect\"\>", 
-        "\[Rule]", "\<\"\:5e93\:5b58\:6570\:91cf\"\>"}], ",", 
-       RowBox[{"\<\"@stkcost_ch\"\>", 
-        "\[Rule]", "\<\"\:5e93\:5b58\:6210\:672c\"\>"}], ",", 
-       RowBox[{"\<\"@syvalue_ch\"\>", 
-        "\[Rule]", "\<\"\:4ea4\:6613\:6536\:76ca\"\>"}], ",", 
-       RowBox[{"\<\"@aicost_ch\"\>", 
-        "\[Rule]", "\<\"\:5229\:606f\:6210\:672c\"\>"}], ",", 
-       RowBox[{"\<\"@lxsr_ch\"\>", 
-        "\[Rule]", "\<\"\:5229\:606f\:6536\:5165\"\>"}], ",", 
-       RowBox[{"\<\"@fee\"\>", "\[Rule]", "\<\"\:603b\:8d39\:7528\"\>"}], ",", 
-       RowBox[{"\<\"@jsxf\"\>", 
-        "\[Rule]", "\<\"\:51c0\:624b\:7eed\:8d39\"\>"}], ",", 
-       RowBox[{"\<\"@yhs\"\>", "\[Rule]", "\<\"\:5370\:82b1\:7a0e\"\>"}], ",", 
-       RowBox[{"\<\"@ghf\"\>", "\[Rule]", "\<\"\:8fc7\:6237\:8d39\"\>"}], ",", 
-       RowBox[{"\<\"@qtfee\"\>", "\[Rule]", "\<\"\:5176\:5b83\:8d39\"\>"}], 
-       ",", 
-       RowBox[{"\<\"@lxs\"\>", "\[Rule]", "\<\"\:5229\:606f\:7a0e\"\>"}], ",", 
-       RowBox[{"\<\"@action\"\>", "\[Rule]", "\<\"HG\"\>"}]}], 
-      "\[RightAssociation]"}], "]"}]}], ",", 
-   RowBox[{"\<\"\:57fa\:91d1\:7ea2\:5229\:62e8\:5165\"\>", "\[Rule]", 
-    RowBox[{"f", "[", 
-     RowBox[{"\[LeftAssociation]", 
-      RowBox[{
-       RowBox[{"\<\"@matchqty\"\>", 
-        "\[Rule]", "\<\"\:6210\:4ea4\:6570\:91cf\"\>"}], ",", 
-       RowBox[{"\<\"@matchamt\"\>", 
-        "\[Rule]", "\<\"\:6210\:4ea4\:91d1\:989d\"\>"}], ",", 
-       RowBox[{"\<\"@matchamt_ex\"\>", "\[Rule]", "\<\"0\"\>"}], ",", 
-       RowBox[{"\<\"@aiamount\"\>", "\[Rule]", "\<\"0\"\>"}], ",", 
-       RowBox[{"\<\"@fundeffect\"\>", 
-        "\[Rule]", "\<\"\:8d26\:6237\:8d44\:91d1\"\>"}], ",", 
-       RowBox[{"\<\"@stkeffect\"\>", 
-        "\[Rule]", "\<\"\:5e93\:5b58\:6570\:91cf\"\>"}], ",", 
-       RowBox[{"\<\"@stkcost_ch\"\>", 
-        "\[Rule]", "\<\"\:5e93\:5b58\:6210\:672c\"\>"}], ",", 
-       RowBox[{"\<\"@syvalue_ch\"\>", 
-        "\[Rule]", "\<\"\:4ea4\:6613\:6536\:76ca\"\>"}], ",", 
-       RowBox[{"\<\"@aicost_ch\"\>", 
-        "\[Rule]", "\<\"\:5229\:606f\:6210\:672c\"\>"}], ",", 
-       RowBox[{"\<\"@lxsr_ch\"\>", 
-        "\[Rule]", "\<\"\:5229\:606f\:6536\:5165\"\>"}], ",", 
-       RowBox[{"\<\"@fee\"\>", "\[Rule]", "\<\"\:603b\:8d39\:7528\"\>"}], ",", 
-       RowBox[{"\<\"@jsxf\"\>", 
-        "\[Rule]", "\<\"\:51c0\:624b\:7eed\:8d39\"\>"}], ",", 
-       RowBox[{"\<\"@yhs\"\>", "\[Rule]", "\<\"\:5370\:82b1\:7a0e\"\>"}], ",", 
-       RowBox[{"\<\"@ghf\"\>", "\[Rule]", "\<\"\:8fc7\:6237\:8d39\"\>"}], ",", 
-       RowBox[{"\<\"@qtfee\"\>", "\[Rule]", "\<\"\:5176\:5b83\:8d39\"\>"}], 
-       ",", 
-       RowBox[{"\<\"@lxs\"\>", "\[Rule]", "\<\"\:5229\:606f\:7a0e\"\>"}], ",", 
-       RowBox[{"\<\"@action\"\>", "\[Rule]", "\<\"HG\"\>"}]}], 
-      "\[RightAssociation]"}], "]"}]}], ",", 
-   RowBox[{"\<\"\:6caa\:6e2f\:901a\:7ea2\:5229\:53d1\:653e\"\>", "\[Rule]", 
-    RowBox[{"f", "[", 
-     RowBox[{"\[LeftAssociation]", 
-      RowBox[{
-       RowBox[{"\<\"@matchqty\"\>", 
-        "\[Rule]", "\<\"\:6210\:4ea4\:6570\:91cf\"\>"}], ",", 
-       RowBox[{"\<\"@matchamt\"\>", 
-        "\[Rule]", "\<\"\:6210\:4ea4\:91d1\:989d\"\>"}], ",", 
-       RowBox[{"\<\"@matchamt_ex\"\>", "\[Rule]", "\<\"0\"\>"}], ",", 
-       RowBox[{"\<\"@aiamount\"\>", "\[Rule]", "\<\"0\"\>"}], ",", 
-       RowBox[{"\<\"@fundeffect\"\>", 
-        "\[Rule]", "\<\"\:8d26\:6237\:8d44\:91d1\"\>"}], ",", 
-       RowBox[{"\<\"@stkeffect\"\>", 
-        "\[Rule]", "\<\"\:5e93\:5b58\:6570\:91cf\"\>"}], ",", 
-       RowBox[{"\<\"@stkcost_ch\"\>", 
-        "\[Rule]", "\<\"\:5e93\:5b58\:6210\:672c\"\>"}], ",", 
-       RowBox[{"\<\"@syvalue_ch\"\>", 
-        "\[Rule]", "\<\"\:4ea4\:6613\:6536\:76ca\"\>"}], ",", 
-       RowBox[{"\<\"@aicost_ch\"\>", 
-        "\[Rule]", "\<\"\:5229\:606f\:6210\:672c\"\>"}], ",", 
-       RowBox[{"\<\"@lxsr_ch\"\>", 
-        "\[Rule]", "\<\"\:5229\:606f\:6536\:5165\"\>"}], ",", 
-       RowBox[{"\<\"@fee\"\>", "\[Rule]", "\<\"\:603b\:8d39\:7528\"\>"}], ",", 
-       RowBox[{"\<\"@jsxf\"\>", 
-        "\[Rule]", "\<\"\:51c0\:624b\:7eed\:8d39\"\>"}], ",", 
-       RowBox[{"\<\"@yhs\"\>", "\[Rule]", "\<\"\:5370\:82b1\:7a0e\"\>"}], ",", 
-       RowBox[{"\<\"@ghf\"\>", "\[Rule]", "\<\"\:8fc7\:6237\:8d39\"\>"}], ",", 
-       RowBox[{"\<\"@qtfee\"\>", "\[Rule]", "\<\"\:5176\:5b83\:8d39\"\>"}], 
-       ",", 
-       RowBox[{"\<\"@lxs\"\>", "\[Rule]", "\<\"\:5229\:606f\:7a0e\"\>"}], ",", 
-       RowBox[{"\<\"@action\"\>", "\[Rule]", "\<\"HG\"\>"}]}], 
-      "\[RightAssociation]"}], "]"}]}], ",", 
-   RowBox[{"\<\"\:7ea2\:5229\:8ba4\:9886\"\>", "\[Rule]", 
-    RowBox[{"f", "[", 
-     RowBox[{"\[LeftAssociation]", 
-      RowBox[{
-       RowBox[{"\<\"@matchqty\"\>", 
-        "\[Rule]", "\<\"\:6210\:4ea4\:6570\:91cf\"\>"}], ",", 
-       RowBox[{"\<\"@matchamt\"\>", 
-        "\[Rule]", "\<\"\:6210\:4ea4\:91d1\:989d\"\>"}], ",", 
-       RowBox[{"\<\"@matchamt_ex\"\>", "\[Rule]", "\<\"0\"\>"}], ",", 
-       RowBox[{"\<\"@aiamount\"\>", "\[Rule]", "\<\"0\"\>"}], ",", 
-       RowBox[{"\<\"@fundeffect\"\>", 
-        "\[Rule]", "\<\"\:8d26\:6237\:8d44\:91d1\"\>"}], ",", 
-       RowBox[{"\<\"@stkeffect\"\>", 
-        "\[Rule]", "\<\"\:5e93\:5b58\:6570\:91cf\"\>"}], ",", 
-       RowBox[{"\<\"@stkcost_ch\"\>", 
-        "\[Rule]", "\<\"\:5e93\:5b58\:6210\:672c\"\>"}], ",", 
-       RowBox[{"\<\"@syvalue_ch\"\>", 
-        "\[Rule]", "\<\"\:4ea4\:6613\:6536\:76ca\"\>"}], ",", 
-       RowBox[{"\<\"@aicost_ch\"\>", 
-        "\[Rule]", "\<\"\:5229\:606f\:6210\:672c\"\>"}], ",", 
-       RowBox[{"\<\"@lxsr_ch\"\>", 
-        "\[Rule]", "\<\"\:5229\:606f\:6536\:5165\"\>"}], ",", 
-       RowBox[{"\<\"@fee\"\>", "\[Rule]", "\<\"\:603b\:8d39\:7528\"\>"}], ",", 
-       RowBox[{"\<\"@jsxf\"\>", 
-        "\[Rule]", "\<\"\:51c0\:624b\:7eed\:8d39\"\>"}], ",", 
-       RowBox[{"\<\"@yhs\"\>", "\[Rule]", "\<\"\:5370\:82b1\:7a0e\"\>"}], ",", 
-       RowBox[{"\<\"@ghf\"\>", "\[Rule]", "\<\"\:8fc7\:6237\:8d39\"\>"}], ",", 
-       RowBox[{"\<\"@qtfee\"\>", "\[Rule]", "\<\"\:5176\:5b83\:8d39\"\>"}], 
-       ",", 
-       RowBox[{"\<\"@lxs\"\>", "\[Rule]", "\<\"\:5229\:606f\:7a0e\"\>"}], ",", 
-       RowBox[{"\<\"@action\"\>", "\[Rule]", "\<\"HG\"\>"}]}], 
-      "\[RightAssociation]"}], "]"}]}], ",", 
-   RowBox[{"\<\"\:503a\:5238\:5151\:606f\"\>", "\[Rule]", 
-    RowBox[{"f", "[", 
-     RowBox[{"\[LeftAssociation]", 
-      RowBox[{
-       RowBox[{"\<\"@matchqty\"\>", 
-        "\[Rule]", "\<\"\:6210\:4ea4\:6570\:91cf\"\>"}], ",", 
-       RowBox[{"\<\"@matchamt\"\>", 
-        "\[Rule]", "\<\"\:6210\:4ea4\:91d1\:989d\"\>"}], ",", 
-       RowBox[{"\<\"@matchamt_ex\"\>", "\[Rule]", "\<\"0\"\>"}], ",", 
-       RowBox[{"\<\"@aiamount\"\>", "\[Rule]", "\<\"0\"\>"}], ",", 
-       RowBox[{"\<\"@fundeffect\"\>", 
-        "\[Rule]", "\<\"\:8d26\:6237\:8d44\:91d1\"\>"}], ",", 
-       RowBox[{"\<\"@stkeffect\"\>", 
-        "\[Rule]", "\<\"\:5e93\:5b58\:6570\:91cf\"\>"}], ",", 
-       RowBox[{"\<\"@stkcost_ch\"\>", 
-        "\[Rule]", "\<\"\:5e93\:5b58\:6210\:672c\"\>"}], ",", 
-       RowBox[{"\<\"@syvalue_ch\"\>", 
-        "\[Rule]", "\<\"\:4ea4\:6613\:6536\:76ca\"\>"}], ",", 
-       RowBox[{"\<\"@aicost_ch\"\>", 
-        "\[Rule]", "\<\"\:5229\:606f\:6210\:672c\"\>"}], ",", 
-       RowBox[{"\<\"@lxsr_ch\"\>", 
-        "\[Rule]", "\<\"\:5229\:606f\:6536\:5165\"\>"}], ",", 
-       RowBox[{"\<\"@fee\"\>", "\[Rule]", "\<\"\:603b\:8d39\:7528\"\>"}], ",", 
-       RowBox[{"\<\"@jsxf\"\>", 
-        "\[Rule]", "\<\"\:51c0\:624b\:7eed\:8d39\"\>"}], ",", 
-       RowBox[{"\<\"@yhs\"\>", "\[Rule]", "\<\"\:5370\:82b1\:7a0e\"\>"}], ",", 
-       RowBox[{"\<\"@ghf\"\>", "\[Rule]", "\<\"\:8fc7\:6237\:8d39\"\>"}], ",", 
-       RowBox[{"\<\"@qtfee\"\>", "\[Rule]", "\<\"\:5176\:5b83\:8d39\"\>"}], 
-       ",", 
-       RowBox[{"\<\"@lxs\"\>", "\[Rule]", "\<\"\:5229\:606f\:7a0e\"\>"}], ",", 
-       RowBox[{"\<\"@action\"\>", "\[Rule]", "\<\"HG\"\>"}]}], 
-      "\[RightAssociation]"}], "]"}]}], ",", 
-   RowBox[{"\<\"\:7ea2\:80a1\:5165\:8d26\"\>", "\[Rule]", 
-    RowBox[{"f", "[", 
-     RowBox[{"\[LeftAssociation]", 
-      RowBox[{
-       RowBox[{"\<\"@matchqty\"\>", 
-        "\[Rule]", "\<\"\:6210\:4ea4\:6570\:91cf\"\>"}], ",", 
-       RowBox[{"\<\"@matchamt\"\>", 
-        "\[Rule]", "\<\"\:6210\:4ea4\:91d1\:989d\"\>"}], ",", 
-       RowBox[{"\<\"@matchamt_ex\"\>", "\[Rule]", "\<\"0\"\>"}], ",", 
-       RowBox[{"\<\"@aiamount\"\>", "\[Rule]", "\<\"0\"\>"}], ",", 
-       RowBox[{"\<\"@fundeffect\"\>", 
-        "\[Rule]", "\<\"\:8d26\:6237\:8d44\:91d1\"\>"}], ",", 
-       RowBox[{"\<\"@stkeffect\"\>", 
-        "\[Rule]", "\<\"\:5e93\:5b58\:6570\:91cf\"\>"}], ",", 
-       RowBox[{"\<\"@stkcost_ch\"\>", 
-        "\[Rule]", "\<\"\:5e93\:5b58\:6210\:672c\"\>"}], ",", 
-       RowBox[{"\<\"@syvalue_ch\"\>", 
-        "\[Rule]", "\<\"\:4ea4\:6613\:6536\:76ca\"\>"}], ",", 
-       RowBox[{"\<\"@aicost_ch\"\>", 
-        "\[Rule]", "\<\"\:5229\:606f\:6210\:672c\"\>"}], ",", 
-       RowBox[{"\<\"@lxsr_ch\"\>", 
-        "\[Rule]", "\<\"\:5229\:606f\:6536\:5165\"\>"}], ",", 
-       RowBox[{"\<\"@fee\"\>", "\[Rule]", "\<\"\:603b\:8d39\:7528\"\>"}], ",", 
-       RowBox[{"\<\"@jsxf\"\>", 
-        "\[Rule]", "\<\"\:51c0\:624b\:7eed\:8d39\"\>"}], ",", 
-       RowBox[{"\<\"@yhs\"\>", "\[Rule]", "\<\"\:5370\:82b1\:7a0e\"\>"}], ",", 
-       RowBox[{"\<\"@ghf\"\>", "\[Rule]", "\<\"\:8fc7\:6237\:8d39\"\>"}], ",", 
-       RowBox[{"\<\"@qtfee\"\>", "\[Rule]", "\<\"\:5176\:5b83\:8d39\"\>"}], 
-       ",", 
-       RowBox[{"\<\"@lxs\"\>", "\[Rule]", "\<\"\:5229\:606f\:7a0e\"\>"}], ",", 
-       RowBox[{"\<\"@action\"\>", "\[Rule]", "\<\"HG\"\>"}]}], 
-      "\[RightAssociation]"}], "]"}]}], ",", 
-   RowBox[{"\<\"\:67e5\:8be2\:6536\:8d39\:ff08222006\:ff09\"\>", "\[Rule]", 
-    RowBox[{"f", "[", 
-     RowBox[{"\[LeftAssociation]", 
-      RowBox[{
-       RowBox[{"\<\"@matchqty\"\>", 
-        "\[Rule]", "\<\"\:6210\:4ea4\:6570\:91cf\"\>"}], ",", 
-       RowBox[{"\<\"@matchamt\"\>", 
-        "\[Rule]", "\<\"\:6210\:4ea4\:91d1\:989d\"\>"}], ",", 
-       RowBox[{"\<\"@matchamt_ex\"\>", "\[Rule]", "\<\"0\"\>"}], ",", 
-       RowBox[{"\<\"@aiamount\"\>", "\[Rule]", "\<\"0\"\>"}], ",", 
-       RowBox[{"\<\"@fundeffect\"\>", 
-        "\[Rule]", "\<\"\:8d26\:6237\:8d44\:91d1\"\>"}], ",", 
-       RowBox[{"\<\"@stkeffect\"\>", 
-        "\[Rule]", "\<\"\:5e93\:5b58\:6570\:91cf\"\>"}], ",", 
-       RowBox[{"\<\"@stkcost_ch\"\>", 
-        "\[Rule]", "\<\"\:5e93\:5b58\:6210\:672c\"\>"}], ",", 
-       RowBox[{"\<\"@syvalue_ch\"\>", 
-        "\[Rule]", "\<\"\:4ea4\:6613\:6536\:76ca\"\>"}], ",", 
-       RowBox[{"\<\"@aicost_ch\"\>", 
-        "\[Rule]", "\<\"\:5229\:606f\:6210\:672c\"\>"}], ",", 
-       RowBox[{"\<\"@lxsr_ch\"\>", 
-        "\[Rule]", "\<\"\:5229\:606f\:6536\:5165\"\>"}], ",", 
-       RowBox[{"\<\"@fee\"\>", "\[Rule]", "\<\"\:603b\:8d39\:7528\"\>"}], ",", 
-       RowBox[{"\<\"@jsxf\"\>", 
-        "\[Rule]", "\<\"\:51c0\:624b\:7eed\:8d39\"\>"}], ",", 
-       RowBox[{"\<\"@yhs\"\>", "\[Rule]", "\<\"\:5370\:82b1\:7a0e\"\>"}], ",", 
-       RowBox[{"\<\"@ghf\"\>", "\[Rule]", "\<\"\:8fc7\:6237\:8d39\"\>"}], ",", 
-       RowBox[{"\<\"@qtfee\"\>", "\[Rule]", "\<\"\:5176\:5b83\:8d39\"\>"}], 
-       ",", 
-       RowBox[{"\<\"@lxs\"\>", "\[Rule]", "\<\"\:5229\:606f\:7a0e\"\>"}], ",", 
-       RowBox[{"\<\"@action\"\>", 
-        "\[Rule]", "\<\"\:8d44\:91d1\:4e1a\:52a1\"\>"}]}], 
-      "\[RightAssociation]"}], "]"}]}]}], "\[RightAssociation]"}]], "Output",
- CellChangeTimes->{{3.6805862634755993`*^9, 3.6805862861223345`*^9}, 
-   3.6805866405415363`*^9, 3.680586674793536*^9, 3.680586843538536*^9, {
-   3.680586924979536*^9, 3.680586935297536*^9}, 3.680587001922536*^9}]
-}, Closed]],
-
-Cell[BoxData[
- RowBox[{
-  RowBox[{"\[LeftAssociation]", 
-   RowBox[{
-    RowBox[{"\"\<\:8bc1\:5238\:4e70\:5165\>\"", "\[Rule]", "\"\<0B\>\""}], 
-    ",", 
-    RowBox[{"\"\<Tn\:8bc1\:5238\:4e70\:5165\>\"", "\[Rule]", "\"\<0B\>\""}], 
-    ",", 
-    RowBox[{
-    "\"\<\:6caa\:6e2f\:901a\:80a1\:7968\:4e70\:5165\>\"", "\[Rule]", 
-     "\"\<0B\>\""}], ",", 
-    RowBox[{"\"\<\:8bc1\:5238\:5356\:51fa\>\"", "\[Rule]", "\"\<0S\>\""}], 
-    ",", 
-    RowBox[{"\"\<Tn\:8bc1\:5238\:5356\:51fa\>\"", "\[Rule]", "\"\<0S\>\""}], 
-    ",", 
-    RowBox[{
-    "\"\<\:6caa\:6e2f\:901a\:80a1\:7968\:5356\:51fa\>\"", "\[Rule]", 
-     "\"\<0S\>\""}], ",", 
-    RowBox[{"\"\<\:7ea2\:5229\:5165\:8d26\>\"", "\[Rule]", "\"\<HG\>\""}], 
-    ",", 
-    RowBox[{
-    "\"\<\:57fa\:91d1\:7ea2\:5229\:62e8\:5165\>\"", "\[Rule]", "\"\<HG\>\""}],
-     ",", 
-    RowBox[{
-    "\"\<\:6caa\:6e2f\:901a\:7ea2\:5229\:53d1\:653e\>\"", "\[Rule]", 
-     "\"\<HG\>\""}], ",", 
-    RowBox[{"\"\<\:7ea2\:5229\:8ba4\:9886\>\"", "\[Rule]", "\"\<HG\>\""}], 
-    ",", 
-    RowBox[{"\"\<\:503a\:5238\:5151\:606f\>\"", "\[Rule]", "\"\<HG\>\""}], 
-    ",", 
-    RowBox[{"\"\<\:7ea2\:80a1\:5165\:8d26\>\"", "\[Rule]", "\"\<HG\>\""}], 
-    ",", 
-    RowBox[{
-    "\"\<\:67e5\:8be2\:6536\:8d39\:ff08222006\:ff09\>\"", "\[Rule]", 
-     "\"\<\:8d44\:91d1\:4e1a\:52a1\>\""}]}], "\[RightAssociation]"}], 
-  "]"}]], "Input",
- CellChangeTimes->{{3.680586244393508*^9, 3.6805862448654604`*^9}}],
-
-Cell[CellGroupData[{
-
-Cell[BoxData[
- RowBox[{
-  RowBox[{"Query", "[", "\[IndentingNewLine]", 
-   RowBox[{"\"\<\:6838\:7b97\:529e\:6cd5\>\"", ",", "\[IndentingNewLine]", 
-    RowBox[{"(*", 
-     RowBox[{"AssociationMap", "[", "translateDB", "]"}], "*)"}], "f"}], 
-   "\[IndentingNewLine]", "]"}], "@", "\:6838\:7b97\:8bbe\:8ba1"}]], "Input",
- CellChangeTimes->{{3.680559464959*^9, 3.6805594674189997`*^9}, {
-   3.680559513749*^9, 3.680559559558*^9}, {3.680559599349*^9, 
-   3.6805596033640003`*^9}, {3.680559676917*^9, 3.680559688624*^9}, 
-   3.680565782409*^9, {3.680565833955871*^9, 3.680565848757391*^9}, {
-   3.680566358113*^9, 3.6805664354309998`*^9}, {3.6805723806003957`*^9, 
-   3.6805724305985537`*^9}, {3.6805724816533413`*^9, 
-   3.6805725630410604`*^9}, {3.6805726360394573`*^9, 
-   3.6805726718183002`*^9}, {3.680572909169536*^9, 3.680572912072536*^9}, 
-   3.680573074881536*^9, {3.6805736422995358`*^9, 3.680573709552536*^9}, {
-   3.6805738436995363`*^9, 3.680573958119917*^9}, {3.680574381292536*^9, 
-   3.6805743885085363`*^9}, 3.680581584635536*^9, {3.6805851707325363`*^9, 
-   3.680585175715536*^9}, {3.680585258403536*^9, 3.680585261359536*^9}}],
-
-Cell[BoxData[
- RowBox[{"f", "[", 
-  RowBox[{"\[LeftAssociation]", 
-   RowBox[{
-    RowBox[{"\<\"\:8bc1\:5238\:4e70\:5165\"\>", "\[Rule]", 
-     RowBox[{"\[LeftAssociation]", 
-      RowBox[{
-       RowBox[{"\<\"\:4e1a\:52a1\:4ee3\:7801\"\>", 
-        "\[Rule]", "\<\"220000\"\>"}], ",", 
-       RowBox[{"\<\"\:7b49\:540c\:7c7b\:578b\"\>", "\[Rule]", "\<\"\"\>"}], 
-       ",", 
-       RowBox[{"\<\"@action\"\>", "\[Rule]", "\<\"0B\"\>"}], ",", 
-       RowBox[{"\<\"\:8bf4\:660e\"\>", "\[Rule]", "\<\"\"\>"}]}], 
-      "\[RightAssociation]"}]}], ",", 
-    RowBox[{"\<\"Tn\:8bc1\:5238\:4e70\:5165\"\>", "\[Rule]", 
-     RowBox[{"\[LeftAssociation]", 
-      RowBox[{
-       RowBox[{"\<\"\:4e1a\:52a1\:4ee3\:7801\"\>", 
-        "\[Rule]", "\<\"220100\"\>"}], ",", 
-       RowBox[{"\<\"\:7b49\:540c\:7c7b\:578b\"\>", 
-        "\[Rule]", "\<\"\:8bc1\:5238\:4e70\:5165\"\>"}], ",", 
-       RowBox[{"\<\"@action\"\>", "\[Rule]", "\<\"0B\"\>"}], ",", 
-       RowBox[{"\<\"\:8bf4\:660e\"\>", "\[Rule]", "\<\"\"\>"}]}], 
-      "\[RightAssociation]"}]}], ",", 
-    RowBox[{"\<\"\:6caa\:6e2f\:901a\:80a1\:7968\:4e70\:5165\"\>", "\[Rule]", 
-     RowBox[{"\[LeftAssociation]", 
-      RowBox[{
-       RowBox[{"\<\"\:4e1a\:52a1\:4ee3\:7801\"\>", 
-        "\[Rule]", "\<\"220094\"\>"}], ",", 
-       RowBox[{"\<\"\:7b49\:540c\:7c7b\:578b\"\>", 
-        "\[Rule]", "\<\"\:8bc1\:5238\:4e70\:5165\"\>"}], ",", 
-       RowBox[{"\<\"@action\"\>", "\[Rule]", "\<\"0B\"\>"}], ",", 
-       RowBox[{"\<\"\:8bf4\:660e\"\>", "\[Rule]", "\<\"\"\>"}]}], 
-      "\[RightAssociation]"}]}], ",", 
-    RowBox[{"\<\"\:8bc1\:5238\:5356\:51fa\"\>", "\[Rule]", 
-     RowBox[{"\[LeftAssociation]", 
-      RowBox[{
-       RowBox[{"\<\"\:4e1a\:52a1\:4ee3\:7801\"\>", 
-        "\[Rule]", "\<\"221001\"\>"}], ",", 
-       RowBox[{"\<\"\:7b49\:540c\:7c7b\:578b\"\>", "\[Rule]", "\<\"\"\>"}], 
-       ",", 
-       RowBox[{"\<\"@action\"\>", "\[Rule]", "\<\"0S\"\>"}], ",", 
-       RowBox[{"\<\"\:8bf4\:660e\"\>", "\[Rule]", "\<\"\"\>"}]}], 
-      "\[RightAssociation]"}]}], ",", 
-    RowBox[{"\<\"Tn\:8bc1\:5238\:5356\:51fa\"\>", "\[Rule]", 
-     RowBox[{"\[LeftAssociation]", 
-      RowBox[{
-       RowBox[{"\<\"\:4e1a\:52a1\:4ee3\:7801\"\>", 
-        "\[Rule]", "\<\"221101\"\>"}], ",", 
-       RowBox[{"\<\"\:7b49\:540c\:7c7b\:578b\"\>", 
-        "\[Rule]", "\<\"\:8bc1\:5238\:5356\:51fa\"\>"}], ",", 
-       RowBox[{"\<\"@action\"\>", "\[Rule]", "\<\"0S\"\>"}], ",", 
-       RowBox[{"\<\"\:8bf4\:660e\"\>", 
-        "\[Rule]", "\<\"T+n\:65e5\:5165\:8d26\:7684\:6210\:4ea4\:4ef7\:683c\
-\:662fT\:65e5\:786e\:5b9a\:7684\:3002\"\>"}]}], "\[RightAssociation]"}]}], 
-    ",", 
-    RowBox[{"\<\"\:6caa\:6e2f\:901a\:80a1\:7968\:5356\:51fa\"\>", "\[Rule]", 
-     RowBox[{"\[LeftAssociation]", 
-      RowBox[{
-       RowBox[{"\<\"\:4e1a\:52a1\:4ee3\:7801\"\>", 
-        "\[Rule]", "\<\"220095\"\>"}], ",", 
-       RowBox[{"\<\"\:7b49\:540c\:7c7b\:578b\"\>", 
-        "\[Rule]", "\<\"\:8bc1\:5238\:5356\:51fa\"\>"}], ",", 
-       RowBox[{"\<\"@action\"\>", "\[Rule]", "\<\"0S\"\>"}], ",", 
-       RowBox[{"\<\"\:8bf4\:660e\"\>", "\[Rule]", "\<\"\"\>"}]}], 
-      "\[RightAssociation]"}]}], ",", 
-    RowBox[{"\<\"\:7ea2\:5229\:5165\:8d26\"\>", "\[Rule]", 
-     RowBox[{"\[LeftAssociation]", 
-      RowBox[{
-       RowBox[{"\<\"\:4e1a\:52a1\:4ee3\:7801\"\>", 
-        "\[Rule]", "\<\"221007\"\>"}], ",", 
-       RowBox[{"\<\"\:7b49\:540c\:7c7b\:578b\"\>", "\[Rule]", "\<\"\"\>"}], 
-       ",", 
-       RowBox[{"\<\"@action\"\>", "\[Rule]", "\<\"HG\"\>"}], ",", 
-       RowBox[{"\<\"\:8bf4\:660e\"\>", "\[Rule]", "\<\"\"\>"}]}], 
-      "\[RightAssociation]"}]}], ",", 
-    RowBox[{"\<\"\:57fa\:91d1\:7ea2\:5229\:62e8\:5165\"\>", "\[Rule]", 
-     RowBox[{"\[LeftAssociation]", 
-      RowBox[{
-       RowBox[{"\<\"\:4e1a\:52a1\:4ee3\:7801\"\>", 
-        "\[Rule]", "\<\"240507\"\>"}], ",", 
-       RowBox[{"\<\"\:7b49\:540c\:7c7b\:578b\"\>", 
-        "\[Rule]", "\<\"\:7ea2\:5229\:5165\:8d26\"\>"}], ",", 
-       RowBox[{"\<\"@action\"\>", "\[Rule]", "\<\"HG\"\>"}], ",", 
-       RowBox[{"\<\"\:8bf4\:660e\"\>", "\[Rule]", "\<\"\"\>"}]}], 
-      "\[RightAssociation]"}]}], ",", 
-    RowBox[{"\<\"\:6caa\:6e2f\:901a\:7ea2\:5229\:53d1\:653e\"\>", "\[Rule]", 
-     RowBox[{"\[LeftAssociation]", 
-      RowBox[{
-       RowBox[{"\<\"\:4e1a\:52a1\:4ee3\:7801\"\>", 
-        "\[Rule]", "\<\"220096\"\>"}], ",", 
-       RowBox[{"\<\"\:7b49\:540c\:7c7b\:578b\"\>", 
-        "\[Rule]", "\<\"\:7ea2\:5229\:5165\:8d26\"\>"}], ",", 
-       RowBox[{"\<\"@action\"\>", "\[Rule]", "\<\"HG\"\>"}], ",", 
-       RowBox[{"\<\"\:8bf4\:660e\"\>", "\[Rule]", "\<\"\"\>"}]}], 
-      "\[RightAssociation]"}]}], ",", 
-    RowBox[{"\<\"\:7ea2\:5229\:8ba4\:9886\"\>", "\[Rule]", 
-     RowBox[{"\[LeftAssociation]", 
-      RowBox[{
-       RowBox[{"\<\"\:4e1a\:52a1\:4ee3\:7801\"\>", 
-        "\[Rule]", "\<\"150032\"\>"}], ",", 
-       RowBox[{"\<\"\:7b49\:540c\:7c7b\:578b\"\>", 
-        "\[Rule]", "\<\"\:7ea2\:5229\:5165\:8d26\"\>"}], ",", 
-       RowBox[{"\<\"@action\"\>", "\[Rule]", "\<\"HG\"\>"}], ",", 
-       RowBox[{"\<\"\:8bf4\:660e\"\>", "\[Rule]", "\<\"\"\>"}]}], 
-      "\[RightAssociation]"}]}], ",", 
-    RowBox[{"\<\"\:503a\:5238\:5151\:606f\"\>", "\[Rule]", 
-     RowBox[{"\[LeftAssociation]", 
-      RowBox[{
-       RowBox[{"\<\"\:4e1a\:52a1\:4ee3\:7801\"\>", 
-        "\[Rule]", "\<\"221008\"\>"}], ",", 
-       RowBox[{"\<\"\:7b49\:540c\:7c7b\:578b\"\>", "\[Rule]", "\<\"\"\>"}], 
-       ",", 
-       RowBox[{"\<\"@action\"\>", "\[Rule]", "\<\"HG\"\>"}], ",", 
-       RowBox[{"\<\"\:8bf4\:660e\"\>", "\[Rule]", "\<\"\"\>"}]}], 
-      "\[RightAssociation]"}]}], ",", 
-    RowBox[{"\<\"\:7ea2\:80a1\:5165\:8d26\"\>", "\[Rule]", 
-     RowBox[{"\[LeftAssociation]", 
-      RowBox[{
-       RowBox[{"\<\"\:4e1a\:52a1\:4ee3\:7801\"\>", 
-        "\[Rule]", "\<\"220010\"\>"}], ",", 
-       RowBox[{"\<\"\:7b49\:540c\:7c7b\:578b\"\>", "\[Rule]", "\<\"\"\>"}], 
-       ",", 
-       RowBox[{"\<\"@action\"\>", "\[Rule]", "\<\"HG\"\>"}], ",", 
-       RowBox[{"\<\"\:8bf4\:660e\"\>", "\[Rule]", "\<\"\"\>"}]}], 
-      "\[RightAssociation]"}]}], ",", 
-    RowBox[{"\<\"\:67e5\:8be2\:6536\:8d39\:ff08222006\:ff09\"\>", "\[Rule]", 
-     RowBox[{"\[LeftAssociation]", 
-      RowBox[{
-       RowBox[{"\<\"\:4e1a\:52a1\:4ee3\:7801\"\>", 
-        "\[Rule]", "\<\"222006\"\>"}], ",", 
-       RowBox[{"\<\"\:7b49\:540c\:7c7b\:578b\"\>", "\[Rule]", "\<\"\"\>"}], 
-       ",", 
-       RowBox[{"\<\"@action\"\>", 
-        "\[Rule]", "\<\"\:8d44\:91d1\:4e1a\:52a1\"\>"}], ",", 
-       RowBox[{"\<\"\:8bf4\:660e\"\>", "\[Rule]", "\<\"\"\>"}]}], 
-      "\[RightAssociation]"}]}]}], "\[RightAssociation]"}], "]"}]], "Output",
- CellChangeTimes->{{3.680559461928*^9, 3.680559468311*^9}, {3.680559518259*^9,
-    3.6805595603380003`*^9}, 3.6805596042469997`*^9, {3.680559679717*^9, 
-   3.680559689466*^9}, {3.680565852424024*^9, 3.680565879382328*^9}, {
-   3.680566365139*^9, 3.6805663856940002`*^9}, {3.680566419619*^9, 
-   3.680566436236*^9}, 3.680572384120634*^9, 3.68057250575152*^9, 
-   3.6805725641948295`*^9, {3.680572641215422*^9, 3.6805726727081223`*^9}, 
-   3.6805729128645363`*^9, {3.680573655656536*^9, 3.680573678293536*^9}, 
-   3.680573710520536*^9, {3.680573856821536*^9, 3.6805739593347955`*^9}, 
-   3.6805743209785357`*^9, 3.6805743906555357`*^9, 3.680581413726536*^9, 
-   3.6805851766405363`*^9, 3.680585265576536*^9}]
-}, Open  ]],
-
-Cell[CellGroupData[{
-
-Cell[BoxData[
- RowBox[{"StringReplace", " ", "[", 
-  RowBox[{
-   StyleBox[
-    "\"\<-((\:5e93\:5b58\:6210\:672c*\:6210\:4ea4\:6570\:91cf)/\:5e93\:5b58\
-\:6570\:91cf)\>\"",
-    ShowStringCharacters->True,
-    NumberMarks->True], ",", 
-   RowBox[{"Normal", "[", 
-    RowBox[{
-     RowBox[{"Query", "[", 
-      RowBox[{
-      "\"\<\:8868\:5b57\:6bb5\:5b9a\:4e49\>\"", ",", "All", ",", 
-       "\"\<\:5b57\:6bb5\>\""}], "]"}], "@", "\:6838\:7b97\:8bbe\:8ba1"}], 
-    "]"}]}], "]"}]], "Input",
- CellChangeTimes->{{3.680319154936741*^9, 3.6803191551083403`*^9}, {
-   3.680324448028283*^9, 3.680324595630283*^9}, {3.6803246513822827`*^9, 
-   3.6803246558662825`*^9}, {3.680325012813283*^9, 3.680325107554283*^9}, 
-   3.6803251527862825`*^9, {3.6803254668102827`*^9, 3.680325467170283*^9}, {
-   3.680573814972536*^9, 3.680573835943536*^9}, {3.6805739639753313`*^9, 
-   3.6805740372580023`*^9}, {3.680574089964731*^9, 3.6805741251692104`*^9}, {
-   3.680574187697536*^9, 3.680574196939536*^9}}],
-
-Cell[BoxData["\<\"-((stkcost_ch*matchqty)/stkqty_ch)\"\>"], "Output",
- CellChangeTimes->{3.6805741985895357`*^9, 3.680574325104536*^9}]
 }, Open  ]]
 }, Closed]]
 },
-WindowSize->{1117, 780},
-WindowMargins->{{Automatic, -1202}, {-47, Automatic}},
+WindowSize->{918, 642},
+WindowMargins->{{1, Automatic}, {Automatic, 0}},
 FrontEndVersion->"10.4 for Microsoft Windows (64-bit) (2016\:5e743\:670819\
 \:65e5)",
 StyleDefinitions->"Default.nb"
@@ -1704,64 +918,45 @@ CellTagsIndex->{}
 Notebook[{
 Cell[CellGroupData[{
 Cell[580, 22, 225, 4, 31, "Input"],
-Cell[808, 28, 575, 9, 31, "Output"]
+Cell[808, 28, 599, 9, 31, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[1420, 42, 158, 2, 70, "Section"],
-Cell[1581, 46, 13438, 292, 1175, "Input"],
-Cell[15022, 340, 6720, 144, 513, "Input"]
+Cell[1444, 42, 158, 2, 70, "Section"],
+Cell[1605, 46, 13615, 292, 1237, "Input"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[21779, 489, 172, 2, 70, "Section"],
+Cell[15257, 343, 172, 2, 70, "Section"],
 Cell[CellGroupData[{
-Cell[21976, 495, 339, 7, 33, "Input"],
-Cell[22318, 504, 1127, 23, 55, "Output"]
-}, Open  ]],
-Cell[23460, 530, 164, 3, 31, "Input"],
-Cell[23627, 535, 165, 3, 31, "Input"],
-Cell[CellGroupData[{
-Cell[23817, 542, 232, 4, 33, "Input"],
-Cell[24052, 548, 8107, 116, 2912, "Output"]
-}, Open  ]],
-Cell[32174, 667, 538, 13, 33, "Input"]
+Cell[15454, 349, 2222, 46, 251, "Input"],
+Cell[17679, 397, 1676, 34, 244, "Output"]
+}, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[32749, 685, 97, 1, 70, "Section"],
-Cell[32849, 688, 1972, 40, 98, "Input"],
-Cell[34824, 730, 1376, 32, 99, "Input"],
+Cell[19404, 437, 97, 1, 70, "Section"],
+Cell[19504, 440, 6720, 144, 513, "Input"],
+Cell[26227, 586, 469, 11, 97, "Input"],
+Cell[26699, 599, 1972, 40, 120, "Input"],
+Cell[28674, 641, 1376, 32, 120, "Input"],
 Cell[CellGroupData[{
-Cell[36225, 766, 1001, 24, 55, "Input"],
-Cell[37229, 792, 325, 5, 33, "Output"]
+Cell[30075, 677, 1001, 24, 55, "Input"],
+Cell[31079, 703, 325, 5, 33, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[37591, 802, 169, 4, 33, "Input"],
-Cell[37763, 808, 528, 11, 33, "Output"]
+Cell[31441, 713, 169, 4, 33, "Input"],
+Cell[31613, 719, 528, 11, 33, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[38328, 824, 1283, 29, 136, "Input"],
-Cell[39614, 855, 2614, 37, 1412, "Output"]
+Cell[32178, 735, 1283, 29, 136, "Input"],
+Cell[33464, 766, 2614, 37, 1412, "Output"]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[42265, 897, 969, 23, 49, "Input"],
-Cell[43237, 922, 247, 3, 31, "Output"]
+Cell[36115, 808, 969, 23, 49, "Input"],
+Cell[37087, 833, 247, 3, 31, "Output"]
 }, Open  ]],
-Cell[43499, 928, 603, 14, 33, "Input"],
+Cell[37349, 839, 603, 14, 33, "Input"],
 Cell[CellGroupData[{
-Cell[44127, 946, 280, 7, 33, "Input"],
-Cell[44410, 955, 1588, 31, 76, "Output"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[46035, 991, 1524, 30, 159, "Input"],
-Cell[47562, 1023, 22456, 422, 856, "Output"]
-}, Closed]],
-Cell[70033, 1448, 1434, 36, 70, "Input"],
-Cell[CellGroupData[{
-Cell[71492, 1488, 1140, 18, 96, "Input"],
-Cell[72635, 1508, 7338, 146, 297, "Output"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[80010, 1659, 984, 21, 33, "Input"],
-Cell[80997, 1682, 135, 1, 31, "Output"]
+Cell[37977, 857, 280, 7, 33, "Input"],
+Cell[38260, 866, 1588, 31, 96, "Output"]
 }, Open  ]]
 }, Closed]]
 }
