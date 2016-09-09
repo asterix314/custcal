@@ -42,13 +42,43 @@ begin try
          return 0
       end
 
-   if (@fundeffect=0 or @expense != 0)
+   if (@fundeffect>=0 or @expense <= 0)
       begin
          select @msg='资金发生与该业务不符.'
          raiserror(' %s', 12, 1, @msg) with SETERROR
       end
 
    begin tran
+      -- 更新持仓核算表：其它费用
+      merge into `持仓核算` as s
+      using (   -- 流通类型为"流通股00"，股票代码为nul
+         select serverid, orgid, custid, fundid, market, '00' as ltlx, fundeffect
+           from `业务流水`
+          where serverid=@serverid and bizdate=@bizdate and sno=@sno) -- primary key of `业务流水`
+      as e on (
+         s.serverid = e.serverid and s.orgid = e.orgid and s.custid = e.custid and s.fundid = e.fundid
+         and s.market = e.market and s.stkcode is null and s.ltlx = e.ltlx) -- primary key of s
+      when matched then
+         update set qtfee = qtfee - e.fundeffect, qtfee_ch = qtfee_ch - e.fundeffect,
+                    fee = fee - e.fundeffect, fee_ch = fee_ch - e.fundeffect
+      when not matched then
+         insert (serverid, orgid, custid, fundid, market, stkcode, ltlx,
+                 stkbuyqty, stkbuyamt, stksaleqty, stksaleamt, stkbuyamt_ex, stksaleamt_ex, stkztgrqty, stkztgramt,
+                 stkztgcqty, stkztgcamt, stkpledge, stkdebt, stkloan, stkhgqty, stkpgqty, stkpgamt,
+                 stkhlamt, stkqty_tz, stkqty_tzje, stkqty, stkqty_ch, stkcost, stkcost_ch, syvalue,
+                 syvalue_ch, gyvalue, gyvalue_ch, lxsr, lxsr_ch, rzlx, rzlx_ch, rqlx,
+                 rqlx_ch, aiamount, aiamount_ch, hglx, hglx_ch, jsxf, jsxf_ch, yhs,
+                 yhs_ch, ghf, ghf_ch, qtfee, qtfee_ch, lxs, lxs_ch, aicost,
+                 aicost_ch, bondintr, lxjt, lxjt_ch, stkadjust, stkadjust_ch, mktvalue, fee, fee_ch
+                 ) -- leaving null: stkprice, jtdate, gydate, remark
+         values (e.serverid, e.orgid, e.custid, e.fundid, e.market, null, e.ltlx,
+                 0,0,0,0,0,0,0,0,
+                 0,0,0,0,0,0,0,0,
+                 0,0,0,0,0,0,0,0,
+                 0,0,0,0,0,0,0,0,
+                 0,0,0,0,0,0,0,0,
+                 0,0,0,-e.fundeffect,-e.fundeffect,0,0,0,
+                 0,0,0,0,0,0,0,-e.fundeffect,-e.fundeffect);
       -- 更新资金核算表
       merge into `资金核算` as f
       using (
@@ -65,11 +95,12 @@ begin try
          insert (serverid, orgid, custid, fundid, moneytype, bankcode, fundbal, fundbal_ch,
                  fundsave, fundsave_ch, fundunsave, fundunsave_ch, fundloan, fundloan_ch, funddebt, funddebt_ch,
                  funduncome, funduncome_ch, fundunpay, fundunpay_ch, fundintr, fundintr_ch, fundaward, fundaward_ch,
-                 fundadjust, fundadjust_ch, fundlastbal, totalvalue) -- leaving null: tjdate, remark, nav, mktvalue, totalfe  
+                 fundadjust, fundadjust_ch, fundlastbal, totalvalue)
+                 -- leaving null: tjdate, remark, nav, mktvalue, totalfe  
          values (e.serverid, e.orgid, e.custid, e.fundid, e.moneytype, e.bankcode, e.fundeffect, e.fundeffect,
                  0,0,0,0,0,0,0,0,
                  0,0,0,0,0,0,0,0,
-                 0,0,0, e.fundeffect);
+                 0,0,0,e.fundeffect);
 
       select @msg='核算处理成功'
       update `业务流水`
