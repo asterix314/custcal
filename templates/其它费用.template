@@ -132,7 +132,6 @@ begin tran
    commit tran
    return 0
 end try
-
 begin catch
    if @@trancount > 0
        rollback tran
