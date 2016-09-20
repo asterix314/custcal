@@ -4,7 +4,7 @@
 *****************************************/
 
 if exists (select * from sysobjects where type = 'P' and name = '`存储过程`')
-    drop procedure `存储过程`
+    drop proc `存储过程`
 go
 /*
 select top 10 * from `业务流水` where digestid = `业务摘要`
@@ -74,10 +74,10 @@ begin tran
    using (   -- 流通类型为"流通股00"。
       select serverid, orgid, custid, fundid, market, stkcode, '00' as ltlx, stkeffect
         from `业务流水`
-       where serverid=@serverid and bizdate=@bizdate and sno=@sno) -- primary key of `业务流水`
+       where serverid=@serverid and bizdate=@bizdate and sno=@sno) -- primary key
    as e on (
       s.serverid = e.serverid and s.orgid = e.orgid and s.custid = e.custid and s.fundid = e.fundid
-      and s.market = e.market and s.stkcode = e.stkcode and s.ltlx = e.ltlx) -- primary key of s
+      and s.market = e.market and s.stkcode = e.stkcode and s.ltlx = e.ltlx) -- primary key
    when matched then
       update set stkqty = stkqty + e.stkeffect, stkqty_ch = stkqty_ch + e.stkeffect
    when not matched then
