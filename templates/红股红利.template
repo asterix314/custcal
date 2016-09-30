@@ -77,9 +77,9 @@ begin try
 begin tran
    exec @ret=nb_Cust_Stkasset_Commit 
              @serverid=@serverid, @orgid=@orgid, @custid=@custid, @fundid=@fundid, @moneytype=@moneytype, @bankcode=@bankcode, 
-             @action='`动作类型`', @market=@market, @stkcode=@stkcode, @ltlx='`流通类型`', @matchqty=@matchqty, 
-             @matchamt=0, @matchamt_ex=0, @aiamount=0, @fundeffect=0, @stkeffect=@stkeffect, 
-             @stkcost_ch=0, @syvalue_ch=0, @aicost_ch=0, @lxsr_ch=0, 
+             @action='`动作类型`', @market=@market, @stkcode=@stkcode, @ltlx='`流通类型`', @matchqty=@stkeffect, 
+             @matchamt=@fundeffect, @matchamt_ex=0, @aiamount=0, @fundeffect=@fundeffect, @stkeffect=@stkeffect, 
+             @stkcost_ch=0, @syvalue_ch=0, @aicost_ch=0, @lxsr_ch=@fundeffect, 
              @sxf=0, @jsxf=0, @yhs=0, @ghf=0, @qtfee=0,
              @blje=0, @blxx='', @msg=@msg output
              
