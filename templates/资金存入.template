@@ -24,6 +24,7 @@ CREATE proc `存储过程`(
 ,@custid    bigint    
 ,@msg       varchar(128) =null output
 )
+
 with encryption
 as
 declare @orgid as varchar(4), @fundid as bigint, @digestid as int, @market as char(1), @stkcode as varchar(10), 
@@ -34,14 +35,14 @@ declare @orgid as varchar(4), @fundid as bigint, @digestid as int, @market as ch
 declare @ref_stkcode as varchar(10), @ref_market as char(1), @stkprice as numeric(12,4),
         @rowcount as int, @ret as int
         
- select @orgid=orgid, @fundid=fundid, @digestid=busintype, @market=market, @stkcode=stkcode, 
+ select @orgid=orgid, @fundid=fundid, @digestid=digestid, @market=market, @stkcode=stkcode, 
         @stkeffect=stkeffect, @matchqty=matchqty, @fundeffect=fundeffect, @matchamt=matchamt, 
-        @fee_sxf=fee_sxf, @fee_jsxf=fee_jsxf, @fee_ghf=fee_ghf, @fee_yhs=fee_yhs, @qtfee=feefront, 
+        @fee_sxf=fee_sxf, @fee_jsxf=fee_jsxf, @fee_ghf=fee_ghf, @fee_yhs=fee_yhs,
+        @qtfee=fee_qsf+fee_jygf+fee_jsf+fee_zgf+fee_qtf+feefront, 
         @bankcode=bankcode, @moneytype=moneytype, @ordersno=ordersno, @orderdate=orderdate,
         @sett_status=sett_status
-   from `业务流水` with (nolock, index=`业务流水索引`)
-  where sno=@sno and bizdate=@bizdate and serverid=@serverid and custid=@custid and 
-        busintype in (`业务摘要`) -- `业务名称`
+   from `业务流水`
+  where  sno=@sno and bizdate=@bizdate and serverid=@serverid and custid=@custid and digestid = `业务摘要` -- `业务名称`
 
 begin try
    if (@sett_status is null)
@@ -63,31 +64,34 @@ begin try
       end
 
 begin tran
-   -- 更新资金核算表
-   merge into `资金核算` as f
-   using (
-      select serverid, orgid, custid, bankcode, fundid, moneytype, fundeffect
-        from `业务流水`
-       where serverid=@serverid and bizdate=@bizdate and sno=@sno) -- primary key
-   as e on (
-      f.serverid = e.serverid and f.orgid = e.orgid and f.custid = e.custid and f.bankcode = e.bankcode and
-      f.fundid = e.fundid and f.moneytype = e.moneytype) -- primary key
-   when matched then
-      update set fundbal = fundbal + e.fundeffect, fundbal_ch = fundbal_ch + e.fundeffect,
-                 fundsave = fundsave + e.fundeffect, fundsave_ch = fundsave_ch + e.fundeffect,
-                 totalvalue = totalvalue + e.fundeffect
-   when not matched then
-      insert (serverid, orgid, custid, fundid, moneytype, bankcode,
-              fundbal, fundbal_ch, fundsave, fundsave_ch, fundunsave, fundunsave_ch, fundloan, fundloan_ch,
-              funddebt, funddebt_ch, funduncome, funduncome_ch, fundunpay, fundunpay_ch, fundintr, fundintr_ch,
-              fundaward, fundaward_ch, fundadjust, fundadjust_ch, fundlastbal, totalvalue, tjdate, remark,
-              nav, mktvalue, totalfe)
-      values (e.serverid, e.orgid, e.custid, e.fundid, e.moneytype, e.bankcode,
-              e.fundeffect, e.fundeffect, e.fundeffect, e.fundeffect,0,0,0,0,
-              0,0,0,0,0,0,0,0,
-              0,0,0,0,0,e.fundeffect,0,0,
-              0,0,0);
 
+    update `资金核算`
+       set fundbal = fundbal + @fundeffect, fundbal_ch = fundbal_ch + @fundeffect,
+           fundsave = fundsave + @fundeffect, fundsave_ch = fundsave_ch + @fundeffect
+     where serverid=@serverid and orgid=@orgid and custid=@custid and bankcode=@bankcode and
+           fundid=@fundid and moneytype=@moneytype -- primary key
+           
+    select @rowcount=@@rowcount
+    if (@rowcount>1)    
+       begin
+          select @msg='更新资金行数错误(rowcount='+CONVERT(varchar, @rowcount)+').'       
+          raiserror(' %s', 12, 2, @msg) with SETERROR                   
+       end
+       else if (@rowcount=0)
+       begin
+          insert `资金核算`
+                 (serverid, orgid, custid, fundid, moneytype, bankcode,
+                 fundbal, fundbal_ch, fundsave, fundsave_ch, fundunsave, fundunsave_ch, fundloan, fundloan_ch,
+                 funddebt, funddebt_ch, funduncome, funduncome_ch, fundunpay, fundunpay_ch, fundintr, fundintr_ch,
+                 fundaward, fundaward_ch, fundadjust, fundadjust_ch, fundlastbal, totalvalue, tjdate, remark,
+                 nav, mktvalue, totalfe, rzlx, rzlx_ch)
+          values (@serverid, @orgid, @custid, @fundid, @moneytype, @bankcode,
+                  @fundeffect, @fundeffect, @fundeffect, @fundeffect,0,0,0,0,
+                  0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,
+                  0,0,0,0,0);
+       end
+       
       select @msg='核算处理成功'
       update `业务流水`
          set sett_status=3, sett_remark=@msg

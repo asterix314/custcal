@@ -24,7 +24,7 @@ CREATE proc `存储过程`(
 ,@custid    bigint    
 ,@msg       varchar(128) =null output
 )
-with encryption
+-- with encryption
 as
 declare @orgid as varchar(4), @fundid as bigint, @digestid as int, @market as char(1), @stkcode as varchar(10), 
         @stkeffect as numeric(20,2), @matchqty as numeric(20,2), @matchamt as numeric(20,2), @bankcode as varchar(4), 
@@ -39,7 +39,7 @@ declare @ref_stkcode as varchar(10), @ref_market as char(1), @stkprice as numeri
         @fee_sxf=fee_sxf, @fee_jsxf=fee_jsxf, @fee_ghf=fee_ghf, @fee_yhs=fee_yhs, @qtfee=feefront, 
         @bankcode=bankcode, @moneytype=moneytype, @ordersno=ordersno, @orderdate=orderdate,
         @sett_status=sett_status
-   from `业务流水` with (nolock, index=`业务流水索引`)
+   from `业务流水`
   where sno=@sno and bizdate=@bizdate and serverid=@serverid and custid=@custid and 
         busintype in (`业务摘要`) -- `业务名称`
 
@@ -117,12 +117,12 @@ begin tran
               fundbal, fundbal_ch, fundsave, fundsave_ch, fundunsave, fundunsave_ch, fundloan, fundloan_ch,
               funddebt, funddebt_ch, funduncome, funduncome_ch, fundunpay, fundunpay_ch, fundintr, fundintr_ch,
               fundaward, fundaward_ch, fundadjust, fundadjust_ch, fundlastbal, totalvalue, tjdate, remark,
-              nav, mktvalue, totalfe)
+              nav, mktvalue, totalfe, rzlx, rzlx_ch)
       values (e.serverid, e.orgid, e.custid, e.fundid, e.moneytype, e.bankcode,
               e.fundeffect, e.fundeffect,0,0,0,0,0,0,
               0,0,0,0,0,0,0,0,
               0,0,0,0,0,e.fundeffect,0,0,
-              0,0,0);
+              0,0,0,0,0);
 
       select @msg='核算处理成功'
       update `业务流水`

@@ -34,14 +34,14 @@ declare @orgid as varchar(4), @fundid as bigint, @digestid as int, @market as ch
 declare @ref_stkcode as varchar(10), @ref_market as char(1), @stkprice as numeric(12,4),
         @rowcount as int, @ret as int
         
- select @orgid=orgid, @fundid=fundid, @digestid=busintype, @market=market, @stkcode=stkcode, 
+ select @orgid=orgid, @fundid=fundid, @digestid=digestid, @market=market, @stkcode=stkcode, 
         @stkeffect=stkeffect, @matchqty=matchqty, @fundeffect=fundeffect, @matchamt=matchamt, 
-        @fee_sxf=fee_sxf, @fee_jsxf=fee_jsxf, @fee_ghf=fee_ghf, @fee_yhs=fee_yhs, @qtfee=feefront, 
+        @fee_sxf=fee_sxf, @fee_jsxf=fee_jsxf, @fee_ghf=fee_ghf, @fee_yhs=fee_yhs,
+        @qtfee=fee_qsf+fee_jygf+fee_jsf+fee_zgf+fee_qtf+feefront, 
         @bankcode=bankcode, @moneytype=moneytype, @ordersno=ordersno, @orderdate=orderdate,
         @sett_status=sett_status
-   from `业务流水` with (nolock, index=`业务流水索引`)
-  where sno=@sno and bizdate=@bizdate and serverid=@serverid and custid=@custid and 
-        busintype in (`业务摘要`) -- `业务名称`
+   from `业务流水`
+  where sno=@sno and bizdate=@bizdate and serverid=@serverid and custid=@custid and digestid = `业务摘要` -- `业务名称`
 
 begin try
     if (@sett_status is null)
@@ -69,12 +69,13 @@ begin try
        end
 
 begin tran
+
    -- 更新持仓核算表
    update `持仓核算`
       set stkcost = stkcost + stkqty_tzje, stkcost_ch = stkcost_ch + stkqty_tzje, stkqty_tzje = 0,
           stkqty = stkqty + @stkeffect, stkqty_ch = stkqty_ch + @stkeffect
     where serverid = @serverid and orgid = @orgid and custid = @custid and fundid = @fundid
-                     and market = @market and stkcode = @stkcode and ltlx = '00' -- primary key
+                     and market = @market and stkcode = @stkcode and ltlx = '`流通类型`' -- primary key
 
       select @msg='核算处理成功'
       update `业务流水`

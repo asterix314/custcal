@@ -37,17 +37,17 @@ declare @reduceby as numeric(12,5), @syvalue_ch as numeric(20,2), @stkcost_ch as
         
  select @orgid=orgid, @fundid=fundid, @market=market, @stkcode=stkcode, 
         @stkeffect=stkeffect, @matchqty=matchqty, @fundeffect=fundeffect, @matchamt=matchamt,
-        @fee_sxf=fee_sxf, @fee_jsxf=fee_jsxf, @fee_ghf=fee_ghf, @fee_yhs=fee_yhs, @qtfee=feefront,         
+        @fee_sxf=fee_sxf, @fee_jsxf=fee_jsxf, @fee_ghf=fee_ghf, @fee_yhs=fee_yhs,
+        @qtfee=fee_qsf+fee_jygf+fee_jsf+fee_zgf+fee_qtf+feefront, 
         @matchprice=matchprice, @bankcode=bankcode, @moneytype=moneytype, @sett_status=sett_status
    from `业务流水`
-  where sno=@sno and bizdate=@bizdate and serverid=@serverid and custid=@custid and
-        busintype in (`业务摘要`) -- `业务名称`
+  where sno=@sno and bizdate=@bizdate and serverid=@serverid and custid=@custid and digestid = `业务摘要` -- `业务名称`
    
    if (@matchqty = 0) -- 降低票面价格
       begin
         select @reduceby = sl1
           from gp_cqcx
-         where market = @market and stkcode = @stkcode and xqr = @bizdate and cqcx = 'RDBY'
+         where market = @market and stkcode = @stkcode and xqr = @bizdate and cqcx = 'ZQDF'
       end
    
 
@@ -78,7 +78,7 @@ begin try
 
     if (@matchqty = 0 and @reduceby is null)
        begin
-          select @msg='查询不到本金递减率（gp_cqcx.sl1 when cqcx="RDBY"）.'
+          select @msg='查询不到本金递减率（gp_cqcx.sl1 when cqcx="ZQDF"）.'
           raiserror(' %s', 12, 1, @msg) with SETERROR
        end
 
@@ -102,10 +102,10 @@ begin tran
             else (@matchamt - @matchqty * @matchprice) end,                       -- 减少持仓
           @stkqty_ch = case when (@matchqty = 0)
             then 0                                                                -- 降低票面
-            else (-@matchqty) end                                                -- 减少持仓
+            else (-@matchqty) end                                                 -- 减少持仓
      from `持仓核算`
     where serverid = @serverid and orgid = @orgid and custid = @custid and fundid = @fundid
-      and market = @market and stkcode = @stkcode and ltlx = '00' -- primary key
+      and market = @market and stkcode = @stkcode and ltlx = '`流通类型`' -- primary key
 
     if (@stkqty is null)
        begin
@@ -118,62 +118,71 @@ begin tran
           raiserror(' %s', 12, 1, @msg) with SETERROR
        end
 
-   -- 更新持仓核算表
-   merge into `持仓核算` as s
-   using (   -- 流通类型为"流通股00"。
-      select serverid, orgid, custid, fundid, market, stkcode, '00' as ltlx, fundeffect, matchqty
-        from `业务流水`
-       where serverid=@serverid and bizdate=@bizdate and sno=@sno) -- primary key
-   as e on (
-      s.serverid = e.serverid and s.orgid = e.orgid and s.custid = e.custid and s.fundid = e.fundid
-      and s.market = e.market and s.stkcode = e.stkcode and s.ltlx = e.ltlx) -- primary key
-   when matched then
-      update set syvalue = syvalue + @syvalue_ch, syvalue_ch = syvalue_ch + @syvalue_ch,
-                 stkcost = stkcost + @stkcost_ch, stkcost_ch = stkcost_ch + @stkcost_ch,
-                 lxsr = lxsr + @lxsr_ch, lxsr_ch = lxsr_ch + @lxsr_ch,
-                 stkqty = stkqty + @stkqty_ch, stkqty_ch = stkqty_ch + @stkqty_ch
-   when not matched then
-      insert (serverid, orgid, custid, fundid, market, stkcode, ltlx, 
-              stkbuyqty, stkbuyamt, stksaleqty, stksaleamt, stkbuyqty_ex, stkbuyamt_ex, stksaleqty_ex, stksaleamt_ex, 
-              stkztgrqty, stkztgramt, stkztgcqty, stkztgcamt, stkhgqty, stkhlamt, stkpgqty, stkpgamt, 
-              stkqty, stkqty_ch, stkqty_tz, stkqty_tzje, stkpledge, stkdebt, stkdebt_ch, stkloan,
-              stkloan_ch, stkadjust, stkadjust_ch, stkprice, bondintr, mktvalue, aiamount, stkcost,
-              stkcost_ch, aicost, aicost_ch, syvalue, syvalue_ch, lxsr, lxsr_ch, gyvalue,
-              gyvalue_ch, lxjt, lxjt_ch, cjsr, cjsr_ch, jrzc, jrzc_ch, sxf,
-              sxf_ch, jsxf, jsxf_ch, yhs, yhs_ch, lxs, lxs_ch, ghf,
-              ghf_ch, qtfee, qtfee_ch, jtdate, gydate, remark)
-      values (e.serverid, e.orgid, e.custid, e.fundid, e.market, e.stkcode, e.ltlx,
-              0,0,0,0,0,0,0,0,
-              0,0,0,0,0,0,0,0,
-              @stkqty_ch,@stkqty_ch,0,0,0,0,0,0,
-              0,0,0,0,0,0,0,@stkcost_ch,
-              @stkcost_ch,0,0,@syvalue_ch, @syvalue_ch, @lxsr_ch, @lxsr_ch, 0,
-              0,0,0,0,0,0,0,0,
-              0,0,0,0,0,0,0,0,
-              0,0,0,0,0,0);
-              
-   -- 更新资金核算表
-   merge into `资金核算` as f
-   using (
-      select serverid, orgid, custid, bankcode, fundid, moneytype, fundeffect
-        from `业务流水`
-       where serverid=@serverid and bizdate=@bizdate and sno=@sno) -- primary key
-   as e on (
-      f.serverid = e.serverid and f.orgid = e.orgid and f.custid = e.custid and f.bankcode = e.bankcode and
-      f.fundid = e.fundid and f.moneytype = e.moneytype) -- primary key
-   when matched then
-      update set fundbal = fundbal + e.fundeffect, fundbal_ch = fundbal_ch + e.fundeffect
-   when not matched then
-      insert (serverid, orgid, custid, fundid, moneytype, bankcode,
-              fundbal, fundbal_ch, fundsave, fundsave_ch, fundunsave, fundunsave_ch, fundloan, fundloan_ch,
-              funddebt, funddebt_ch, funduncome, funduncome_ch, fundunpay, fundunpay_ch, fundintr, fundintr_ch,
-              fundaward, fundaward_ch, fundadjust, fundadjust_ch, fundlastbal, totalvalue, tjdate, remark,
-              nav, mktvalue, totalfe)
-      values (e.serverid, e.orgid, e.custid, e.fundid, e.moneytype, e.bankcode,
-              e.fundeffect, e.fundeffect,0,0,0,0,0,0,
-              0,0,0,0,0,0,0,0,
-              0,0,0,0,0,0,0,0,
-              0,0,0);
+
+    update `持仓核算`
+       set syvalue = syvalue + @syvalue_ch, syvalue_ch = syvalue_ch + @syvalue_ch,
+           stkcost = stkcost + @stkcost_ch, stkcost_ch = stkcost_ch + @stkcost_ch,
+           lxsr = lxsr + @lxsr_ch, lxsr_ch = lxsr_ch + @lxsr_ch,
+           stkqty = stkqty + @stkqty_ch, stkqty_ch = stkqty_ch + @stkqty_ch
+     where serverid=@serverid and orgid=@orgid and custid=@custid and fundid=@fundid and
+           market=@market and stkcode=@stkcode and ltlx='`流通类型`' -- 主键
+
+    select @rowcount=@@rowcount
+    if (@rowcount>1)    
+       begin
+          select @msg='更新证券持仓行数错误(rowcount='+CONVERT(varchar, @rowcount)+').'       
+          raiserror(' %s', 12, 2, @msg) with SETERROR                   
+       end
+       else if (@rowcount=0)
+       begin
+          insert `持仓核算`
+                 (serverid, orgid, custid, fundid, market, stkcode, ltlx, 
+                 stkbuyqty, stkbuyamt, stksaleqty, stksaleamt, stkbuyqty_ex, stkbuyamt_ex, stksaleqty_ex, stksaleamt_ex, 
+                 stkztgrqty, stkztgramt, stkztgcqty, stkztgcamt, stkhgqty, stkhlamt, stkpgqty, stkpgamt, 
+                 stkqty, stkqty_ch, stkqty_tz, stkqty_tzje, stkpledge, stkdebt, stkdebt_ch, stkloan,
+                 stkloan_ch, stkadjust, stkadjust_ch, stkprice, bondintr, mktvalue, aiamount, stkcost,
+                 stkcost_ch, aicost, aicost_ch, syvalue, syvalue_ch, lxsr, lxsr_ch, gyvalue,
+                 gyvalue_ch, lxjt, lxjt_ch, cjsr, cjsr_ch, jrzc, jrzc_ch, sxf,
+                 sxf_ch, jsxf, jsxf_ch, yhs, yhs_ch, lxs, lxs_ch, ghf,
+                 ghf_ch, qtfee, qtfee_ch, jtdate, gydate, remark, stkpledge_ch, yearqty,
+                 yeargyvalue, yearlxjt)
+          values (@serverid, @orgid, @custid, @fundid, @market, @stkcode, '`流通类型`',
+                 0,0,0,0,0,0,0,0,
+                 0,0,0,0,0,0,0,0,
+                 @stkqty_ch,@stkqty_ch,0,0,0,0,0,0,
+                 0,0,0,0,0,0,0,@stkcost_ch,
+                 @stkcost_ch,0,0,@syvalue_ch, @syvalue_ch, @lxsr_ch, @lxsr_ch, 0,
+                 0,0,0,0,0,0,0,0,
+                 0,0,0,0,0,0,0,0,
+                 0,0,0,0,0,'',0,0,
+                 0,0);
+       end    
+
+    update `资金核算`
+       set fundbal=fundbal+@fundeffect, fundbal_ch=fundbal_ch+@fundeffect
+     where serverid=@serverid and orgid=@orgid and custid=@custid and bankcode=@bankcode and
+           fundid=@fundid and moneytype=@moneytype -- primary key
+           
+    select @rowcount=@@rowcount
+    if (@rowcount>1)    
+       begin
+          select @msg='更新资金行数错误(rowcount='+CONVERT(varchar, @rowcount)+').'       
+          raiserror(' %s', 12, 2, @msg) with SETERROR                   
+       end
+       else if (@rowcount=0)
+       begin
+          insert `资金核算`
+                 (serverid, orgid, custid, fundid, moneytype, bankcode,
+                 fundbal, fundbal_ch, fundsave, fundsave_ch, fundunsave, fundunsave_ch, fundloan, fundloan_ch,
+                 funddebt, funddebt_ch, funduncome, funduncome_ch, fundunpay, fundunpay_ch, fundintr, fundintr_ch,
+                 fundaward, fundaward_ch, fundadjust, fundadjust_ch, fundlastbal, totalvalue, tjdate, remark,
+                 nav, mktvalue, totalfe, rzlx, rzlx_ch)
+          values (@serverid, @orgid, @custid, @fundid, @moneytype, @bankcode,
+                 @fundeffect, @fundeffect,0,0,0,0,0,0,
+                 0,0,0,0,0,0,0,0,
+                 0,0,0,0,0,0,0,'',
+                 0,0,0,0,0);
+       end
 
       select @msg='核算处理成功'
       update `业务流水`

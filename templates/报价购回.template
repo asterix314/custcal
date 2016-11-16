@@ -27,7 +27,7 @@ CREATE proc `存储过程`(
 )
 with encryption
 as
-declare @orgid as varchar(4), @fundid as bigint, @digestid as int, @market as char(1), @stkcode as varchar(10), 
+declare @orgid as varchar(4), @fundid as bigint, @digestid as int, @market as char(1), @stkcode as varchar(10),
         @stkeffect as numeric(20,2), @matchqty as numeric(20,2), @matchamt as numeric(20,2), @bankcode as varchar(4), 
         @moneytype as char(1), @fundeffect as numeric(20,2), @fee_sxf as numeric(20,2), @stkqty as numeric(20,2),
         @stkqty_ch as numeric(20,2), @fee_jsxf as numeric(20,2), @fee_ghf as numeric(20,2), @fee_yhs as numeric(20,2),
@@ -63,24 +63,6 @@ begin try
           raiserror(' %s', 12, 1, @msg) with SETERROR
        end
 
-    if (@stkeffect>=0)
-       begin
-          select @msg='股票发生与该业务不符.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
-
-    if (@fee_sxf<@fee_jsxf or @fee_ghf<0 or @fee_yhs<0 or @qtfee<0)
-       begin
-          select @msg='费用金额异常.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
-
-    if (@matchamt-@fee_sxf-@fee_ghf-@fee_yhs-@qtfee-@fundeffect!=0)
-       begin
-          select @msg='资金发生不等于成交金额减费用.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
-
 begin tran
 
   select @stkqty = stkqty, @syvalue_ch = @matchamt - stkcost * @matchqty / stkqty,
@@ -101,13 +83,12 @@ begin tran
        end
 
 
-    update `持仓核算`
-       set syvalue = syvalue + @syvalue_ch, syvalue_ch = syvalue_ch + @syvalue_ch,
+    -- 价差放入利息收入
+    update `持仓核算` 
+       set lxsr = lxsr + @syvalue_ch, lxsr_ch = lxsr_ch + @syvalue_ch,
            stkcost = stkcost + @stkcost_ch, stkcost_ch = stkcost_ch + @stkcost_ch,
-           jsxf=jsxf+@fee_jsxf, jsxf_ch=jsxf_ch+@fee_jsxf, sxf=sxf+@fee_sxf, sxf_ch=sxf_ch+@fee_sxf,
-           ghf=ghf+@fee_ghf, ghf_ch=ghf_ch+@fee_ghf, qtfee=qtfee+@qtfee, qtfee_ch=qtfee_ch+@qtfee,
            stksaleqty=stksaleqty+@matchqty, stksaleamt=stksaleamt+@matchamt,
-           stkqty=stkqty+@stkeffect, stkqty_ch=stkqty_ch+@stkeffect, 
+           stkqty=stkqty-@matchqty, stkqty_ch=stkqty_ch-@matchqty, 
            mktvalue=mktvalue+@stkcost_ch
      where serverid=@serverid and orgid=@orgid and custid=@custid and fundid=@fundid and
            market=@market and stkcode=@stkcode and ltlx='`流通类型`' -- 主键
