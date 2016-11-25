@@ -29,7 +29,7 @@ as
 declare @orgid as varchar(4), @fundid as bigint, @digestid as int, @market as char(1), @stkcode as varchar(10), 
         @stkeffect as numeric(20,2), @matchqty as numeric(20,2), @matchamt as numeric(20,2), @bankcode as varchar(4), 
         @moneytype as char(1), @fundeffect as numeric(20,2), @fee_sxf as numeric(20,2),@fee_jsxf as numeric(20,2),
-        @fee_ghf as numeric(20,2), @fee_yhs as numeric(20,2), @qtfee as numeric(20,2), 
+        @fee_ghf as numeric(20,2), @fee_yhs as numeric(20,2), @qtfee as numeric(20,2), @stkpledge as numeric(20,2),
         @ordersno as bigint, @orderdate as int, @sett_status as char(1), @rowcount as int, @ret as int
         
  select @orgid=orgid, @fundid=fundid, @digestid=digestid, @market=market, @stkcode=stkcode, 
@@ -67,12 +67,25 @@ begin tran
            serverid=@serverid and fundid=@fundid and ltlx='`流通类型`' -- 主键
 
     select @rowcount=@@rowcount
-    if (@rowcount>1)    
+    if (@rowcount>1)
        begin
           select @msg='更新证券持仓行数错误(rowcount='+CONVERT(varchar, @rowcount)+').'       
           raiserror(' %s', 12, 2, @msg) with SETERROR                   
        end
-       else if (@rowcount=0)
+    else if (@rowcount=1) -- 检查更新后的质押数量是否为负数
+       begin
+          select @stkpledge=stkpledge
+            from `持仓核算` with (nolock, index=stkasset_hs_pk)
+           where stkcode=@stkcode and market=@market and custid=@custid and orgid=@orgid and
+                 serverid=@serverid and fundid=@fundid and ltlx='`流通类型`'       
+          if (@stkpledge<0)
+          begin
+             rollback tran
+             select @msg='质押数量不足出质数量.'
+             raiserror(' %s', 12, 1, @msg) with SETERROR
+          end
+       end
+    else if (@rowcount=0)
        begin
           insert `持仓核算`
                   (serverid, orgid, custid, fundid, market, stkcode,

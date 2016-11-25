@@ -81,24 +81,20 @@ begin try
           raiserror(' %s', 12, 1, @msg) with SETERROR
        end
 
-    select @stkqty=stkqty, @stkcost_ch=-stkcost*@matchqty/stkqty, @stkqty_ch=-@matchqty
+    -- tx_stkcost: 成本计减值
+    select @tx_stkcost=stkcost*@matchqty/stkqty, @stkqty=stkqty
       from `持仓核算` with (nolock, index=stkasset_hs_pk)
-     where stkcode=@stkcode and market=@market and custid=@custid and orgid=@orgid and
-           serverid=@serverid and fundid=@fundid and ltlx='`流通类型`' -- 主键       
+      where stkcode=@stkcode and market=@market and fundid=@fundid and custid=@custid and orgid=@orgid and
+            stkqty>=@matchqty and serverid=@serverid  and ltlx='`流通类型`' -- 主键
 
-    if (@stkqty is null)
+    if (@tx_stkcost is null)
        begin
-          select @msg='卖出：客户无持仓.'
+          select @msg='客户持仓不足.'
           raiserror(' %s', 12, 1, @msg) with SETERROR
        end
-    else if (@matchqty>@stkqty)
-       begin
-          select @msg='卖出：客户持仓不足.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
-
+       
 begin tran
-    select @syvalue_ch=@matchamt+@stkcost_ch
+    select @syvalue_ch=@matchamt-@tx_stkcost, @stkcost_ch=-@tx_stkcost
     
     update `持仓核算`
        set syvalue=syvalue+@syvalue_ch, syvalue_ch=syvalue_ch+@syvalue_ch,
@@ -109,30 +105,32 @@ begin tran
            stkqty=stkqty+@stkeffect, stkqty_ch=stkqty_ch+@stkeffect, 
            mktvalue=mktvalue+@stkcost_ch
      where stkcode=@stkcode and market=@market and custid=@custid and orgid=@orgid and
-           serverid=@serverid and fundid=@fundid and ltlx='`流通类型`' -- 主键
-           
-    select @rowcount=@@rowcount
-    if (@rowcount>1)    
-       begin
-          select @msg='更新证券持仓行数错误(rowcount='+CONVERT(varchar, @rowcount)+').'       
-          raiserror(' %s', 12, 2, @msg) with SETERROR                   
-       end
+           serverid=@serverid and fundid=@fundid and ltlx='`流通类型`' and stkqty+@stkeffect>=0
 
+    select @rowcount=@@rowcount
+       if (@rowcount!=1)
+           begin
+              if (@@TRANCOUNT>0)
+                  rollback tran
+                 
+              select @msg='卖出持仓不足或更新持仓错误(rowcount='+CONVERT(varchar, @rowcount)+').'
+              raiserror(' %s', 12, 1, @msg) with SETERROR
+           end
+              
     update `资金核算`
        set fundbal=fundbal+@fundeffect, fundbal_ch=fundbal_ch+@fundeffect
-     where orgid=@orgid and custid=@custid and bankcode=@bankcode and fundid=@fundid and
-           moneytype=@moneytype and serverid=@serverid -- 主键
+     where fundid=@fundid and custid=@custid and orgid=@orgid and serverid=@serverid and
+           moneytype=@moneytype   
            
     select @rowcount=@@rowcount
     if (@rowcount>1)    
        begin
-          select @msg='更新资金行数错误(rowcount='+CONVERT(varchar, @rowcount)+').'       
-          raiserror(' %s', 12, 2, @msg) with SETERROR                   
+          select @msg='更新资金记录条数错误(rowcount='+CONVERT(varchar, @rowcount)+').'
+          raiserror(' %s', 12, 1, @msg) with SETERROR
        end
        else if (@rowcount=0)
        begin
-          insert `资金核算`
-                  (serverid, orgid, custid, fundid, moneytype,
+          insert `资金核算`(serverid, orgid, custid, fundid, moneytype,
                   bankcode, fundbal, fundbal_ch, fundsave, fundsave_ch, fundunsave,
                   fundunsave_ch, fundloan, fundloan_ch, funddebt, funddebt_ch,
                   funduncome, funduncome_ch, fundunpay, fundunpay_ch, fundintr,

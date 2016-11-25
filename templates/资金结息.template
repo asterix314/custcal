@@ -59,6 +59,12 @@ begin try
          select @msg='资金发生与该业务不符.'
          raiserror(' %s', 12, 1, @msg) with SETERROR
       end
+      
+   if (@stkeffect!=0)
+       begin
+          select @msg='股票发生与该业务不符.'
+          raiserror(' %s', 12, 1, @msg) with SETERROR
+       end      
 
    if (@fee_sxf!=0 or @fee_jsxf!=0 or @fee_ghf!=0 or @fee_yhs!=0 or @qtfee!=0)
        begin
@@ -71,8 +77,8 @@ begin tran
     update `资金核算`
        set fundbal=fundbal+@fundeffect, fundbal_ch=fundbal_ch+@fundeffect,
            fundaward=fundaward+@fundeffect, fundaward_ch=fundaward_ch+@fundeffect
-     where orgid=@orgid and custid=@custid and bankcode=@bankcode and fundid=@fundid and
-           moneytype=@moneytype and serverid=@serverid -- 主键
+     where fundid=@fundid and custid=@custid and orgid=@orgid and serverid=@serverid and
+           moneytype=@moneytype   
            
     select @rowcount=@@rowcount
     if (@rowcount>1)    

@@ -99,7 +99,7 @@ begin tran
            stkadjust=stkadjust+@matchamt,stkadjust_ch=stkadjust_ch+@matchamt,
            mktvalue=mktvalue+@matchamt
      where stkcode=@stkcode and market=@market and custid=@custid and orgid=@orgid and
-           serverid=@serverid and fundid=@fundid and ltlx='`流通类型`' -- 主键
+           serverid=@serverid and fundid=@fundid and ltlx='`流通类型`' and stkqty+@stkeffect>0
 
     select @rowcount=@@rowcount
     if (@rowcount>1)    

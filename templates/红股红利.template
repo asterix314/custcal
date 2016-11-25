@@ -120,9 +120,9 @@ begin tran
 
     update `资金核算`
        set fundbal=fundbal+@fundeffect, fundbal_ch=fundbal_ch+@fundeffect
-     where orgid=@orgid and custid=@custid and bankcode=@bankcode and fundid=@fundid and
-           moneytype=@moneytype and serverid=@serverid -- 主键
-           
+     where fundid=@fundid and custid=@custid and orgid=@orgid and serverid=@serverid and
+           moneytype=@moneytype
+
     select @rowcount=@@rowcount
     if (@rowcount>1)    
        begin
