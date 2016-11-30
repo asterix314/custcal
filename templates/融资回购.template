@@ -54,44 +54,15 @@ begin try
           return 0
        end
 
-    if (@fundeffect<=0)
-       begin
-          select @msg='资金发生与该业务不符.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
-       
-    if (@matchqty<=0) -- stkeffect = 0
-       begin
-          select @msg='股票发生与该业务不符.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end       
-
-    -- stkeffect = 0
-    if (`业务摘要`<>221004 and @matchqty*100<>@matchamt) -- 非约定融资回购（股票质押）的，判断100倍关系
-       begin
-          select @msg='成交金额与成交数量不满足100倍关系.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
-
-    if (@fee_sxf<@fee_jsxf or @fee_sxf<0 or @fee_ghf<0 or @fee_yhs<0 or @qtfee<0)
-       begin
-          select @msg='费用金额异常.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
-
-    if (@fee_sxf+@fee_ghf+@fee_yhs+@qtfee+@fundeffect!=@matchamt)
-       begin
-          select @msg='资金发生,成交金额,费用关系不平.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
+`校验处理`
 
 begin tran
     update `持仓核算` -- 成本计增。用流通类型标识，汇总成本时应扣除此项成本。
-       set stkcost=stkcost+@matchamt, stkcost_ch=stkcost_ch+@matchamt,
+       set stkbuyqty=stkbuyqty+@matchqty, stkbuyamt=stkbuyamt+@matchamt,
            stkqty=stkqty+@matchqty, stkqty_ch=stkqty_ch+@matchqty,
-           jsxf=jsxf+@fee_jsxf, jsxf_ch=jsxf_ch+@fee_jsxf,
-           sxf=sxf+@fee_sxf, sxf_ch=sxf_ch+@fee_sxf,
-           ghf=ghf+@fee_ghf, ghf_ch=ghf_ch+@fee_ghf, 
+           stkcost=stkcost+@matchamt, stkcost_ch=stkcost_ch+@matchamt,
+           jsxf=jsxf+@fee_jsxf, jsxf_ch=jsxf_ch+@fee_jsxf, sxf=sxf+@fee_sxf, sxf_ch=sxf_ch+@fee_sxf,
+           ghf=ghf+@fee_ghf, ghf_ch=ghf_ch+@fee_ghf, yhs=yhs+@fee_yhs, yhs_ch=yhs_ch+@fee_yhs,
            qtfee=qtfee+@qtfee, qtfee_ch=qtfee_ch+@qtfee
      where stkcode=@stkcode and market=@market and custid=@custid and orgid=@orgid and
            serverid=@serverid and fundid=@fundid and ltlx='`流通类型`'
@@ -118,19 +89,18 @@ begin tran
                  stkpledge_ch, yearqty, yeargyvalue, yearlxjt)
           select serverid=@serverid, orgid=@orgid, custid=@custid,
                  fundid=@fundid, market=@market, stkcode=@stkcode, ltlx='`流通类型`',
-                 stkbuyqty=0, stkbuyamt=0, stksaleqty=0, stksaleamt=0, stkbuyqty_ex=0,
+                 stkbuyqty=@matchqty, stkbuyamt=@matchamt, stksaleqty=0, stksaleamt=0, stkbuyqty_ex=0,
                  stkbuyamt_ex=0, stksaleqty_ex=0, stksaleamt_ex=0, stkztgrqty=0,
                  stkztgramt=0, stkztgcqty=0, stkztgcamt=0, stkhgqty=0, stkhlamt=0,
                  stkpgqty=0, stkpgamt=0, stkqty=@matchqty,
                  stkqty_ch=@matchqty, stkqty_tz=0, stkqty_tzje=0,
                  stkpledge=0, stkdebt=0, stkdebt_ch=0, stkloan=0, stkloan_ch=0,
                  stkadjust=0, stkadjust_ch=0, stkprice=0, bondintr=0, mktvalue=0,
-                 aiamount=0, stkcost=@matchamt,
-                 stkcost_ch=@matchamt, aicost=0, aicost_ch=0,
+                 aiamount=0, stkcost=@matchamt, stkcost_ch=@matchamt, aicost=0, aicost_ch=0,
                  syvalue=0, syvalue_ch=0, lxsr=0, lxsr_ch=0, gyvalue=0, gyvalue_ch=0,
                  lxjt=0, lxjt_ch=0, cjsr=0, cjsr_ch=0, jrzc=0, jrzc_ch=0,
                  sxf=@fee_sxf, sxf_ch=@fee_sxf, jsxf=@fee_jsxf, jsxf_ch=@fee_jsxf,
-                 yhs=0, yhs_ch=0, lxs=0, lxs_ch=0, ghf=@fee_ghf, ghf_ch=@fee_ghf,
+                 yhs=@fee_yhs, yhs_ch=@fee_yhs, lxs=0, lxs_ch=0, ghf=@fee_ghf, ghf_ch=@fee_ghf,
                  qtfee=@qtfee, qtfee_ch=@qtfee, jtdate=0, gydate=0, remark='',
                  stkpledge_ch=0, yearqty=0, yeargyvalue=0, yearlxjt=0                 
        end
@@ -175,7 +145,7 @@ begin catch
    if @@trancount>0
        rollback tran
 
-   select @msg='失败:'+error_message()+''
+   select @msg='失败:`业务名称` '+error_message()+''
    update `业务流水`
       set sett_status=4, sett_remark=@msg
     where sno=@sno and bizdate=@bizdate and serverid=@serverid

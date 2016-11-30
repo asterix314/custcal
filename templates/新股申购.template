@@ -55,45 +55,13 @@ begin try
           return 0
        end
 
-   if (@fundeffect>0)
-      begin
-         select @msg='资金发生与该业务不符.'
-         raiserror(' %s', 12, 1, @msg) with SETERROR
-      end
-
-    if (@stkeffect<0)
-       begin
-          select @msg='股票发生与该业务不符.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
-
-    if (@matchqty<0)
-       begin
-          select @msg='成交数量与该业务不符.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
-
-    if (@matchqty*100<>@matchamt) -- 判断100倍关系
-       begin
-          select @msg='成交金额与成交数量不满足100倍关系.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
-
-    if (@fee_sxf<@fee_jsxf or @fee_sxf<0 or @fee_ghf<0 or @fee_yhs<0 or @qtfee<0)
-       begin
-          select @msg='费用金额异常.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
-
-    if (@fee_sxf+@fee_ghf+@fee_yhs+@qtfee+@fundeffect+@matchamt!=0)
-       begin
-          select @msg='资金发生,成交金额,费用关系不平.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end       
+`校验处理`
 
 begin tran
     update `持仓核算`
-       set stkbuyqty_ex=stkbuyqty_ex+@stkeffect, stkbuyamt_ex=stkbuyamt_ex-@fundeffect
+       set stkbuyqty_ex=stkbuyqty_ex+@matchqty, stkbuyamt_ex=stkbuyamt_ex+@matchamt,
+           stkqty=stkqty+@matchqty, stkqty_ch=stkqty_ch+@matchqty,
+           stkcost=stkcost+@matchamt, stkcost_ch=stkcost_ch+@matchamt
      where stkcode=@stkcode and market=@market and custid=@custid and orgid=@orgid and serverid=@serverid and
            fundid=@fundid and ltlx='`流通类型`'
 
@@ -103,7 +71,7 @@ begin tran
           select @msg='更新证券持仓行数错误(rowcount='+CONVERT(varchar, @rowcount)+').'       
           raiserror(' %s', 12, 2, @msg) with SETERROR                   
        end
-       else if (@rowcount=0)
+    else if (@rowcount=0)
        begin
            insert `持仓核算`
                    (serverid, orgid, custid, fundid, market, stkcode,
@@ -123,10 +91,10 @@ begin tran
                    stkbuyqty_ex=@stkeffect, stkbuyamt_ex=-@fundeffect, stksaleqty_ex=0,
                    stksaleamt_ex=0, stkztgrqty=0, stkztgramt=0, stkztgcqty=0,
                    stkztgcamt=0, stkhgqty=0, stkhlamt=0, stkpgqty=0, stkpgamt=0,
-                   stkqty=0, stkqty_ch=0, stkqty_tz=0, stkqty_tzje=0, stkpledge=0,
+                   stkqty=@matchqty, stkqty_ch=@matchqty, stkqty_tz=0, stkqty_tzje=0, stkpledge=0,
                    stkdebt=0, stkdebt_ch=0, stkloan=0, stkloan_ch=0, stkadjust=0,
                    stkadjust_ch=0, stkprice=0, bondintr=0, mktvalue=0, aiamount=0,
-                   stkcost=0, stkcost_ch=0, aicost=0, aicost_ch=0, syvalue=0,
+                   stkcost=@matchamt, stkcost_ch=@matchamt, aicost=0, aicost_ch=0, syvalue=0,
                    syvalue_ch=0, lxsr=0, lxsr_ch=0, gyvalue=0, gyvalue_ch=0, lxjt=0,
                    lxjt_ch=0, cjsr=0, cjsr_ch=0, jrzc=0, jrzc_ch=0, sxf=0, sxf_ch=0,
                    jsxf=0, jsxf_ch=0, yhs=0, yhs_ch=0, lxs=0, lxs_ch=0, ghf=0, ghf_ch=0,
@@ -145,7 +113,7 @@ begin tran
           select @msg='更新资金行数错误(rowcount='+CONVERT(varchar, @rowcount)+').'       
           raiserror(' %s', 12, 2, @msg) with SETERROR                   
        end
-       else if (@rowcount=0)
+    else if (@rowcount=0)
        begin
           insert `资金核算`
                   (serverid, orgid, custid, fundid, moneytype,
@@ -178,7 +146,7 @@ begin catch
    if @@trancount>0
        rollback tran
 
-   select @msg='失败:'+error_message()+''
+   select @msg='失败:`业务名称` '+error_message()+''
    update `业务流水`
       set sett_status=4, sett_remark=@msg
     where sno=@sno and bizdate=@bizdate and serverid=@serverid

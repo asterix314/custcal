@@ -54,17 +54,7 @@ begin try
          return 0
       end
 
-   if (@fundeffect=0)
-      begin
-         select @msg='资金发生与该业务不符.'
-         raiserror(' %s', 12, 1, @msg) with SETERROR
-      end
-
-   if (@fee_sxf!=0 or @fee_jsxf!=0 or @fee_ghf!=0 or @fee_yhs!=0 or @qtfee!=0)
-       begin
-          select @msg='费用金额异常.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
+`校验处理`
 
 begin tran
    -- 更新持仓核算表：利息税
@@ -79,7 +69,7 @@ begin tran
           select @msg='更新证券持仓行数错误(rowcount='+CONVERT(varchar, @rowcount)+').'       
           raiserror(' %s', 12, 2, @msg) with SETERROR                   
        end
-       else if (@rowcount=0)
+    else if (@rowcount=0)
        begin
            insert `持仓核算`
                    (serverid, orgid, custid, fundid, market, stkcode,
@@ -121,7 +111,7 @@ begin tran
           select @msg='更新资金行数错误(rowcount='+CONVERT(varchar, @rowcount)+').'       
           raiserror(' %s', 12, 2, @msg) with SETERROR                   
        end
-       else if (@rowcount=0)
+    else if (@rowcount=0)
        begin
            insert `资金核算`
                   (serverid, orgid, custid, fundid, moneytype,
@@ -154,7 +144,7 @@ begin catch
    if @@trancount>0
        rollback tran
 
-   select @msg='失败:'+error_message()+''
+   select @msg='失败:`业务名称` '+error_message()+''
    
    update `业务流水` 
       set sett_status=4, sett_remark=@msg

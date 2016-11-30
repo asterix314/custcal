@@ -56,30 +56,9 @@ begin try
           select @msg='该笔流水已处理.'
           return 0
        end
-   if (@fundeffect<=0)
-       begin
-          select @msg='资金发生与该业务不符.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
 
-    if (@matchqty<=0)  -- stkeffect=0
-       begin
-          select @msg='股票发生与该业务不符.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
+`校验处理`
 
-    if (@fee_sxf<@fee_jsxf or @fee_sxf<0 or @fee_ghf<0 or @fee_yhs<0 or @qtfee<0)
-       begin
-          select @msg='费用金额异常.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
-
-    if (@matchamt+@fee_sxf+@fee_ghf+@fee_yhs+@qtfee!=@fundeffect)
-       begin
-          select @msg='资金发生,成交金额,费用关系不平.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
-       
     -- tx_stkcost: 成本计减值
     select @tx_stkcost=stkcost*@matchqty/stkqty, @stkqty=stkqty
       from `持仓核算` with (nolock, index=stkasset_hs_pk)
@@ -97,15 +76,15 @@ begin tran
     
     -- 价差收益放入利息收入
     update `持仓核算`
-       set lxsr=lxsr+@syvalue_ch, lxsr_ch=lxsr_ch+@syvalue_ch,
-           stkcost=stkcost+@stkcost_ch, stkcost_ch=stkcost_ch+@stkcost_ch,
+       set stksaleqty=stksaleqty+@matchqty, stksaleamt=stksaleamt+@matchamt,
            stkqty=stkqty-@matchqty, stkqty_ch=stkqty_ch-@matchqty,
-           jsxf=jsxf+@fee_jsxf, jsxf_ch=jsxf_ch+@fee_jsxf,
-           sxf=sxf+@fee_sxf, sxf_ch=sxf_ch+@fee_sxf,
-           ghf=ghf+@fee_ghf, ghf_ch=ghf_ch+@fee_ghf, 
+           stkcost=stkcost+@stkcost_ch, stkcost_ch=stkcost_ch+@stkcost_ch,
+           lxsr=lxsr+@syvalue_ch, lxsr_ch=lxsr_ch+@syvalue_ch,
+           jsxf=jsxf+@fee_jsxf, jsxf_ch=jsxf_ch+@fee_jsxf, sxf=sxf+@fee_sxf, sxf_ch=sxf_ch+@fee_sxf,
+           ghf=ghf+@fee_ghf, ghf_ch=ghf_ch+@fee_ghf, yhs=yhs+@fee_yhs, yhs_ch=yhs_ch+@fee_yhs,
            qtfee=qtfee+@qtfee, qtfee_ch=qtfee_ch+@qtfee
      where stkcode=@stkcode and market=@market and custid=@custid and orgid=@orgid and
-           serverid=@serverid and fundid=@fundid and ltlx='`流通类型`' and stkqty-@matchqty>=0
+           serverid=@serverid and fundid=@fundid and ltlx='`流通类型`' and stkqty>=@matchqty
 
    select @rowcount=@@rowcount
        if (@rowcount!=1)
@@ -154,7 +133,7 @@ begin catch
    if @@trancount>0
        rollback tran
 
-   select @msg='失败:'+error_message()+''
+   select @msg='失败:`业务名称` '+error_message()+''
    update `业务流水`
       set sett_status=4, sett_remark=@msg
     where sno=@sno and bizdate=@bizdate and serverid=@serverid

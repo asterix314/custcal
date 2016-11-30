@@ -56,31 +56,29 @@ begin try
          return 0
       end
 
-   if (@fundeffect>0)
-      begin
-         select @msg='资金发生与该业务不符.'
-         raiserror(' %s', 12, 1, @msg) with SETERROR
-      end
+`校验处理`
 
-    if (@stkeffect>0)
+begin tran
+   -- 更新持仓核算表：冲销权证记录
+   update `持仓核算`
+      set stkqty=stkqty-@matchqty, stkqty_ch=stkqty_ch-@matchqty
+    where stkcode=@stkcode and market=@market and custid=@custid and orgid=@orgid and
+          serverid=@serverid and fundid=@fundid and ltlx='`流通类型`' and
+          stkqty>=@matchqty
+
+    select @rowcount=@@rowcount
+    if (@rowcount>1)    
        begin
-          select @msg='股票发生与该业务不符.'
+          select @msg='更新配股权证持仓行数错误(rowcount='+CONVERT(varchar, @rowcount)+').'       
+          raiserror(' %s', 12, 2, @msg) with SETERROR                   
+       end
+    else if (@rowcount=0)
+       begin
+          select @msg='无配股权证记录.'
           raiserror(' %s', 12, 1, @msg) with SETERROR
        end
 
-   if (@matchqty<0)
-      begin
-         select @msg='成交数量与该业务不符.'
-         raiserror(' %s', 12, 1, @msg) with SETERROR
-      end
-
-begin tran
-   -- 更新持仓核算表：冲销权证记录（如有）
-   update `持仓核算`
-      set stkqty=stkqty+@stkeffect, stkqty_ch=stkqty_ch+@stkeffect
-    where stkcode=@stkcode and market=@market and custid=@custid and orgid=@orgid and
-          serverid=@serverid and fundid=@fundid and ltlx='`流通类型`'  -- 主键      
-
+  -- 更新持仓核算表：正股缴款，非流通状态
   select @ref_stkcode=linkstk
     from stktrd with (nolock)
    where stkcode=@stkcode and market=@market
@@ -91,7 +89,6 @@ begin tran
          raiserror(' %s', 12, 1, @msg) with SETERROR
       end
 
-   -- 更新持仓核算表：正股缴款，非流通状态
     update `持仓核算`
        set stkcost=stkcost+@matchamt, stkcost_ch=stkcost_ch+@matchamt,
            stkqty=stkqty+@matchqty, stkqty_ch=stkqty_ch+@matchqty
@@ -119,7 +116,7 @@ begin tran
                   yhs, yhs_ch, lxs, lxs_ch, ghf, ghf_ch, qtfee, qtfee_ch, jtdate,
                   gydate, remark, stkpledge_ch, yearqty, yeargyvalue, yearlxjt)
            select serverid=@serverid, orgid=@orgid, custid=@custid,
-                  fundid=@fundid, market=@market, stkcode=@stkcode, ltlx='`流通类型`',
+                  fundid=@fundid, market=@market, stkcode=@ref_stkcode, ltlx='`流通类型`',
                   stkbuyqty=0, stkbuyamt=0, stksaleqty=0, stksaleamt=0,
                   stkbuyqty_ex=0, stkbuyamt_ex=0, stksaleqty_ex=0, stksaleamt_ex=0,
                   stkztgrqty=0, stkztgramt=0, stkztgcqty=0, stkztgcamt=0, stkhgqty=0,
@@ -175,11 +172,12 @@ begin tran
    commit tran
    return 0
 end try
+
 begin catch
    if @@trancount>0
        rollback tran
 
-   select @msg='失败:'+error_message()+''
+   select @msg='失败:`业务名称` '+error_message()+''
    
    update `业务流水` 
       set sett_status=4, sett_remark=@msg

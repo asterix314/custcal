@@ -28,7 +28,7 @@ CREATE proc `存储过程`(
 as
 declare @orgid as varchar(4), @fundid as bigint, @digestid as int, @market as char(1), @stkcode as varchar(10), 
         @stkeffect as numeric(20,2), @matchqty as numeric(20,2), @matchamt as numeric(20,2),
-        @matchamt_log as numeric(20,2), @bankcode as varchar(4),
+        @bankcode as varchar(4), @lastprice as numeric(12,4),
         @moneytype as char(1), @fundeffect as numeric(20,2), @fee_sxf as numeric(20,2),@fee_jsxf as numeric(20,2),
         @fee_ghf as numeric(20,2), @fee_yhs as numeric(20,2), @qtfee as numeric(20,2),        
         @ordersno as bigint, @orderdate as int, @sett_status as char(1)
@@ -36,7 +36,7 @@ declare @tx_stkcost as numeric(20,2), @syvalue_ch as numeric(20,2), @stkcost_ch 
         @rowcount as int, @ret as int
         
  select @orgid=orgid, @fundid=fundid, @digestid=digestid, @market=market, @stkcode=stkcode, 
-        @stkeffect=stkeffect, @matchqty=matchqty, @fundeffect=fundeffect, @matchamt_log=matchamt, 
+        @stkeffect=stkeffect, @matchqty=matchqty, @fundeffect=fundeffect, @matchamt=matchamt, 
         @fee_sxf=fee_sxf, @fee_jsxf=fee_jsxf, @fee_ghf=fee_ghf, @fee_yhs=fee_yhs,
         @qtfee=fee_qsf+fee_jygf+fee_jsf+fee_zgf+fee_qtf+feefront, 
         @bankcode=bankcode, @moneytype=moneytype, @ordersno=ordersno, @orderdate=orderdate,
@@ -57,49 +57,31 @@ begin try
           return 0
        end
 
-    if (@fundeffect!=0)
+`校验处理`
+
+    -- 计算转入成本（如流水不提供）
+    if (@matchamt=0)
        begin
-          select @msg='资金发生与该业务不符.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
+          select @lastprice=lastprice
+            from stkprice_hs
+           where bizdate=@bizdate and market=@market and stkcode=@stkcode -- 主键
+
+          if (@lastprice is null)
+             begin
+                select @msg='缺失日终价格，无法计算转入成本(stkprice_hs.lastprice).'       
+                raiserror(' %s', 12, 1, @msg) with SETERROR                   
+             end   
+          select @matchamt=@matchqty*@lastprice
        end
-
-    if (@stkeffect<0)
-       begin
-          select @msg='股票发生与该业务不符.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
-
-    if (@fee_sxf<@fee_jsxf or @fee_ghf<0 or @fee_yhs<0 or @qtfee<0)
-       begin
-          select @msg='费用金额异常.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
-
-    -- 以 lastprice 确定转入成本
-    -- if (@matchamt_log=0) 忽略流水给出的成本
-    select @matchamt=@stkeffect*lastprice
-      from stkprice_hs
-     where bizdate=@bizdate and market=@market and stkcode=@stkcode -- 主键
-
-    if (@matchamt is null or @matchamt=0)
-      begin
-         select @msg='缺失日终价格，无法计算转入成本（stkprice_hs.lastprice）.'       
-         raiserror(' %s', 12, 1, @msg) with SETERROR                   
-      end
-    else if (@matchamt_log>0 and @matchamt<>@matchamt_log)
-      begin
-         select @msg='流水给出转入成本与用日终市场价格计算出的成本不符.'       
-         raiserror(' %s', 12, 1, @msg) with SETERROR                   
-      end
       
 begin tran
     update `持仓核算`
-       set stkcost=stkcost+@matchamt, stkcost_ch=stkcost_ch+@matchamt,
-           stkqty=stkqty+@stkeffect, stkqty_ch=stkqty_ch+@stkeffect, 
-           stkadjust=stkadjust+@matchamt,stkadjust_ch=stkadjust_ch+@matchamt,
+       set stkztgrqty=stkztgrqty+@matchqty, stkztgramt=stkztgramt+@matchamt,
+           stkqty=stkqty+@matchqty, stkqty_ch=stkqty_ch+@matchqty,
+           stkcost=stkcost+@matchamt, stkcost_ch=stkcost_ch+@matchamt,
            mktvalue=mktvalue+@matchamt
      where stkcode=@stkcode and market=@market and custid=@custid and orgid=@orgid and
-           serverid=@serverid and fundid=@fundid and ltlx='`流通类型`' and stkqty+@stkeffect>0
+           serverid=@serverid and fundid=@fundid and ltlx='`流通类型`'
 
     select @rowcount=@@rowcount
     if (@rowcount>1)    
@@ -124,9 +106,9 @@ begin tran
             select serverid=@serverid, orgid=@orgid, custid=@custid,
                    fundid=@fundid, market=@market, stkcode=@stkcode, ltlx='`流通类型`',
                    stkbuyqty=0, stkbuyamt=0, stksaleqty=0, stksaleamt=0, stkbuyqty_ex=0,
-                   stkbuyamt_ex=0, stksaleqty_ex=0, stksaleamt_ex=0, stkztgrqty=0,
-                   stkztgramt=0, stkztgcqty=0, stkztgcamt=0, stkhgqty=0, stkhlamt=0,
-                   stkpgqty=0, stkpgamt=0, stkqty=@stkeffect, stkqty_ch=@stkeffect,
+                   stkbuyamt_ex=0, stksaleqty_ex=0, stksaleamt_ex=0, stkztgrqty=@matchqty,
+                   stkztgramt=@matchamt, stkztgcqty=0, stkztgcamt=0, stkhgqty=0, stkhlamt=0,
+                   stkpgqty=0, stkpgamt=0, stkqty=@matchqty, stkqty_ch=@matchqty,
                    stkqty_tz=0, stkqty_tzje=0, stkpledge=0, stkdebt=0, stkdebt_ch=0,
                    stkloan=0, stkloan_ch=0, stkadjust=@matchamt, stkadjust_ch=@matchamt,
                    stkprice=0, bondintr=0, mktvalue=@matchamt, aiamount=0,
@@ -150,7 +132,7 @@ begin catch
    if @@trancount>0
        rollback tran
 
-   select @msg='失败:'+error_message()+''
+   select @msg='失败:`业务名称` '+error_message()+''
    update `业务流水`
       set sett_status=4, sett_remark=@msg
     where sno=@sno and bizdate=@bizdate and serverid=@serverid
