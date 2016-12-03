@@ -58,16 +58,24 @@ begin try
 
 `校验处理`
 
+    -- 使用正股代码入账
+    select top 1 @ref_stkcode=linkstk
+      from stktrd
+     where stkcode=@stkcode and market=@market
+
+    if (@ref_stkcode is null or rtrim(ltrim(@ref_stkcode))='')
+       begin
+          select @msg='对应正股名称不存在.'
+          raiserror(' %s', 12, 1, @msg) with SETERROR
+       end
+
 begin tran
     update `持仓核算`
-       set stkbuyqty=stkbuyqty+@matchqty, stkbuyamt=stkbuyamt+@matchamt,
+       set stkbuyqty_ex=stkbuyqty_ex+@matchqty, stkbuyamt_ex=stkbuyamt_ex+@matchamt,
            stkqty=stkqty+@matchqty, stkqty_ch=stkqty_ch+@matchqty, 
            stkcost=stkcost+@matchamt, stkcost_ch=stkcost_ch+@matchamt,
-           jsxf=jsxf+@fee_jsxf, jsxf_ch=jsxf_ch+@fee_jsxf, sxf=sxf+@fee_sxf, sxf_ch=sxf_ch+@fee_sxf,
-           ghf=ghf+@fee_ghf, ghf_ch=ghf_ch+@fee_ghf, yhs=yhs+@fee_yhs, yhs_ch=yhs_ch+@fee_yhs,
-           qtfee=qtfee+@qtfee, qtfee_ch=qtfee_ch+@qtfee,
            mktvalue=mktvalue+@matchamt
-     where stkcode=@stkcode and market=@market and custid=@custid and orgid=@orgid and
+     where stkcode=@ref_stkcode and market=@market and custid=@custid and orgid=@orgid and
            serverid=@serverid and fundid=@fundid and ltlx='`流通类型`'
 
     select @rowcount=@@rowcount
@@ -91,9 +99,9 @@ begin tran
                    yhs, yhs_ch, lxs, lxs_ch, ghf, ghf_ch, qtfee, qtfee_ch, jtdate,
                    gydate, remark, stkpledge_ch, yearqty, yeargyvalue, yearlxjt)
             select serverid=@serverid, orgid=@orgid, custid=@custid,
-                   fundid=@fundid, market=@market, stkcode=@stkcode, ltlx='`流通类型`',
-                   stkbuyqty=@matchqty, stkbuyamt=@matchamt, stksaleqty=0, stksaleamt=0,
-                   stkbuyqty_ex=0, stkbuyamt_ex=0, stksaleqty_ex=0, stksaleamt_ex=0,
+                   fundid=@fundid, market=@market, stkcode=@ref_stkcode, ltlx='`流通类型`',
+                   stkbuyqty=0, stkbuyamt=0, stksaleqty=0, stksaleamt=0,
+                   stkbuyqty_ex=@matchqty, stkbuyamt_ex=@matchamt, stksaleqty_ex=0, stksaleamt_ex=0,
                    stkztgrqty=0, stkztgramt=0, stkztgcqty=0, stkztgcamt=0, stkhgqty=0,
                    stkhlamt=0, stkpgqty=0, stkpgamt=0, stkqty=@matchqty,
                    stkqty_ch=@matchqty, stkqty_tz=0, stkqty_tzje=0, stkpledge=0,
@@ -102,9 +110,8 @@ begin tran
                    aiamount=0, stkcost=@matchamt, stkcost_ch=@matchamt, aicost=0,
                    aicost_ch=0, syvalue=0, syvalue_ch=0, lxsr=0, lxsr_ch=0, gyvalue=0,
                    gyvalue_ch=0, lxjt=0, lxjt_ch=0, cjsr=0, cjsr_ch=0, jrzc=0,
-                   jrzc_ch=0, sxf=@fee_sxf, sxf_ch=@fee_sxf, jsxf=@fee_jsxf,
-                   jsxf_ch=@fee_jsxf, yhs=@fee_yhs, yhs_ch=@fee_yhs, lxs=0, lxs_ch=0, ghf=@fee_ghf,
-                   ghf_ch=@fee_ghf, qtfee=@qtfee, qtfee_ch=@qtfee, jtdate=0, gydate=0,
+                   jrzc_ch=0, sxf=0, sxf_ch=0, jsxf=0, jsxf_ch=0, yhs=0, yhs_ch=0,
+                   lxs=0, lxs_ch=0, ghf=0, ghf_ch=0, qtfee=0, qtfee_ch=0, jtdate=0, gydate=0,
                    remark='', stkpledge_ch=0, yearqty=0, yeargyvalue=0, yearlxjt=0
        end    
 
@@ -112,7 +119,7 @@ begin tran
        set fundbal=fundbal+@fundeffect, fundbal_ch=fundbal_ch+@fundeffect
     where fundid=@fundid and custid=@custid and orgid=@orgid and serverid=@serverid and
           moneytype=@moneytype   
-           
+ 
     select @rowcount=@@rowcount
     if (@rowcount>1)    
        begin
@@ -141,7 +148,7 @@ begin tran
 
       select @msg='`业务名称`核算处理成功'
       update `业务流水` 
-         set sett_status=3, sett_remark=@msg
+         set sett_status=3, sett_remark=@msg, ref_stkcode=@ref_stkcode
        where sno=@sno and bizdate=@bizdate and serverid=@serverid
 
       commit tran

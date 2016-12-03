@@ -11,7 +11,7 @@ select top 10 * from `业务流水` where busintype=`业务摘要`
 update `业务流水` set sett_status=0, sett_remark='' where busintype=`业务摘要`
 
 declare @ret as int, @msg as varchar(128)
-exec @ret=`存储过程` '1',20160421, 70991, 120300042316, @msg output
+exec @ret=`存储过程` '2', 20150804, 17795, 180399995492, @msg output
 select @ret, @msg
 
 select * from `持仓核算`
@@ -28,119 +28,83 @@ CREATE proc `存储过程`(
 as
 declare @orgid as varchar(4), @fundid as bigint, @busintype as int, @market as char(1), @stkcode as varchar(10), 
         @stkeffect as numeric(20,2), @matchqty as numeric(20,2), @matchamt as numeric(20,2), @bankcode as varchar(4), 
-        @moneytype as char(1), @fundeffect as numeric(20,2), @fee_sxf as numeric(20,2), 
+        @moneytype as char(1), @fundeffect as numeric(20,2), @fee_sxf as numeric(20,2),
         @fee_jsxf as numeric(20,2), @fee_ghf as numeric(20,2), @fee_yhs as numeric(20,2), @qtfee as numeric(20,2), 
         @ordersno as bigint, @orderdate as int, @sett_status as char(1)
-declare @ref_stkcode as varchar(10), @tx_stkcost as numeric(20,2), @rowcount as int, @ret as int
+declare @ref_stkcode as varchar(10), @ref_market as char(1), @stkprice as numeric(12,4),
+        @rowcount as int, @ret as int
         
- select @orgid=orgid, @fundid=fundid, @busintype=busintype, @market=market, @stkcode=stkcode, 
+ select @orgid=orgid, @fundid=fundid, @busintype=busintype, @market=market, @stkcode=stkcode,
         @stkeffect=stkeffect, @matchqty=matchqty, @fundeffect=fundeffect, @matchamt=matchamt, 
         @fee_sxf=fee_sxf, @fee_jsxf=fee_jsxf, @fee_ghf=fee_ghf, @fee_yhs=fee_yhs,
-        @qtfee=fee_qsf+fee_jygf+fee_jsf+fee_zgf+fee_qtf+feefront, 
+        @qtfee=fee_qsf+fee_jygf+fee_jsf+fee_zgf+fee_qtf+feefront,
         @bankcode=bankcode, @moneytype=moneytype, @ordersno=ordersno, @orderdate=orderdate,
         @sett_status=sett_status
    from `业务流水` with (nolock, index=logasset_hs_pk)
   where sno=@sno and bizdate=@bizdate and serverid=@serverid and custid=@custid and busintype=`业务摘要` -- `业务名称`
-
+  
 begin try
-    if (@sett_status is null)
-       begin
-          select @msg='该笔流水不存在或调用错误.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
+   if (@sett_status is null)
+      begin
+         select @msg='该笔流水不存在或调用错误.'
+         raiserror(' %s', 12, 1, @msg) with SETERROR
+      end
 
-    if (@sett_status='3')
-       begin
-          select @msg='该笔流水已处理.'
-          return 0
-       end
-       
-    if (@fundeffect!=0)
-       begin
-          select @msg='资金发生与该业务不符.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
+   if (@sett_status='3')
+      begin
+         select @msg='该笔流水已处理.'
+         return 0
+      end
 
-    if (@stkeffect<=0)
-       begin
-          select @msg='股份发生与该业务不符.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
+`校验处理`
 
-    if (@matchqty!=@stkeffect)
-       begin
-          select @msg='成交数量与该业务不符.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
+  select @ref_stkcode=linkstk
+    from stktrd with (nolock)
+   where stkcode=@stkcode and market=@market
 
-    if (@fee_sxf!=0 or @fee_jsxf!=0 or @fee_ghf!=0 or @fee_yhs!=0 or @qtfee!=0)
-       begin
-          select @msg='费用金额异常.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
-
-    -- 使用正股代码入账（linkstk非空）
-    select top 1 @ref_stkcode=case rtrim(ltrim(linkstk)) when '' then stkcode else linkstk end
-      from stktrd
-     where stkcode=@stkcode and market=@market
-
-    if (@ref_stkcode is null)
-       begin
-          select @msg='对应正股名称不存在.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
-
-   -- 计算按比例转到流通状态的stkcost
-   select @tx_stkcost=stkcost*@stkeffect/stkqty
-     from `持仓核算` with (nolock, index=stkasset_hs_pk)
-    where stkcode=@ref_stkcode and market=@market and custid=@custid and orgid=@orgid and
-          serverid=@serverid and fundid=@fundid and ltlx='`转出类型`' and stkqty>0
-
-   if (@tx_stkcost is null)
-     begin
-        select @msg='正股对应的非流通股份不足.'
-        raiserror(' %s', 12, 1, @msg) with SETERROR
-     end
+   if (@ref_stkcode is null or rtrim(ltrim(@ref_stkcode))='')
+      begin
+         select @msg='正股名称不存在.'
+         raiserror(' %s', 12, 1, @msg) with SETERROR
+      end
 
 begin tran
-   -- 非流通股持仓转出
+   -- 更新持仓核算表：转出权证数量
    update `持仓核算`
-      set stkztgcqty=stkztgcqty+@matchqty, stkztgcamt=stkztgcamt+@tx_stkcost,
-          stkqty=stkqty-@matchqty, stkqty_ch=stkqty_ch-@matchqty,
-          stkcost=stkcost-@tx_stkcost, stkcost_ch=stkcost_ch-@tx_stkcost,
-          mktvalue=mktvalue-@tx_stkcost
-    where stkcode=@ref_stkcode and market=@market and custid=@custid and orgid=@orgid and
+      set stkztgcqty=stkztgcqty+@matchqty,
+          stkqty=stkqty-@matchqty, stkqty_ch=stkqty_ch-@matchqty
+    where stkcode=@stkcode and market=@market and custid=@custid and orgid=@orgid and
           serverid=@serverid and fundid=@fundid and ltlx='`转出类型`' and
           stkqty>=@matchqty
-          
+
     select @rowcount=@@rowcount
-    if (@rowcount>1)    
+    if (@rowcount>1)
        begin
-          select @msg='更新证券持仓行数错误(rowcount='+CONVERT(varchar, @rowcount)+').'       
+          select @msg='更新配股权证持仓行数错误(rowcount='+CONVERT(varchar, @rowcount)+').'       
           raiserror(' %s', 12, 2, @msg) with SETERROR                   
        end
     else if (@rowcount=0)
        begin
-          select @msg='客户无对应的非流通股份'       
-          raiserror(' %s', 12, 1, @msg) with SETERROR                          
+          select @msg='无配股权证记录.'
+          raiserror(' %s', 12, 1, @msg) with SETERROR
        end
 
-    -- 流通股持仓转入
+  -- 更新持仓核算表：正股上账，非流通状态
     update `持仓核算`
-       set stkztgrqty=stkztgrqty+@matchqty, stkztgramt=stkztgramt+@tx_stkcost,
+       set stkbuyqty_ex=stkbuyqty_ex+@matchqty, stkbuyamt_ex=stkbuyamt_ex+@matchamt,
            stkqty=stkqty+@matchqty, stkqty_ch=stkqty_ch+@matchqty,
-           stkcost=stkcost+@tx_stkcost, stkcost_ch=stkcost_ch+@tx_stkcost,
-           mktvalue=mktvalue+@tx_stkcost
+           stkcost=stkcost+@matchamt, stkcost_ch=stkcost_ch+@matchamt,
+           mktvalue=mktvalue+@matchamt
      where stkcode=@ref_stkcode and market=@market and custid=@custid and orgid=@orgid and
-           serverid=@serverid and fundid=@fundid and ltlx='`流通类型`'
-           
+           serverid=@serverid and fundid=@fundid and ltlx='`流通类型`' -- 主键
+
     select @rowcount=@@rowcount
     if (@rowcount>1)    
        begin
           select @msg='更新证券持仓行数错误(rowcount='+CONVERT(varchar, @rowcount)+').'       
           raiserror(' %s', 12, 2, @msg) with SETERROR                   
        end
-    else if (@rowcount=0)
+       else if (@rowcount=0)
        begin
           insert `持仓核算`
                   (serverid, orgid, custid, fundid, market, stkcode,
@@ -157,13 +121,13 @@ begin tran
            select serverid=@serverid, orgid=@orgid, custid=@custid,
                   fundid=@fundid, market=@market, stkcode=@ref_stkcode, ltlx='`流通类型`',
                   stkbuyqty=0, stkbuyamt=0, stksaleqty=0, stksaleamt=0,
-                  stkbuyqty_ex=0, stkbuyamt_ex=0, stksaleqty_ex=0, stksaleamt_ex=0,
-                  stkztgrqty=@matchqty, stkztgramt=@tx_stkcost, stkztgcqty=0, stkztgcamt=0, stkhgqty=0,
-                  stkhlamt=0, stkpgqty=0, stkpgamt=0, stkqty=@matchqty,
+                  stkbuyqty_ex=@matchqty, stkbuyamt_ex=@matchamt, stksaleqty_ex=0,
+                  stksaleamt_ex=0, stkztgrqty=0, stkztgramt=0, stkztgcqty=0, stkztgcamt=0,
+                  stkhgqty=0, stkhlamt=0, stkpgqty=0, stkpgamt=0, stkqty=@matchqty,
                   stkqty_ch=@matchqty, stkqty_tz=0, stkqty_tzje=0, stkpledge=0,
                   stkdebt=0, stkdebt_ch=0, stkloan=0, stkloan_ch=0, stkadjust=0,
-                  stkadjust_ch=0, stkprice=0, bondintr=0, mktvalue=@tx_stkcost,
-                  aiamount=0, stkcost=@tx_stkcost, stkcost_ch=@tx_stkcost, aicost=0,
+                  stkadjust_ch=0, stkprice=0, bondintr=0, mktvalue=@matchamt,
+                  aiamount=0, stkcost=@matchamt, stkcost_ch=@matchamt, aicost=0,
                   aicost_ch=0, syvalue=0, syvalue_ch=0, lxsr=0, lxsr_ch=0, gyvalue=0,
                   gyvalue_ch=0, lxjt=0, lxjt_ch=0, cjsr=0, cjsr_ch=0, jrzc=0,
                   jrzc_ch=0, sxf=0, sxf_ch=0, jsxf=0,jsxf_ch=0, yhs=0, yhs_ch=0,
@@ -171,6 +135,38 @@ begin tran
                   remark='', stkpledge_ch=0, yearqty=0, yeargyvalue=0, yearlxjt=0
        end    
 
+    update `资金核算`
+       set fundbal=fundbal+@fundeffect, fundbal_ch=fundbal_ch+@fundeffect
+    where fundid=@fundid and custid=@custid and orgid=@orgid and serverid=@serverid and
+          moneytype=@moneytype
+           
+    select @rowcount=@@rowcount
+    if (@rowcount>1)    
+       begin
+          select @msg='更新资金行数错误(rowcount='+CONVERT(varchar, @rowcount)+').'       
+          raiserror(' %s', 12, 2, @msg) with SETERROR                   
+       end
+       else if (@rowcount=0)
+       begin
+          insert `资金核算`
+                 (serverid, orgid, custid, fundid, moneytype,
+                 bankcode, fundbal, fundbal_ch, fundsave, fundsave_ch, fundunsave,
+                 fundunsave_ch, fundloan, fundloan_ch, funddebt, funddebt_ch,
+                 funduncome, funduncome_ch, fundunpay, fundunpay_ch, fundintr,
+                 fundintr_ch, fundaward, fundaward_ch, fundadjust, fundadjust_ch,
+                 fundlastbal, totalvalue, tjdate, remark, nav, mktvalue, totalfe,
+                 rzlx, rzlx_ch)
+          select serverid=@serverid, orgid=@orgid, custid=@custid,
+                 fundid=@fundid, moneytype=@moneytype, bankcode=@bankcode,
+                 fundbal=@fundeffect, fundbal_ch=@fundeffect, fundsave=0,
+                 fundsave_ch=0, fundunsave=0, fundunsave_ch=0, fundloan=0,
+                 fundloan_ch=0, funddebt=0, funddebt_ch=0, funduncome=0,
+                 funduncome_ch=0, fundunpay=0, fundunpay_ch=0, fundintr=0,
+                 fundintr_ch=0, fundaward=0, fundaward_ch=0, fundadjust=0,
+                 fundadjust_ch=0, fundlastbal=0, totalvalue=0, tjdate=0, remark='',
+                 nav=0, mktvalue=0, totalfe=0, rzlx=0, rzlx_ch=0
+       end
+       
       select @msg='`业务名称`核算处理成功'
       update `业务流水`
          set sett_status=3, sett_remark=@msg, ref_stkcode=@ref_stkcode
@@ -179,6 +175,7 @@ begin tran
    commit tran
    return 0
 end try
+
 begin catch
    if @@trancount>0
        rollback tran
@@ -192,6 +189,3 @@ begin catch
    return -1
 end catch
 go
-
-
-

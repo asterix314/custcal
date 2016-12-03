@@ -7,13 +7,13 @@ if exists (select * from sysobjects where type='P' and name='`存储过程`')
     drop proc `存储过程`
 go
 /*
-select top 10 * from `业务流水` where custid=129500065129 and digestid=`业务摘要`
+select top 10 * from `业务流水` where custid=129500065129 and busintype=`业务摘要`
 
 declare @msg as varchar(128)
 exec `存储过程` @serverid=1, @bizdate=20150105, @sno=148741, @custid=129500065129, @msg=@msg output
 select @msg
 
-select * from `业务流水` where custid=129500065129 and bizdate=20150105 and digestid=221001
+select * from `业务流水` where custid=129500065129 and bizdate=20150105 and busintype=221001
 select * from `持仓核算` where custid=129500065129 and stkcode='601607'
 */
 CREATE proc `存储过程`(
@@ -25,7 +25,7 @@ CREATE proc `存储过程`(
 )
 -- with encryption
 as
-declare @orgid as varchar(4), @fundid as bigint, @digestid as int, @market as char(1), @stkcode as varchar(10), 
+declare @orgid as varchar(4), @fundid as bigint, @busintype as int, @market as char(1), @stkcode as varchar(10), 
         @stkeffect as numeric(20,2), @matchqty as numeric(20,2), @matchamt as numeric(20,2),
         @bankcode as varchar(4), @lastprice as numeric(12,4),
         @moneytype as char(1), @fundeffect as numeric(20,2), @fee_sxf as numeric(20,2), @stkqty as numeric(20,2),
@@ -34,14 +34,14 @@ declare @orgid as varchar(4), @fundid as bigint, @digestid as int, @market as ch
 declare @tx_stkcost as numeric(20,2), @syvalue_ch as numeric(20,2), @stkcost_ch as numeric(20,2), 
         @rowcount as int, @ret as int
         
- select @orgid=orgid, @fundid=fundid, @digestid=digestid, @market=market, @stkcode=stkcode, 
+ select @orgid=orgid, @fundid=fundid, @busintype=busintype, @market=market, @stkcode=stkcode, 
         @stkeffect=stkeffect, @matchqty=matchqty, @fundeffect=fundeffect, @matchamt=matchamt, 
         @fee_sxf=fee_sxf, @fee_jsxf=fee_jsxf, @fee_ghf=fee_ghf, @fee_yhs=fee_yhs,
         @qtfee=fee_qsf+fee_jygf+fee_jsf+fee_zgf+fee_qtf+feefront, 
         @bankcode=bankcode, @moneytype=moneytype, @ordersno=ordersno, @orderdate=orderdate,
         @sett_status=sett_status
    from `业务流水` with (nolock, index=logasset_hs_pk)
-  where sno=@sno and bizdate=@bizdate and serverid=@serverid and custid=@custid and digestid=`业务摘要` -- `业务名称`
+  where sno=@sno and bizdate=@bizdate and serverid=@serverid and custid=@custid and busintype=`业务摘要` -- `业务名称`
 
 begin try
     if (@sett_status is null)
@@ -107,7 +107,7 @@ begin tran
               raiserror(' %s', 12, 1, @msg) with SETERROR
            end
              
-      select @msg='核算处理成功'
+      select @msg='`业务名称`核算处理成功'
       update `业务流水`
          set sett_status=3, sett_remark=@msg
        where sno=@sno and bizdate=@bizdate and serverid=@serverid
@@ -119,7 +119,7 @@ begin catch
    if @@trancount>0
        rollback tran
 
-   select @msg='失败:`业务名称` '+error_message()+''
+   select @msg='`业务名称`失败: '+error_message()+''
    update `业务流水`
       set sett_status=4, sett_remark=@msg
     where sno=@sno and bizdate=@bizdate and serverid=@serverid

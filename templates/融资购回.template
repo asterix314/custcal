@@ -10,12 +10,12 @@ go
 select * from `业务流水` where bizdate<20150106
 select * from `业务流水` where sno=251110 and bizdate=20150130
 select * from `业务流水` where sno=278249 and bizdate=20150105
-select * from `业务流水` where custid=129500065129 and bizdate=20150105 and digestid=`业务摘要`
+select * from `业务流水` where custid=129500065129 and bizdate=20150105 and busintype=`业务摘要`
 declare @msg as varchar(128)
 exec `存储过程` @serverid=1, @bizdate=20150105, @sno=148741, @custid=129500065129, @msg=@msg output
 select @msg
 
-select * from `业务流水` where custid=129500065129 and bizdate=20150105 and digestid=221001
+select * from `业务流水` where custid=129500065129 and bizdate=20150105 and busintype=221001
 select * from `持仓核算` where custid=129500065129 and stkcode='601607'
 */
 CREATE proc `存储过程`(
@@ -27,7 +27,7 @@ CREATE proc `存储过程`(
 )
 -- with encryption
 as
-declare @orgid as varchar(4), @fundid as bigint, @digestid as int, @market as char(1), @stkcode as varchar(10),
+declare @orgid as varchar(4), @fundid as bigint, @busintype as int, @market as char(1), @stkcode as varchar(10),
         @stkeffect as numeric(20,2), @matchqty as numeric(20,2), @matchamt as numeric(20,2), @bankcode as varchar(4), 
         @moneytype as char(1), @fundeffect as numeric(20,2), @fee_sxf as numeric(20,2), @stkqty as numeric(20,2),
         @stkqty_ch as numeric(20,2), @fee_jsxf as numeric(20,2), @fee_ghf as numeric(20,2), @fee_yhs as numeric(20,2),
@@ -35,14 +35,14 @@ declare @orgid as varchar(4), @fundid as bigint, @digestid as int, @market as ch
 declare @tx_stkcost as numeric(20,2), @syvalue_ch as numeric(20,2), @stkcost_ch as numeric(20,2), 
         @rowcount as int, @ret as int
         
- select @orgid=orgid, @fundid=fundid, @digestid=digestid, @market=market, @stkcode=stkcode, 
+ select @orgid=orgid, @fundid=fundid, @busintype=busintype, @market=market, @stkcode=stkcode, 
         @stkeffect=stkeffect, @matchqty=matchqty, @fundeffect=fundeffect, @matchamt=matchamt, 
         @fee_sxf=fee_sxf, @fee_jsxf=fee_jsxf, @fee_ghf=fee_ghf, @fee_yhs=fee_yhs,
         @qtfee=fee_qsf+fee_jygf+fee_jsf+fee_zgf+fee_qtf+feefront, 
         @bankcode=bankcode, @moneytype=moneytype, @ordersno=ordersno, @orderdate=orderdate,
         @sett_status=sett_status
    from `业务流水` with (nolock, index=logasset_hs_pk)
-  where sno=@sno and bizdate=@bizdate and serverid=@serverid and custid=@custid and digestid=`业务摘要` -- `业务名称`
+  where sno=@sno and bizdate=@bizdate and serverid=@serverid and custid=@custid and busintype=`业务摘要` -- `业务名称`
            
 begin try
     if (@sett_status is null)
@@ -63,7 +63,7 @@ begin try
     select @tx_stkcost=stkcost*@matchqty/stkqty, @stkqty=stkqty
       from `持仓核算` with (nolock, index=stkasset_hs_pk)
       where stkcode=@stkcode and market=@market and fundid=@fundid and custid=@custid and orgid=@orgid and
-            stkqty>=@matchqty and serverid=@serverid  and ltlx='`流通类型`' -- 主键
+            stkqty>=@matchqty and serverid=@serverid  and ltlx='`流通类型`'
         
     if (@tx_stkcost is null)
        begin
@@ -89,10 +89,10 @@ begin tran
     select @rowcount=@@rowcount
         if (@rowcount!=1)
            begin
-              if (@@TRANCOUNT>0)
+              if (@@trancount>0)
                   rollback tran
                  
-              select @msg='卖出持仓不足或更新持仓错误(rowcount='+CONVERT(varchar, @rowcount)+').'
+              select @msg='购回持仓不足或更新持仓错误(rowcount='+CONVERT(varchar, @rowcount)+').'
               raiserror(' %s', 12, 1, @msg) with SETERROR
            end
 
@@ -103,25 +103,16 @@ begin tran
            moneytype=@moneytype and funddebt>=@tx_stkcost -- 保证funddebt不至减成负数        
 
     select @rowcount=@@rowcount
-    if (@rowcount>1)    
+    if (@rowcount!=1)
        begin
-          select @msg='更新资金行数错误(rowcount='+CONVERT(varchar, @rowcount)+').'       
-          raiserror(' %s', 12, 2, @msg) with SETERROR                   
-       end
-       else if (@rowcount=0)
-       begin
-          insert fundasset_hs(serverid, orgid, custid, fundid, moneytype, fundlastbal, fundbal, fundbal_ch, 
-                 fundsave, fundsave_ch, fundunsave, fundunsave_ch, fundloan, fundloan_ch, funddebt, funddebt_ch, 
-                 funduncome, funduncome_ch, fundunpay, fundunpay_ch, fundadjust, fundadjust_ch, fundintr, fundintr_ch, 
-                 fundaward, fundaward_ch, rzlx, rzlx_ch, bankcode, mktvalue, totalvalue, totalfe, nav, tjdate, remark)
-          select @serverid, @orgid, @custid, @fundid, @moneytype, fundlastbal=0, fundbal=@fundeffect, fundbal_ch=@fundeffect, 
-                 fundsave=0, fundsave_ch=0, fundunsave=0, fundunsave_ch=0, fundloan=0, fundloan_ch=0, funddebt=-@tx_stkcost,
-                 funddebt_ch=-@tx_stkcost, funduncome=0, funduncome_ch=0, fundunpay=0, fundunpay_ch=0, fundadjust=0,
-                 fundadjust_ch=0, fundintr=0, fundintr_ch=0, fundaward=0, fundaward_ch=0, rzlx=0, rzlx_ch=0, bankcode=@bankcode,
-                 mktvalue=0, totalvalue=0, totalfe=0, nav=0, tjdate=0, remark=''
+          if (@@trancount>0)
+             rollback tran
+                 
+          select @msg='借入金额不足或更新资金错误(rowcount='+CONVERT(varchar, @rowcount)+').'
+          raiserror(' %s', 12, 1, @msg) with SETERROR
        end
 
-      select @msg='核算处理成功'
+      select @msg='`业务名称`核算处理成功'
       update `业务流水`
          set sett_status=3, sett_remark=@msg
        where sno=@sno and bizdate=@bizdate and serverid=@serverid
@@ -133,7 +124,7 @@ begin catch
    if @@trancount>0
        rollback tran
 
-   select @msg='失败:`业务名称` '+error_message()+''
+   select @msg='`业务名称`失败: '+error_message()+''
    update `业务流水`
       set sett_status=4, sett_remark=@msg
     where sno=@sno and bizdate=@bizdate and serverid=@serverid
