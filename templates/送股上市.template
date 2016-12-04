@@ -60,8 +60,8 @@ begin try
 begin tran
     update `持仓核算`
        set stkbuyqty_ex=stkbuyqty_ex+@matchqty,
-           stkqty=stkqty+@matchqty, stkqty_ch=stkqty_ch+@matchqty,
-     where stkcode=stkcode and market=@market and custid=@custid and orgid=@orgid and serverid=@serverid and
+           stkqty=stkqty+@matchqty, stkqty_ch=stkqty_ch+@matchqty
+     where stkcode=@stkcode and market=@market and custid=@custid and orgid=@orgid and serverid=@serverid and
            fundid=@fundid and ltlx='`流通类型`'
 
     select @rowcount=@@rowcount
