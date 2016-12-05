@@ -17,7 +17,7 @@ CREATE proc `存储过程`(
 -- with encryption
 as
     select @msg='无需核算'
-    update `业务流水`
+    update logasset_hs
        set sett_status=5, sett_remark=@msg
      where sno=@sno and bizdate=@bizdate and serverid=@serverid
 go

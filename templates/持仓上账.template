@@ -7,15 +7,15 @@ if exists (select * from sysobjects where type='P' and name='`存储过程`')
     drop proc `存储过程`
 go
 /*
-select top 10 * from `业务流水` where busintype=`业务摘要`
-update `业务流水` set sett_status=0, sett_remark='' where busintype=`业务摘要`
+select top 10 * from logasset_hs where busintype=`业务摘要`
+update logasset_hs set sett_status=0, sett_remark='' where busintype=`业务摘要`
 
 declare @ret as int, @msg as varchar(128)
 exec @ret=`存储过程`  '1',20151207, 18689, 120199995234, @msg output
 select @ret, @msg
 
-select * from `持仓核算`
-select * from `资金核算`
+select * from stkasset_hs
+select * from fundasset_hs
 */
 CREATE proc `存储过程`(
  @serverid  char(1)      
@@ -39,7 +39,7 @@ declare @rowcount as int, @ret as int
         @qtfee=fee_qsf+fee_jygf+fee_jsf+fee_zgf+fee_qtf+feefront,
         @bankcode=bankcode, @moneytype=moneytype, @ordersno=ordersno, @orderdate=orderdate,
         @sett_status=sett_status
-   from `业务流水` with (nolock, index=logasset_hs_pk)
+   from logasset_hs with (nolock, index=logasset_hs_pk)
   where sno=@sno and bizdate=@bizdate and serverid=@serverid and custid=@custid and busintype=`业务摘要` -- `业务名称`
 
 begin try
@@ -59,7 +59,7 @@ begin try
 
 begin tran
    -- 更新持仓核算表：持仓数量
-    update `持仓核算`
+    update stkasset_hs
        set stkbuyqty_ex=stkbuyqty_ex+@stkeffect, stkqty=stkqty+@stkeffect, stkqty_ch=stkqty_ch+@stkeffect
      where stkcode=@stkcode and market=@market and custid=@custid and orgid=@orgid and serverid=@serverid and
            fundid=@fundid and ltlx='`流通类型`' -- 主键
@@ -72,7 +72,7 @@ begin tran
        end
        else if (@rowcount=0)
        begin
-          insert `持仓核算`
+          insert stkasset_hs
                  (serverid, orgid, custid, fundid,
                  market, stkcode, ltlx, stkbuyqty, stkbuyamt, stksaleqty, stksaleamt,
                  stkbuyqty_ex, stkbuyamt_ex, stksaleqty_ex, stksaleamt_ex, stkztgrqty,
@@ -102,7 +102,7 @@ begin tran
        end    
 
       select @msg='`业务名称`核算处理成功'
-      update `业务流水`
+      update logasset_hs
          set sett_status=3, sett_remark=@msg
        where sno=@sno and bizdate=@bizdate and serverid=@serverid
    
@@ -115,7 +115,7 @@ begin catch
 
    select @msg='`业务名称`失败: '+error_message()+''
    
-   update `业务流水` 
+   update logasset_hs 
       set sett_status=4, sett_remark=@msg
     where sno=@sno and bizdate=@bizdate and serverid=@serverid
 

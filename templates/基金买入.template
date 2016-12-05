@@ -29,9 +29,10 @@ as
 declare @orgid as varchar(4), @fundid as bigint, @busintype as int, @market as char(1), @stkcode as varchar(10), 
         @stkeffect as numeric(20,2), @matchqty as numeric(20,2), @matchamt as numeric(20,2), @bankcode as varchar(4), 
         @moneytype as char(1), @fundeffect as numeric(20,2), @fee_sxf as numeric(20,2),@fee_jsxf as numeric(20,2),
-        @fee_ghf as numeric(20,2), @fee_yhs as numeric(20,2), @qtfee as numeric(20,2), @matchprice as numeric(9,3),
+        @fee_ghf as numeric(20,2), @fee_yhs as numeric(20,2), @qtfee as numeric(20,2), 
         @ordersno as bigint, @orderdate as int, @sett_status as char(1)
-declare @ref_stkcode as varchar(10), @stkbuyqty_ex as numeric(20,2), @rowcount as int, @ret as int
+declare @ref_stkcode as varchar(10), @ref_market as char(1), @stkprice as numeric(12,4), @matchprice as numeric(9,3),
+        @rowcount as int, @ret as int
         
  select @orgid=orgid, @fundid=fundid, @busintype=busintype, @market=market, @stkcode=stkcode, 
         @stkeffect=stkeffect, @matchqty=matchqty, @fundeffect=fundeffect, @matchamt=matchamt, 
@@ -55,60 +56,63 @@ begin try
           return 0
        end
 
-    if (@fundeffect<=0)
-       begin
-          select @msg='资金发生与该业务不符.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
-
-    if (@stkeffect>=0)
-       begin
-          select @msg='股份发生与该业务不符.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
-
-    if (@matchqty+@stkeffect!=0)
-       begin
-          select @msg='成交数量与股份发生不符.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
-
-    if (@matchamt!=@matchqty*@matchprice)
-       begin
-          select @msg='成交金额不等于成交数量*成交价格.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
-
-    if (@fee_sxf!=0 or @fee_jsxf!=0 or @fee_ghf!=0 or @fee_yhs!=0 or @qtfee!=0)
-       begin
-          select @msg='费用金额异常.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
-
-    if (@fee_sxf+@fee_ghf+@fee_yhs+@qtfee+@fundeffect!=@matchamt)
-       begin
-          select @msg='资金发生不等于成交金额减费用.'
-          raiserror(' %s', 12, 1, @msg) with SETERROR
-       end
+`校验处理`
 
 begin tran
     update stkasset_hs
-       set stksaleqty_ex=stksaleqty_ex+@matchqty, stksaleamt_ex=stksaleamt_ex+@matchamt,
-           stkqty=stkqty-@matchqty, stkqty_ch=stkqty_ch-@matchqty,
-           stkcost=stkcost-@matchamt, stkcost_ch=stkcost_ch-@matchamt,
-           mktvalue=mktvalue-@matchamt
-     where stkcode=@stkcode and market=@market and custid=@custid and orgid=@orgid and serverid=@serverid and
-           fundid=@fundid and ltlx='`流通类型`' and stkqty>=@matchqty
+       set stkbuyqty=stkbuyqty+@matchqty, stkbuyamt=stkbuyamt+@matchamt,
+           stkqty=stkqty+@matchqty, stkqty_ch=stkqty_ch+@matchqty, 
+           stkcost=stkcost+@matchamt, stkcost_ch=stkcost_ch+@matchamt,
+           jsxf=jsxf+@fee_jsxf, jsxf_ch=jsxf_ch+@fee_jsxf, sxf=sxf+@fee_sxf, sxf_ch=sxf_ch+@fee_sxf,
+           ghf=ghf+@fee_ghf, ghf_ch=ghf_ch+@fee_ghf, yhs=yhs+@fee_yhs, yhs_ch=yhs_ch+@fee_yhs,
+           qtfee=qtfee+@qtfee, qtfee_ch=qtfee_ch+@qtfee,
+           mktvalue=mktvalue+@matchamt
+     where stkcode=@stkcode and market=@market and custid=@custid and orgid=@orgid and
+           serverid=@serverid and fundid=@fundid and ltlx='`流通类型`'
 
     select @rowcount=@@rowcount
-    if (@rowcount!=1)    
+    if (@rowcount>1)    
        begin
-          select @msg='还款数量大于申购数量或无对应申购记录.'       
-          raiserror(' %s', 12, 1, @msg) with SETERROR                   
+          select @msg='更新证券持仓行数错误(rowcount='+CONVERT(varchar, @rowcount)+').'       
+          raiserror(' %s', 12, 2, @msg) with SETERROR                   
        end
+       else if (@rowcount=0)
+       begin
+           insert stkasset_hs
+                   (serverid, orgid, custid, fundid, market, stkcode,
+                   ltlx, stkbuyqty, stkbuyamt, stksaleqty, stksaleamt, stkbuyqty_ex,
+                   stkbuyamt_ex, stksaleqty_ex, stksaleamt_ex, stkztgrqty, stkztgramt,
+                   stkztgcqty, stkztgcamt, stkhgqty, stkhlamt, stkpgqty, stkpgamt,
+                   stkqty, stkqty_ch, stkqty_tz, stkqty_tzje, stkpledge, stkdebt,
+                   stkdebt_ch, stkloan, stkloan_ch, stkadjust, stkadjust_ch, stkprice,
+                   bondintr, mktvalue, aiamount, stkcost, stkcost_ch, aicost, aicost_ch,
+                   syvalue, syvalue_ch, lxsr, lxsr_ch, gyvalue, gyvalue_ch, lxjt,
+                   lxjt_ch, cjsr, cjsr_ch, jrzc, jrzc_ch, sxf, sxf_ch, jsxf, jsxf_ch,
+                   yhs, yhs_ch, lxs, lxs_ch, ghf, ghf_ch, qtfee, qtfee_ch, jtdate,
+                   gydate, remark, stkpledge_ch, yearqty, yeargyvalue, yearlxjt)
+            select serverid=@serverid, orgid=@orgid, custid=@custid,
+                   fundid=@fundid, market=@market, stkcode=@stkcode, ltlx='`流通类型`',
+                   stkbuyqty=@matchqty, stkbuyamt=@matchamt, stksaleqty=0, stksaleamt=0,
+                   stkbuyqty_ex=0, stkbuyamt_ex=0, stksaleqty_ex=0, stksaleamt_ex=0,
+                   stkztgrqty=0, stkztgramt=0, stkztgcqty=0, stkztgcamt=0, stkhgqty=0,
+                   stkhlamt=0, stkpgqty=0, stkpgamt=0, stkqty=@matchqty,
+                   stkqty_ch=@matchqty, stkqty_tz=0, stkqty_tzje=0, stkpledge=0,
+                   stkdebt=0, stkdebt_ch=0, stkloan=0, stkloan_ch=0, stkadjust=0,
+                   stkadjust_ch=0, stkprice=0, bondintr=0, mktvalue=@matchamt,
+                   aiamount=0, stkcost=@matchamt, stkcost_ch=@matchamt, aicost=0,
+                   aicost_ch=0, syvalue=0, syvalue_ch=0, lxsr=0, lxsr_ch=0, gyvalue=0,
+                   gyvalue_ch=0, lxjt=0, lxjt_ch=0, cjsr=0, cjsr_ch=0, jrzc=0,
+                   jrzc_ch=0, sxf=@fee_sxf, sxf_ch=@fee_sxf, jsxf=@fee_jsxf,
+                   jsxf_ch=@fee_jsxf, yhs=@fee_yhs, yhs_ch=@fee_yhs, lxs=0, lxs_ch=0, ghf=@fee_ghf,
+                   ghf_ch=@fee_ghf, qtfee=@qtfee, qtfee_ch=@qtfee, jtdate=0, gydate=0,
+                   remark='', stkpledge_ch=0, yearqty=0, yeargyvalue=0, yearlxjt=0
+       end    
+
 
     update fundasset_hs
-       set fundbal=fundbal+@fundeffect, fundbal_ch=fundbal_ch+@fundeffect
+       set fundbal=fundbal+@fundeffect, fundbal_ch=fundbal_ch+@fundeffect,
+           fundkfjj=fundkfjj+@fundeffect, fundkfjj_ch=fundkfjj_ch+@fundeffect,
+           fundadjust=fundadjust+@fundeffect, fundadjust_ch=fundadjust_ch+@fundeffect
      where fundid=@fundid and custid=@custid and orgid=@orgid and serverid=@serverid and
            moneytype=@moneytype   
           
@@ -138,16 +142,16 @@ begin tran
                  fundlastbal=0, fundbal=@fundeffect, fundbal_ch=@fundeffect, 
                  fundsave=0, fundsave_ch=0, fundunsave=0, fundunsave_ch=0, 
                  fundzqjy_ch=0, fundzqjy0_ch=0, fundbxyw=0, fundbxyw_ch=0, 
-                 fundotc=0, fundotc_ch=0, fundkfjj=0, fundkfjj_ch=0, 
+                 fundotc=0, fundotc_ch=0, fundkfjj=@fundeffect, fundkfjj_ch=@fundeffect, 
                  fundgold=0, fundgold_ch=0, fundother=0, fundother_ch=0, 
                  fundloan=0, fundloan_ch=0, funddebt=0, funddebt_ch=0, 
                  funduncome=0, funduncome_ch=0, fundunpay=0, fundunpay_ch=0, 
-                 fundadjust=0, fundadjust_ch=0, 
+                 fundadjust=@fundeffect, fundadjust_ch=@fundeffect,
                  fundintr=0, fundintr_ch=0, fundaward=0, fundaward_ch=0, 
                  rzlx=0, rzlx_ch=0, rcsr=0, rcsr_ch=0, 
                  lxs=0, lxs_ch=0, qtsz=0, qtsz_ch=0, 
                  bankcode=@bankcode, tjdate=0, remark=''
-           end             
+           end
 
       select @msg='`业务名称`核算处理成功'
       update logasset_hs 

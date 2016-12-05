@@ -7,21 +7,20 @@ if exists (select * from sysobjects where type='P' and name='`存储过程`')
     drop proc `存储过程`
 go
 /*
-select top 10 * from logasset_hs where busintype=`业务摘要`
-update logasset_hs set sett_status=0, sett_remark='' where busintype=`业务摘要`
+select top 10 * from logasset_hs where custid=120200033036 and busintype=`业务摘要`
 
-declare @ret as int, @msg as varchar(128)
-exec @ret=`存储过程`  '1',20151207, 18689, 120199995234, @msg output
-select @ret, @msg
+declare @msg as varchar(128)
+exec `存储过程` @serverid='1', @bizdate=20150105, @sno=148741, @custid=129500065129, @msg=@msg output
+select @msg
 
-select * from stkasset_hs
-select * from fundasset_hs
+select * from stkasset_hs where serverid='1' and custid=120200033036 and stkcode in ('02935','03800')
+
 */
 CREATE proc `存储过程`(
- @serverid  char(1)
-,@bizdate   int
+ @serverid  char(1)      
+,@bizdate   int          
 ,@sno       int
-,@custid    bigint
+,@custid    bigint    
 ,@msg       varchar(128)=null output
 )
 -- with encryption
@@ -29,9 +28,9 @@ as
 declare @orgid as varchar(4), @fundid as bigint, @busintype as int, @market as char(1), @stkcode as varchar(10), 
         @stkeffect as numeric(20,2), @matchqty as numeric(20,2), @matchamt as numeric(20,2),
         @bankcode as varchar(4), @lastprice as numeric(12,4),
-        @moneytype as char(1), @fundeffect as numeric(20,2), @fee_sxf as numeric(20,2),@fee_jsxf as numeric(20,2),
-        @fee_ghf as numeric(20,2), @fee_yhs as numeric(20,2), @qtfee as numeric(20,2),        
-        @ordersno as bigint, @orderdate as int, @sett_status as char(1)
+        @moneytype as char(1), @fundeffect as numeric(20,2), @fee_sxf as numeric(20,2), @stkqty as numeric(20,2),
+        @stkqty_ch as numeric(20,2), @fee_jsxf as numeric(20,2), @fee_ghf as numeric(20,2), @fee_yhs as numeric(20,2),
+        @qtfee as numeric(20,2), @ordersno as bigint, @orderdate as int, @sett_status as char(1)
 declare @tx_stkcost as numeric(20,2), @syvalue_ch as numeric(20,2), @stkcost_ch as numeric(20,2), 
         @rowcount as int, @ret as int
         
@@ -51,7 +50,7 @@ begin try
           raiserror(' %s', 12, 1, @msg) with SETERROR
        end
 
-    if (@sett_status ='3')
+    if (@sett_status='3')
        begin
           select @msg='该笔流水已处理.'
           return 0
@@ -59,30 +58,27 @@ begin try
 
 `校验处理`
 
-    -- 计算转入成本（如流水不提供）
-    if (@matchamt=0)
-       begin
-          select @lastprice=lastprice
-            from stkprice_hs
-           where bizdate=@bizdate and market=@market and stkcode=@stkcode -- 主键
+    -- tx_stkcost: 转入成本
+    select @tx_stkcost=stkcost*@matchqty/stkqty
+      from stkasset_hs with (nolock, index=stkasset_hs_pk)
+      where stkcode=@stkcode and market=@market and fundid=@fundid and custid=@custid and orgid=@orgid and
+            stkqty>0 and serverid=@serverid  and ltlx='`流通类型`' -- 主键
 
-          if (@lastprice is null)
-             begin
-                select @msg='缺失日终价格，无法计算转入成本(stkprice_hs.lastprice).'       
-                raiserror(' %s', 12, 1, @msg) with SETERROR                   
-             end   
-          select @matchamt=@matchqty*@lastprice
+    if (@tx_stkcost is null)
+       begin
+          select @msg='客户无持仓,无法计算转入成本.'
+          raiserror(' %s', 12, 1, @msg) with SETERROR
        end
-      
-begin tran
+       
+begin tran    
     update stkasset_hs
-       set stkztgrqty=stkztgrqty+@matchqty, stkztgramt=stkztgramt+@matchamt,
+       set stkztgrqty=stkztgrqty+@matchqty, stkztgramt=stkztgramt+@tx_stkcost,
            stkqty=stkqty+@matchqty, stkqty_ch=stkqty_ch+@matchqty,
-           stkcost=stkcost+@matchamt, stkcost_ch=stkcost_ch+@matchamt,
-           mktvalue=mktvalue+@matchamt
+           stkcost=stkcost+@tx_stkcost, stkcost_ch=stkcost_ch+@tx_stkcost,
+           mktvalue=mktvalue+@tx_stkcost
      where stkcode=@stkcode and market=@market and custid=@custid and orgid=@orgid and
            serverid=@serverid and fundid=@fundid and ltlx='`流通类型`'
-
+           
     select @rowcount=@@rowcount
     if (@rowcount>1)    
        begin
@@ -103,25 +99,24 @@ begin tran
                    lxjt_ch, cjsr, cjsr_ch, jrzc, jrzc_ch, sxf, sxf_ch, jsxf, jsxf_ch,
                    yhs, yhs_ch, lxs, lxs_ch, ghf, ghf_ch, qtfee, qtfee_ch, jtdate,
                    gydate, remark, stkpledge_ch, yearqty, yeargyvalue, yearlxjt)
-            select serverid=@serverid, orgid=@orgid, custid=@custid,
-                   fundid=@fundid, market=@market, stkcode=@stkcode, ltlx='`流通类型`',
+            select serverid=@serverid, orgid=@orgid, custid=@custid, fundid=@fundid,
+                   market=@market, stkcode=@stkcode, ltlx='`流通类型`',
                    stkbuyqty=0, stkbuyamt=0, stksaleqty=0, stksaleamt=0, stkbuyqty_ex=0,
                    stkbuyamt_ex=0, stksaleqty_ex=0, stksaleamt_ex=0, stkztgrqty=@matchqty,
-                   stkztgramt=@matchamt, stkztgcqty=0, stkztgcamt=0, stkhgqty=0, stkhlamt=0,
+                   stkztgramt=@tx_stkcost, stkztgcqty=0, stkztgcamt=0, stkhgqty=0, stkhlamt=0,
                    stkpgqty=0, stkpgamt=0, stkqty=@matchqty, stkqty_ch=@matchqty,
                    stkqty_tz=0, stkqty_tzje=0, stkpledge=0, stkdebt=0, stkdebt_ch=0,
-                   stkloan=0, stkloan_ch=0, stkadjust=0, stkadjust_ch=0,
-                   stkprice=0, bondintr=0, mktvalue=@matchamt, aiamount=0,
-                   stkcost=@matchamt, stkcost_ch=@matchamt, aicost=0, aicost_ch=0,
-                   syvalue=0, syvalue_ch=0, lxsr=0, lxsr_ch=0, gyvalue=0, gyvalue_ch=0,
-                   lxjt=0, lxjt_ch=0, cjsr=0, cjsr_ch=0, jrzc=0, jrzc_ch=0, sxf=0,
-                   sxf_ch=0, jsxf=0, jsxf_ch=0, yhs=0, yhs_ch=0, lxs=0, lxs_ch=0, ghf=0,
-                   ghf_ch=0, qtfee=0, qtfee_ch=0, jtdate=0, gydate=0, remark='',
-                   stkpledge_ch=0, yearqty=0, yeargyvalue=0, yearlxjt=0
+                   stkloan=0, stkloan_ch=0, stkadjust=0, stkadjust_ch=0, stkprice=0,
+                   bondintr=0, mktvalue=@tx_stkcost, aiamount=0, stkcost=@tx_stkcost,
+                   stkcost_ch=@tx_stkcost, aicost=0, aicost_ch=0, syvalue=0, syvalue_ch=0,
+                   lxsr=0, lxsr_ch=0, gyvalue=0, gyvalue_ch=0, lxjt=0, lxjt_ch=0, cjsr=0,
+                   cjsr_ch=0, jrzc=0, jrzc_ch=0, sxf=0, sxf_ch=0, jsxf=0, jsxf_ch=0, yhs=0,
+                   yhs_ch=0, lxs=0, lxs_ch=0, ghf=0, ghf_ch=0, qtfee=0, qtfee_ch=0, jtdate=0,
+                   gydate=0, remark='', stkpledge_ch=0, yearqty=0, yeargyvalue=0, yearlxjt=0
        end    
              
       select @msg='`业务名称`核算处理成功'
-      update logasset_hs 
+      update logasset_hs
          set sett_status=3, sett_remark=@msg
        where sno=@sno and bizdate=@bizdate and serverid=@serverid
 
