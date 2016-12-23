@@ -23,7 +23,7 @@ CREATE proc `存储过程`(
 )
 -- with encryption
 as
-declare @orgid as varchar(4), @fundid as bigint, @market as char(1), @stkcode as varchar(10), 
+declare @orgid as varchar(4), @fundid as bigint, @market as char(1), @stkcode as varchar(10), @ref_sno as int,
         @stkeffect as numeric(20,2), @matchqty as numeric(20,2), @matchamt as numeric(20,2), @bankcode as varchar(4),
         @fee_sxf as numeric(20,2), @fee_jsxf as numeric(20,2), @fee_ghf as numeric(20,2), @fee_yhs as numeric(20,2),
         @qtfee as numeric(20,2), @matchprice as numeric(20,2), @moneytype as char(1), @fundeffect as numeric(20,2)
@@ -36,7 +36,8 @@ declare @reduceby as numeric(12,5), @syvalue_ch as numeric(20,2), @tx_stkcost as
         @qtfee=fee_qsf+fee_jygf+fee_jsf+fee_zgf+fee_qtf+feefront, 
         @matchprice=matchprice, @bankcode=bankcode, @moneytype=moneytype, @sett_status=sett_status
    from logasset_hs with (nolock, index=logasset_hs_pk)
-  where sno=@sno and bizdate=@bizdate and serverid=@serverid and custid=@custid and busintype=`业务摘要` -- `业务名称`   
+  where sno=@sno and bizdate=@bizdate and serverid=@serverid and custid=@custid and
+        busintype=`业务摘要` -- `业务名称`
 
 begin try
     if (@sett_status is null)
@@ -57,15 +58,15 @@ begin try
           raiserror(' %s', 12, 1, @msg) with SETERROR
        end
 
-    if (@matchqty>0 and @stkeffect>=0)
+    if (@stkeffect!=0)
        begin
           select @msg='股票发生与该业务不符.'
           raiserror(' %s', 12, 1, @msg) with SETERROR
        end
        
-    if (@matchqty>0 and @matchprice!=100)
+    if (@matchqty!=0)
        begin
-          select @msg='还本面值不是100.'
+          select @msg='成交数量与该业务不符.'
           raiserror(' %s', 12, 1, @msg) with SETERROR
        end       
        
@@ -75,25 +76,24 @@ begin try
           raiserror(' %s', 12, 1, @msg) with SETERROR
        end
 
-    if (@matchqty=0) -- 降低票面价格
+     if (@matchamt!=@fundeffect)
        begin
-          select @reduceby=sl1 -- 本金递减率
-            from gp_cqcx
-           where stkcode=@stkcode and market=@market and xqr=@bizdate and cqcx='ZQDF'
-           
-           if (@reduceby is null)
-              begin
-                 select @msg='查询不到本金递减率(gp_cqcx.sl1 where cqcx="ZQDF").'
-                 raiserror(' %s', 12, 1, @msg) with SETERROR
-              end
-       end
+          select @msg='成交金额与资金发生不符.'
+          raiserror(' %s', 12, 1, @msg) with SETERROR
+       end       
 
-    select @tx_stkcost=case when (@matchqty=0)
-              then (stkcost*@reduceby)                 -- 降低票面
-              else (stkcost*@matchqty/stkqty) end,     -- 减少持仓
-           @lxsr_ch=case when (@matchqty=0)
-              then (@matchamt-100*stkqty*@reduceby)    -- 降低票面
-              else (@matchamt-100*@matchqty) end       -- 减少持仓              
+    select top 1 @matchqty=matchqty, @ref_sno=sno
+      from logasset_hs with (nolock, index=logasset_hs_pk)
+     where bizdate=@bizdate and serverid=@serverid and custid=@custid and digestid=221006 and
+           remark='股份特殊调帐'
+
+    if (@matchqty=0)
+       begin
+          select @msg='还本数量（股份特殊调账）不能为零.'
+          raiserror(' %s', 12, 1, @msg) with SETERROR
+       end       
+
+    select @tx_stkcost=stkcost*@matchqty/stkqty
       from stkasset_hs with (nolock, index=stkasset_hs_pk)
      where stkcode=@stkcode and market=@market and fundid=@fundid and custid=@custid and orgid=@orgid and
            stkqty>=@matchqty+stkpledge and serverid=@serverid  and ltlx='`流通类型`'
@@ -105,14 +105,11 @@ begin try
        end
 
 begin tran
-    select @syvalue_ch=@matchamt-@tx_stkcost-@lxsr_ch
-    
     update stkasset_hs
        set stksaleqty_ex=stksaleqty_ex+@matchqty, stksaleamt_ex=stksaleamt_ex+@matchamt,
            stkqty=stkqty-@matchqty, stkqty_ch=stkqty_ch-@matchqty,
            stkcost=stkcost-@tx_stkcost, stkcost_ch=stkcost_ch-@tx_stkcost,
-           syvalue=syvalue+@syvalue_ch, syvalue_ch=syvalue_ch+@syvalue_ch,
-           lxsr=lxsr+@lxsr_ch, lxsr_ch=lxsr_ch+@lxsr_ch,
+           syvalue=syvalue+@matchamt-@tx_stkcost, syvalue_ch=syvalue_ch+@matchamt-@tx_stkcost,
            mktvalue=mktvalue-@tx_stkcost
      where stkcode=@stkcode and market=@market and custid=@custid and orgid=@orgid and
            serverid=@serverid and fundid=@fundid and ltlx='`流通类型`' and stkqty>=@matchqty+stkpledge
@@ -173,7 +170,7 @@ begin tran
       select @msg='`业务名称`核算处理成功'
       update logasset_hs
          set sett_status=3, sett_remark=@msg
-       where sno=@sno and bizdate=@bizdate and serverid=@serverid
+       where (sno=@sno or sno=@ref_sno) and bizdate=@bizdate and serverid=@serverid
    
    commit tran
    return 0

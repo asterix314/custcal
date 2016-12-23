@@ -1,8 +1,3 @@
-/****************************************
-    存储过程：    `存储过程`
-    业务描述：    `业务名称`（`业务摘要`）
-*****************************************/
-
 if exists (select * from sysobjects where type='P' and name='`存储过程`')
     drop proc `存储过程`
 go
@@ -108,7 +103,8 @@ begin tran
        end
 
     update fundasset_hs
-       set fundbal=fundbal+@fundeffect, fundbal_ch=fundbal_ch+@fundeffect
+       set fundbal=fundbal+@fundeffect, fundbal_ch=fundbal_ch+@fundeffect,
+           fundzqjy_ch=fundzqjy_ch+@fundeffect
      where fundid=@fundid and custid=@custid and orgid=@orgid and serverid=@serverid and
            moneytype=@moneytype   
           
@@ -137,7 +133,7 @@ begin tran
           select @serverid, @orgid, @custid, @fundid, @moneytype, 
                  fundlastbal=0, fundbal=@fundeffect, fundbal_ch=@fundeffect, 
                  fundsave=0, fundsave_ch=0, fundunsave=0, fundunsave_ch=0, 
-                 fundzqjy_ch=0, fundzqjy0_ch=0, fundbxyw=0, fundbxyw_ch=0, 
+                 fundzqjy_ch=@fundeffect, fundzqjy0_ch=0, fundbxyw=0, fundbxyw_ch=0, 
                  fundotc=0, fundotc_ch=0, fundkfjj=0, fundkfjj_ch=0, 
                  fundgold=0, fundgold_ch=0, fundother=0, fundother_ch=0, 
                  fundloan=0, fundloan_ch=0, funddebt=0, funddebt_ch=0, 
@@ -161,7 +157,7 @@ begin catch
    if @@trancount>0
        rollback tran
 
-   select @msg='`业务名称`失败: '+error_message()+''
+   select @msg='`业务名称`失败:'+error_message()+''
    update logasset_hs
       set sett_status=4, sett_remark=@msg
     where sno=@sno and bizdate=@bizdate and serverid=@serverid

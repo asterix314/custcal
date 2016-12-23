@@ -1,8 +1,3 @@
-/****************************************
-    存储过程：    `存储过程`
-    业务描述：    `业务名称`（`业务摘要`）
-*****************************************/
-
 if exists (select * from sysobjects where type='P' and name='`存储过程`')
     drop proc `存储过程`
 go
@@ -32,8 +27,7 @@ declare @orgid as varchar(4), @fundid as bigint, @busintype as int, @market as c
         @moneytype as char(1), @fundeffect as numeric(20,2), @fee_sxf as numeric(20,2), @stkqty as numeric(20,2),
         @stkqty_ch as numeric(20,2), @fee_jsxf as numeric(20,2), @fee_ghf as numeric(20,2), @fee_yhs as numeric(20,2),
         @qtfee as numeric(20,2), @ordersno as bigint, @orderdate as int, @sett_status as char(1)
-declare @tx_stkcost as numeric(20,2), @syvalue_ch as numeric(20,2), @stkcost_ch as numeric(20,2), 
-        @rowcount as int, @ret as int
+declare @tx_stkcost as numeric(20,2), @rowcount as int, @ret as int
         
  select @orgid=orgid, @fundid=fundid, @busintype=busintype, @market=market, @stkcode=stkcode, 
         @stkeffect=stkeffect, @matchqty=matchqty, @fundeffect=fundeffect, @matchamt=matchamt, 
@@ -42,7 +36,8 @@ declare @tx_stkcost as numeric(20,2), @syvalue_ch as numeric(20,2), @stkcost_ch 
         @bankcode=bankcode, @moneytype=moneytype, @ordersno=ordersno, @orderdate=orderdate,
         @sett_status=sett_status
    from logasset_hs with (nolock, index=logasset_hs_pk)
-  where sno=@sno and bizdate=@bizdate and serverid=@serverid and custid=@custid and busintype=`业务摘要` -- `业务名称`
+  where sno=@sno and bizdate=@bizdate and serverid=@serverid and custid=@custid and
+        busintype=`业务摘要` -- `业务名称`
            
 begin try
     if (@sett_status is null)
@@ -60,7 +55,7 @@ begin try
 `校验处理`
 
     -- tx_stkcost: 成本计减值
-    select @tx_stkcost=stkcost*@matchqty/stkqty, @stkqty=stkqty
+    select @tx_stkcost=stkcost*@matchqty/stkqty
       from stkasset_hs with (nolock, index=stkasset_hs_pk)
       where stkcode=@stkcode and market=@market and fundid=@fundid and custid=@custid and orgid=@orgid and
             stkqty>=@matchqty and serverid=@serverid  and ltlx='`流通类型`'
@@ -72,14 +67,12 @@ begin try
        end
 
 begin tran
-    select @syvalue_ch=@matchamt-@tx_stkcost, @stkcost_ch=-@tx_stkcost
-    
-    -- 价差收益放入利息收入
+    -- 价差收益计增利息收入
     update stkasset_hs
-       set stksaleqty=stksaleqty+@matchqty, stksaleamt=stksaleamt+@matchamt,
+       set stksaleqty_ex=stksaleqty_ex+@matchqty, stksaleamt_ex=stksaleamt_ex+@matchamt,
            stkqty=stkqty-@matchqty, stkqty_ch=stkqty_ch-@matchqty,
-           stkcost=stkcost+@stkcost_ch, stkcost_ch=stkcost_ch+@stkcost_ch,
-           lxsr=lxsr+@syvalue_ch, lxsr_ch=lxsr_ch+@syvalue_ch,
+           stkcost=stkcost-@tx_stkcost, stkcost_ch=stkcost_ch-@tx_stkcost,
+           lxsr=lxsr+@matchamt-@tx_stkcost, lxsr_ch=lxsr_ch+@matchamt-@tx_stkcost,
            jsxf=jsxf+@fee_jsxf, jsxf_ch=jsxf_ch+@fee_jsxf, sxf=sxf+@fee_sxf, sxf_ch=sxf_ch+@fee_sxf,
            ghf=ghf+@fee_ghf, ghf_ch=ghf_ch+@fee_ghf, yhs=yhs+@fee_yhs, yhs_ch=yhs_ch+@fee_yhs,
            qtfee=qtfee+@qtfee, qtfee_ch=qtfee_ch+@qtfee
@@ -98,10 +91,9 @@ begin tran
 
     update fundasset_hs
        set fundbal=fundbal+@fundeffect, fundbal_ch=fundbal_ch+@fundeffect,
-           fundzqjy_ch=fundzqjy_ch+@fundeffect,       
-           fundloan=fundloan+@stkcost_ch, fundloan_ch=fundloan_ch+@stkcost_ch
+           fundzqjy_ch=fundzqjy_ch+@fundeffect
      where fundid=@fundid and custid=@custid and orgid=@orgid and serverid=@serverid and
-           moneytype=@moneytype and fundloan>=@tx_stkcost -- 保证fundloan不至减成负数
+           moneytype=@moneytype
 
     select @rowcount=@@rowcount
     if (@rowcount!=1)
@@ -109,7 +101,7 @@ begin tran
           if (@@trancount>0)
              rollback tran
                  
-          select @msg='借出金额不足或更新资金错误(rowcount='+CONVERT(varchar, @rowcount)+').'
+          select @msg='更新资金错误(rowcount='+CONVERT(varchar, @rowcount)+').'
           raiserror(' %s', 12, 1, @msg) with SETERROR
        end
 
@@ -125,7 +117,7 @@ begin catch
    if @@trancount>0
        rollback tran
 
-   select @msg='`业务名称`失败: '+error_message()+''
+   select @msg='`业务名称`失败:'+error_message()+''
    update logasset_hs
       set sett_status=4, sett_remark=@msg
     where sno=@sno and bizdate=@bizdate and serverid=@serverid

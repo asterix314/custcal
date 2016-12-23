@@ -6,7 +6,7 @@ select top 10 * from logasset_hs where busintype=`业务摘要`
 update logasset_hs set sett_status=0, sett_remark='' where busintype=`业务摘要`
 
 declare @ret as int, @msg as varchar(128)
-exec @ret=`存储过程` '2', 20150804, 17795, 180399995492, @msg output
+exec @ret=`存储过程` '1',20160107, 107450, 120100148413, @msg output
 select @ret, @msg
 
 select * from stkasset_hs
@@ -23,42 +23,43 @@ CREATE proc `存储过程`(
 as
 declare @orgid as varchar(4), @fundid as bigint, @busintype as int, @market as char(1), @stkcode as varchar(10), 
         @stkeffect as numeric(20,2), @matchqty as numeric(20,2), @matchamt as numeric(20,2), @bankcode as varchar(4), 
-        @moneytype as char(1), @fundeffect as numeric(20,2), @fee_sxf as numeric(20,2), 
+        @moneytype as char(1), @fundeffect as numeric(20,2), @fee_sxf as numeric(20,2),
         @fee_jsxf as numeric(20,2), @fee_ghf as numeric(20,2), @fee_yhs as numeric(20,2), @qtfee as numeric(20,2), 
         @ordersno as bigint, @orderdate as int, @sett_status as char(1), @rowcount as int, @ret as int
         
  select @orgid=orgid, @fundid=fundid, @busintype=busintype, @market=market, @stkcode=stkcode, 
-        @stkeffect=stkeffect, @matchqty=matchqty, @fundeffect=fundeffect, @matchamt=matchamt, 
+        @stkeffect=stkeffect, @matchqty=matchqty, @fundeffect=fundeffect, @matchamt=matchamt,
         @fee_sxf=fee_sxf, @fee_jsxf=fee_jsxf, @fee_ghf=fee_ghf, @fee_yhs=fee_yhs,
-        @qtfee=fee_qsf+fee_jygf+fee_jsf+fee_zgf+fee_qtf+feefront, 
+        @qtfee=fee_qsf+fee_jygf+fee_jsf+fee_zgf+fee_qtf+feefront,
         @bankcode=bankcode, @moneytype=moneytype, @ordersno=ordersno, @orderdate=orderdate,
         @sett_status=sett_status
    from logasset_hs with (nolock, index=logasset_hs_pk)
-  where sno=@sno and bizdate=@bizdate and serverid=@serverid and custid=@custid and busintype=`业务摘要` -- `业务名称`
+  where sno=@sno and bizdate=@bizdate and serverid=@serverid and custid=@custid and
+        busintype=`业务摘要` -- `业务名称`
 
 begin try
-   if (@sett_status is null)
-      begin
-         select @msg='该笔流水不存在或调用错误.'
-         raiserror(' %s', 12, 1, @msg) with SETERROR
-      end
+    if (@sett_status is null)
+       begin
+          select @msg='该笔流水不存在或调用错误.'
+          raiserror(' %s', 12, 1, @msg) with SETERROR
+       end
 
-   if (@sett_status='3')
-      begin
-         select @msg='该笔流水已处理.'
-         return 0
-      end
+    if (@sett_status='3')
+       begin
+          select @msg='该笔流水已处理.'
+          return 0
+       end
 
 `校验处理`
 
 begin tran
-    -- 更新资金核算表：资金余额、累计结息
     update fundasset_hs
        set fundbal=fundbal+@fundeffect, fundbal_ch=fundbal_ch+@fundeffect,
-           fundaward=fundaward+@fundeffect, fundaward_ch=fundaward_ch+@fundeffect
+           fundzqjy_ch=fundzqjy_ch+@fundeffect,
+           qtsz=qtsz+@fundeffect, qtsz_ch=qtsz_ch+@fundeffect
      where fundid=@fundid and custid=@custid and orgid=@orgid and serverid=@serverid and
-           moneytype=@moneytype   
-          
+           moneytype=@moneytype
+
     select @rowcount=@@ROWCOUNT
     if (@rowcount>1)
        begin
@@ -84,15 +85,15 @@ begin tran
           select @serverid, @orgid, @custid, @fundid, @moneytype, 
                  fundlastbal=0, fundbal=@fundeffect, fundbal_ch=@fundeffect, 
                  fundsave=0, fundsave_ch=0, fundunsave=0, fundunsave_ch=0, 
-                 fundzqjy_ch=0, fundzqjy0_ch=0, fundbxyw=0, fundbxyw_ch=0, 
+                 fundzqjy_ch=@fundeffect, fundzqjy0_ch=0, fundbxyw=0, fundbxyw_ch=0, 
                  fundotc=0, fundotc_ch=0, fundkfjj=0, fundkfjj_ch=0, 
                  fundgold=0, fundgold_ch=0, fundother=0, fundother_ch=0, 
                  fundloan=0, fundloan_ch=0, funddebt=0, funddebt_ch=0, 
                  funduncome=0, funduncome_ch=0, fundunpay=0, fundunpay_ch=0, 
                  fundadjust=0, fundadjust_ch=0, 
-                 fundintr=0, fundintr_ch=0, fundaward=@fundeffect, fundaward_ch=@fundeffect, 
+                 fundintr=0, fundintr_ch=0, fundaward=0, fundaward_ch=0, 
                  rzlx=0, rzlx_ch=0, rcsr=0, rcsr_ch=0, 
-                 lxs=0, lxs_ch=0, qtsz=0, qtsz_ch=0, 
+                 lxs=0, lxs_ch=0, qtsz=@fundeffect, qtsz_ch=@fundeffect,
                  bankcode=@bankcode, tjdate=0, remark=''
            end
 
@@ -104,6 +105,7 @@ begin tran
    commit tran
    return 0
 end try
+
 begin catch
    if @@trancount>0
        rollback tran

@@ -23,7 +23,7 @@ CREATE proc `存储过程`(
 as
 declare @orgid as varchar(4), @fundid as bigint, @busintype as int, @market as char(1), @stkcode as varchar(10), 
         @stkeffect as numeric(20,2), @matchqty as numeric(20,2), @matchamt as numeric(20,2), @bankcode as varchar(4), 
-        @moneytype as char(1), @fundeffect as numeric(20,2), @fee_sxf as numeric(20,2), 
+        @moneytype as char(1), @fundeffect as numeric(20,2), @fee_sxf as numeric(20,2), @remark as varchar(64),
         @fee_jsxf as numeric(20,2), @fee_ghf as numeric(20,2), @fee_yhs as numeric(20,2), @qtfee as numeric(20,2), 
         @ordersno as bigint, @orderdate as int, @sett_status as char(1)
 declare @rowcount as int, @ret as int
@@ -31,7 +31,7 @@ declare @rowcount as int, @ret as int
  select @orgid=orgid, @fundid=fundid, @busintype=busintype, @market=market, @stkcode=stkcode, 
         @stkeffect=stkeffect, @matchqty=matchqty, @fundeffect=fundeffect, @matchamt=matchamt, 
         @fee_sxf=fee_sxf, @fee_jsxf=fee_jsxf, @fee_ghf=fee_ghf, @fee_yhs=fee_yhs,
-        @qtfee=fee_qsf+fee_jygf+fee_jsf+fee_zgf+fee_qtf+feefront,
+        @qtfee=fee_qsf+fee_jygf+fee_jsf+fee_zgf+fee_qtf+feefront, @remark=left(remark,32),
         @bankcode=bankcode, @moneytype=moneytype, @ordersno=ordersno, @orderdate=orderdate,
         @sett_status=sett_status
    from logasset_hs with (nolock, index=logasset_hs_pk)
@@ -54,31 +54,29 @@ begin try
 `校验处理`
 
 begin tran
-   -- 更新持仓核算表：持仓数量下账
+   -- 持仓数量、成本下账
     update stkasset_hs
-       set stksaleqty_ex=stksaleqty_ex+abs(@stkeffect), stkqty=stkqty+@stkeffect, stkqty_ch=stkqty_ch+@stkeffect
+       set stkztgcqty=stkztgcqty+stkqty, stkztgcamt=stkztgcamt+stkcost,
+           stkqty=0, stkqty_ch=stkqty_ch-stkqty, stkcost=0, stkcost_ch=stkcost_ch-stkcost,
+           stkadjust=stkadjust-stkcost, stkadjust_ch=stkadjust_ch-stkcost,
+           mktvalue=mktvalue-stkcost
      where stkcode=@stkcode and market=@market and custid=@custid and orgid=@orgid and serverid=@serverid and
-           fundid=@fundid and ltlx='`流通类型`' and stkqty+@stkeffect>=0
+           fundid=@fundid and stkqty>0 -- 所有流通类型
 
     select @rowcount=@@rowcount
-    if (@rowcount>1)    
-       begin
-          select @msg='更新证券持仓行数错误(rowcount='+CONVERT(varchar, @rowcount)+').'       
-          raiserror(' %s', 12, 2, @msg) with SETERROR                   
-       end    
-    else if (@rowcount!=1)
+    if (@rowcount!=1)
        begin
           if (@@TRANCOUNT>0)
-            rollback tran
-       
-          select @msg='持仓不足无法全部下账.'
+             rollback tran
+                 
+          select @msg='客户已无持仓或更新持仓错误(rowcount='+CONVERT(varchar, @rowcount)+').'
           raiserror(' %s', 12, 1, @msg) with SETERROR
        end
 
-      select @msg='`业务名称`核算处理成功'
-      update logasset_hs
-         set sett_status=3, sett_remark=@msg
-       where sno=@sno and bizdate=@bizdate and serverid=@serverid
+    select @msg='`业务名称`核算处理成功'
+    update logasset_hs
+       set sett_status=3, sett_remark=@msg
+     where sno=@sno and bizdate=@bizdate and serverid=@serverid
    
    commit tran
    return 0
@@ -96,6 +94,5 @@ begin catch
    return -1
 end catch
 go
-
 
 
