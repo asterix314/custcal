@@ -57,7 +57,7 @@ begin try
     -- tx_stkcost: 成本计减值
     select @tx_stkcost=stkcost*@matchqty/stkqty
       from stkasset_hs with (nolock, index=stkasset_hs_pk)
-      where stkcode=@stkcode and market=@market and fundid=@fundid and custid=@custid and orgid=@orgid and
+      where stkcode=@stkcode and market=@market and custid=@custid and orgid=@orgid and
             stkqty>=@matchqty and serverid=@serverid  and ltlx='`流通类型`'
 
     if (@tx_stkcost is null)
@@ -77,7 +77,7 @@ begin tran
            ghf=ghf+@fee_ghf, ghf_ch=ghf_ch+@fee_ghf, yhs=yhs+@fee_yhs, yhs_ch=yhs_ch+@fee_yhs,
            qtfee=qtfee+@qtfee, qtfee_ch=qtfee_ch+@qtfee
      where stkcode=@stkcode and market=@market and custid=@custid and orgid=@orgid and
-           serverid=@serverid and fundid=@fundid and ltlx='`流通类型`' and stkqty>=@matchqty
+           serverid=@serverid and ltlx='`流通类型`' and stkqty>=@matchqty
 
    select @rowcount=@@rowcount
        if (@rowcount!=1)

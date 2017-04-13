@@ -59,7 +59,7 @@ begin try
     -- 注意 stkqty<=0
     select @tx_stkcost=stkcost*@matchqty/stkqty
       from stkasset_hs with (nolock, index=stkasset_hs_pk)
-     where stkcode=@stkcode and market=@market and fundid=@fundid and custid=@custid and orgid=@orgid and
+     where stkcode=@stkcode and market=@market and custid=@custid and orgid=@orgid and
            stkqty+@matchqty<=0 and serverid=@serverid  and ltlx='`流通类型`'
         
     if (@tx_stkcost is null)
@@ -79,7 +79,7 @@ begin tran
            ghf=ghf+@fee_ghf, ghf_ch=ghf_ch+@fee_ghf, yhs=yhs+@fee_yhs, yhs_ch=yhs_ch+@fee_yhs,
            qtfee=qtfee+@qtfee, qtfee_ch=qtfee_ch+@qtfee
      where stkcode=@stkcode and market=@market and custid=@custid and orgid=@orgid and
-           serverid=@serverid and fundid=@fundid and ltlx='`流通类型`' and stkqty+@matchqty<=0
+           serverid=@serverid and ltlx='`流通类型`' and stkqty+@matchqty<=0
 
     select @rowcount=@@rowcount
     if (@rowcount!=1)
@@ -90,12 +90,12 @@ begin tran
           select @msg='购回持仓不足或更新持仓错误(rowcount='+CONVERT(varchar, @rowcount)+').'
           raiserror(' %s', 12, 1, @msg) with SETERROR
        end
-
+/*
     -- 质押出库
     update stkasset_hs
        set stkpledge=stkpledge-@matchqty
      where stkcode=@stkcode and market=@market and custid=@custid and orgid=@orgid and
-           serverid=@serverid and fundid=@fundid and ltlx='`转出类型`' and
+           serverid=@serverid and ltlx='`转出类型`' and
            stkpledge>=@matchqty
 
     select @rowcount=@@rowcount
@@ -107,7 +107,7 @@ begin tran
           select @msg='质押数量不足或更新持仓错误(rowcount='+CONVERT(varchar, @rowcount)+').'
           raiserror(' %s', 12, 1, @msg) with SETERROR
        end
-
+*/
     update fundasset_hs
        set fundbal=fundbal+@fundeffect, fundbal_ch=fundbal_ch+@fundeffect,
            fundzqjy_ch=fundzqjy_ch+@fundeffect

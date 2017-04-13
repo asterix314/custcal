@@ -61,7 +61,7 @@ begin tran
            ghf=ghf+@fee_ghf, ghf_ch=ghf_ch+@fee_ghf, yhs=yhs+@fee_yhs, yhs_ch=yhs_ch+@fee_yhs,
            qtfee=qtfee+@qtfee, qtfee_ch=qtfee_ch+@qtfee
      where stkcode=@stkcode and market=@market and custid=@custid and orgid=@orgid and
-           serverid=@serverid and fundid=@fundid and ltlx='`流通类型`'
+           serverid=@serverid and ltlx='`流通类型`'
 
     select @rowcount=@@rowcount
     if (@rowcount>1)    

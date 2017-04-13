@@ -53,10 +53,11 @@ begin try
 `校验处理`
 
 begin tran
+/*
     update stkasset_hs -- 原证券持仓质押入库
        set stkpledge=stkpledge+@matchqty
      where stkcode=@stkcode and market=@market and custid=@custid and orgid=@orgid and
-           serverid=@serverid and fundid=@fundid and ltlx='`转出类型`' and
+           serverid=@serverid and ltlx='`转出类型`' and
            stkqty>=@matchqty+stkpledge
            
     select @rowcount=@@rowcount
@@ -68,7 +69,7 @@ begin tran
           select @msg='可供质押持仓不足或更新持仓错误(rowcount='+CONVERT(varchar, @rowcount)+').'
           raiserror(' %s', 12, 1, @msg) with SETERROR
        end
-       
+*/       
     update stkasset_hs -- 回购期初形成负成本
        set stksaleqty_ex=stksaleqty_ex+@matchqty, stksaleamt_ex=stksaleamt_ex+@matchamt,
            stkqty=stkqty-@matchqty, stkqty_ch=stkqty_ch-@matchqty,
@@ -77,7 +78,7 @@ begin tran
            ghf=ghf+@fee_ghf, ghf_ch=ghf_ch+@fee_ghf, yhs=yhs+@fee_yhs, yhs_ch=yhs_ch+@fee_yhs,
            qtfee=qtfee+@qtfee, qtfee_ch=qtfee_ch+@qtfee
      where stkcode=@stkcode and market=@market and custid=@custid and orgid=@orgid and
-           serverid=@serverid and fundid=@fundid and ltlx='`流通类型`'
+           serverid=@serverid and ltlx='`流通类型`'
 
     select @rowcount=@@rowcount
     if (@rowcount>1)

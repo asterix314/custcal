@@ -1,37 +1,38 @@
-if exists (select * from sysobjects where type='P' and name='`存储过程名称`')
-    drop proc `存储过程名称`
+-- `PROC_NAME`: `BIZ_NAME`(`BIZ_ID`)
+
+if exists (select * from sysobjects where type='P' and name='`PROC_NAME`')
+    drop proc `PROC_NAME`
 go
 
 /*
-select top 10 * from logasset_hs where busintype=`业务代码` where sett_status!='3'
+select top 10 * from logasset_hs where busintype=`BIZ_ID` where sett_status!='3'
 
--- update logasset_hs set sett_status=0, sett_remark='' where busintype=`业务代码` and ...
+-- update logasset_hs set sett_status=0, sett_remark='' where busintype=`BIZ_ID` and ...
 
 declare @ret as int, @msg as varchar(128)
-exec @ret=`存储过程名称`  '1', 20160104, 18689, 120199995234, @msg output
+exec @ret=`PROC_NAME`  '1', 20160104, 18689, 120199995234, @msg output
 select @ret, @msg
 
 select * from stkasset_hs where custid=120100139424 and stkcode in ( '111023','111018')
 select * from fundasset_hs where custid=120100139424
 */
 
-CREATE proc `存储过程名称`(
+create proc `PROC_NAME`(
  @serverid  char(1)      
 ,@bizdate   int          
 ,@sno       int
 ,@custid    bigint    
 ,@msg       varchar(128)=null output
 )
--- with encryption
 as
 declare @orgid as varchar(4), @fundid as bigint, @market as char(1), @stkcode as varchar(10), @secuid as varchar(32),
         @busintype as int, @bankcode as char(4), @fundeffect as numeric(20,2), @fundbal as numeric(20,2),
         @stkeffect as numeric(20,2), @stkbal as numeric(20,2), @matchqty as numeric(20,2), @matchamt as numeric(20,2),
         @matchprice as numeric(9,3), @fee_jsxf as numeric(20,2), @fee_sxf as numeric(20,2), @fee_ghf as numeric(20,2),
-        @fee_yhs as numeric(20,2), @qtfee as numeric(20,2), @ref_sno as int, 
-        @busintype as int, @sett_status as char(1), @sett_remark as varchar(128)
-declare @ref_stkcode as varchar(16), @tx_stkcost as numeric(20,2), @syvalue_ch as numeric(20,2),
-        @rowcount as int, @ret as int
+        @fee_yhs as numeric(20,2), @qtfee as numeric(20,2), @ref_sno as int, @busintype as int, @sett_status as char(1),
+        @sett_remark as varchar(128)
+declare @ref_stkcode as varchar(16), @tx_stkcost as numeric(20,2), @syvalue_ch as numeric(20,2), @rowcount as int,
+        @ret as int
         
  select @orgid=orgid, @fundid=fundid, @busintype=busintype, @bankcode=bankcode, @moneytype=moneytype, @market=market,
         @stkcode=stkcode, @stkeffect=stkeffect, @matchqty=matchqty, @fundeffect=fundeffect, @matchamt=matchamt,
@@ -39,7 +40,7 @@ declare @ref_stkcode as varchar(16), @tx_stkcost as numeric(20,2), @syvalue_ch a
         @qtfee=fee_qsf+fee_jygf+fee_jsf+fee_zgf+fee_qtf+feefront, @sett_status=sett_status
    from logasset_hs with (nolock, index=logasset_hs_pk)
   where sno=@sno and bizdate=@bizdate and serverid=@serverid and custid=@custid and
-        busintype=`BUS_ID` -- `BUS_NAME`
+        busintype=`BIZ_ID` -- `BIZ_NAME`
 
 begin try
     if (@sett_status is null)
